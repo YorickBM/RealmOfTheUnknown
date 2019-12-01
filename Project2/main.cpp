@@ -12,6 +12,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Model.h"
+#include "Collision.h"
 
 // GLM Mathemtics
 #include <glm/glm.hpp>
@@ -147,11 +148,26 @@ int main()
 
 	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
-	PineTree3Snowy.setPosition(glm::vec3(4.7f, 0.f, 0.0f));
+	PineTree3Snowy.setPosition(glm::vec3(4.2f, 0.f, 0.0f));
 	PineTree3Snowy.setScale(0.2f);
 
 	//Init Mesh stuff
 	mesh.initVertArray();
+
+	std::vector<glm::vec3> x;
+	std::vector<glm::vec3> y;
+
+	x.push_back(glm::vec3(200, 300, 20));
+	x.push_back(glm::vec3(100, 100, 20));
+
+	y.push_back(glm::vec3(200, 180, 10));
+	y.push_back(glm::vec3(320, 180, 10));
+
+	Collision* col = new Collision();
+	col->detectCollision(x, y);
+
+	PineStump.DetectCollision(PineTree3Snowy);
+	PineTree1.DetectCollision(PineTree3Snowy);
 
 	// Game loop
 	while (!glfwWindowShouldClose(window))

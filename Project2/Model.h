@@ -18,6 +18,8 @@
 #include <assimp/postprocess.h>
 
 #include "Mesh.h"
+#include "Shader.h"
+#include "Collision.h"
 
 using namespace std;
 
@@ -37,6 +39,23 @@ public:
 		this->model = glm::translate(this->model, position);
 		this->model = glm::scale(this->model, glm::vec3(scale, scale, scale));
 		this->loadModel(path);
+	}
+
+	void DetectCollision(Model SceneModel) {
+		std::vector<glm::vec3> objectVertices;
+		std::vector<glm::vec3> ModelVertices;
+
+		for (int i = 0; i < SceneModel.getModelVertices().size(); i++) {
+				glm::vec3 pos = SceneModel.getModelVertices().at(i).Position;
+				objectVertices.push_back(pos);
+		}
+		for (int i = 0; i < this->getModelVertices().size(); i++) {
+				glm::vec3 pos = this->getModelVertices().at(i).Position;
+				ModelVertices.push_back(pos);
+		}
+
+		Collision* col = new Collision();
+		col->detectCollision(objectVertices, ModelVertices);
 	}
 
 	// Draws the model, and thus all its meshes
@@ -71,15 +90,19 @@ public:
 		this->model = newModel;
 		this->_scale = scale;
 	}
+	BoundingBox getBoundingBox() { return this->_boundingBox; }
+	vector<Vertex> getModelVertices() { return this->ModelVertices; }
 
 private:
 	/*  Model Data  */
+	BoundingBox _boundingBox;
 	vector<Mesh> meshes;
 	string directory;
 	vector<Texture> textures_loaded;	// Stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
 	glm::mat4 model;
 	glm::vec3 _position;
 	float _scale;
+	std::vector<Vertex> ModelVertices;
 
 	/*  Functions   */
 	// Loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
@@ -164,6 +187,7 @@ private:
 				vertex.TexCoords = glm::vec2(0.0f, 0.0f);
 			}
 
+			this->ModelVertices.push_back(vertex);
 			vertices.push_back(vertex);
 		}
 
@@ -199,7 +223,6 @@ private:
 			vector<Texture> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 			textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 		}
-
 		// Return a mesh object created from the extracted mesh data
 		return Mesh(vertices, indices, textures);
 	}
