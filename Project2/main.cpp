@@ -27,7 +27,7 @@
 
 // Properties
 const GLuint WIDTH = 800, HEIGHT = 600;
-const char* TITLE = "Island Clash - Beta Release";
+const char* TITLE = "Realm Of The Unknown - Beta Release";
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
 // Function prototypes
