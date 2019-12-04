@@ -1,11 +1,15 @@
 #pragma once
+#define _USE_MATH_DEFINES
 
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 #include <map>
 #include <vector>
+
+#include <math.h>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -33,29 +37,32 @@ public:
 	Model(const char *path)
 	{
 		this->loadModel(path);
+		this->col = new que::Collision();
 	}
 	Model(const char *path, glm::vec3 position, float scale = 1.0f)
 	{
+		this->_position = position;
 		this->model = glm::translate(this->model, position);
 		this->model = glm::scale(this->model, glm::vec3(scale, scale, scale));
 		this->loadModel(path);
+		this->col = new que::Collision();
 	}
 
 	void DetectCollision(Model SceneModel) {
-		std::vector<glm::vec3> objectVertices;
-		std::vector<glm::vec3> ModelVertices;
 
-		for (int i = 0; i < SceneModel.getModelVertices().size(); i++) {
-				glm::vec3 pos = SceneModel.getModelVertices().at(i).Position;
-				objectVertices.push_back(pos);
-		}
-		for (int i = 0; i < this->getModelVertices().size(); i++) {
-				glm::vec3 pos = this->getModelVertices().at(i).Position;
-				ModelVertices.push_back(pos);
-		}
+		std::cout << "--- Starting Collision Detection ---" << std::endl;
+		/*for (int current = 0; current < SceneModel.getModelVertices().size(); current++) {
+			double x = this->col->CalcAngleSum(SceneModel.getModelVertices()[current],this->getModelVertices(), this->getModelVertices().size());
+			if (abs(x) < M_PI)
+				exit(1);
+			
+			std::cout << x << std::endl;
+			std::cout << "> " << SceneModel.getModelVertices()[current].x << std::endl;
+		}*/
+		this->col->detectCollision(SceneModel.getModelFaces(), this->getModelVertices());
 
-		Collision* col = new Collision();
-		col->detectCollision(objectVertices, ModelVertices);
+
+		std::cout << "--- Finished Collision Detection ---" << std::endl;
 	}
 
 	// Draws the model, and thus all its meshes
@@ -76,6 +83,28 @@ public:
 		}
 	}
 
+	std::vector<glm::vec3> testList;
+	void getATriangleFace() {
+		for (GLuint i = 0; i < this->meshes.size(); i++)
+		{
+			for (int h = 0; h < this->meshes[i].indices.size(); h++) {
+				float x = this->meshes[i].vertices[h].Position.x;
+				float y = this->meshes[i].vertices[h].Position.y;
+				float z = this->meshes[i].vertices[h].Position.z;
+
+				glm::vec3 prod = glm::vec3(x, y, z);
+
+				if(std::find(testList.begin(), testList.end(), prod) == testList.end())
+					testList.push_back(prod);
+
+				///std::cout << x << ";" << y << ";" << z << std::endl;
+			}
+
+			std::cout << "Faces: " << _faces.size() << std::endl;
+			std::cout << "Vertices: " << testList.size() << std::endl;
+		}
+	}
+
 	void setPosition(glm::vec3 position) {
 		glm::mat4 newModel;
 		newModel = glm::translate(newModel, position);
@@ -90,10 +119,18 @@ public:
 		this->model = newModel;
 		this->_scale = scale;
 	}
+
 	BoundingBox getBoundingBox() { return this->_boundingBox; }
-	vector<Vertex> getModelVertices() { return this->ModelVertices; }
+
+	std::vector<Face> getModelFaces() { return this->_faces; }
+	std::vector<glm::vec3> getModelVertices() { return this->_vertices; }
+
+	glm::vec3 getPosition() { return this->_position; }
+	float getScale() { return this->_scale; }
 
 private:
+	que::Collision* col;
+
 	/*  Model Data  */
 	BoundingBox _boundingBox;
 	vector<Mesh> meshes;
@@ -102,7 +139,8 @@ private:
 	glm::mat4 model;
 	glm::vec3 _position;
 	float _scale;
-	std::vector<Vertex> ModelVertices;
+	std::vector<glm::vec3> _vertices;
+	std::vector<Face> _faces;
 
 	/*  Functions   */
 	// Loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
@@ -153,8 +191,11 @@ private:
 		vector<Vertex> vertices;
 		vector<GLuint> indices;
 		vector<Texture> textures;
+		glm::vec3 Max, Min;
 
 		// Walk through each of the mesh's vertices
+		int q = 0;
+		std::vector<glm::vec3> TempVertices;
 		for (GLuint i = 0; i < mesh->mNumVertices; i++)
 		{
 			Vertex vertex;
@@ -165,6 +206,31 @@ private:
 			vector.y = mesh->mVertices[i].y;
 			vector.z = mesh->mVertices[i].z;
 			vertex.Position = vector;
+
+			if (std::find(this->_vertices.begin(), this->_vertices.end(), (vertex.Position + this->_position)) == this->_vertices.end())
+				this->_vertices.push_back(vertex.Position + this->_position);
+			TempVertices.push_back(vertex.Position + this->_position);
+
+			//Face Creation
+			if (++q == 3) {
+				Face TempFace;
+				TempFace.Pos0 = TempVertices.at(0);
+				TempFace.Pos1 = TempVertices.at(1);
+				TempFace.Pos2 = TempVertices.at(2);
+
+				_faces.push_back(TempFace);
+				q = 0;
+				TempVertices.clear();
+			}
+
+			//Get Max & Min Values;
+			Max.x = max(vector.x, Max.x);
+			Max.y = max(vector.y, Max.y);
+			Max.z = max(vector.z, Max.z);
+
+			Min.x = min(vector.x, Min.x);
+			Min.y = min(vector.y, Min.y);
+			Min.z = min(vector.z, Min.z);
 
 			// Normals
 			vector.x = mesh->mNormals[i].x;
@@ -186,8 +252,6 @@ private:
 			{
 				vertex.TexCoords = glm::vec2(0.0f, 0.0f);
 			}
-
-			this->ModelVertices.push_back(vertex);
 			vertices.push_back(vertex);
 		}
 
@@ -223,6 +287,11 @@ private:
 			vector<Texture> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 			textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 		}
+
+		//Store BoundingBox
+		this->_boundingBox.min = Min;
+		this->_boundingBox.max = Max;
+
 		// Return a mesh object created from the extracted mesh data
 		return Mesh(vertices, indices, textures);
 	}

@@ -138,37 +138,29 @@ int main()
 
 	// Load models
 	///Model ourModel("res/models/suit/nanosuit.obj");
-	Model PineTree3Snowy("res/models/OBJ/Alien/PineTree3Snowy.obj");
+	Model PineTree3Snowy("res/models/OBJ/Alien/PineTree3Snowy.obj", glm::vec3(4.2f, 0.f, 0.0f), 0.2f);
 
-	Model PineTree1("res/models/OBJ/Evergreen/PineTree1.obj", glm::vec3(4.0f, 0.f, 0.0f), 0.2f);
+	Model PineTree1("res/models/OBJ/Evergreen/PineTree1.obj", glm::vec3(4.0f, 0.2f, 0.0f), 0.2f);
 	Model PineStump("res/models/OBJ/Pine/PineStump.obj", glm::vec3(0.0f, 0.f, 0.0f), 0.2f);
+
+	Model Rock1("res/models/Rocks/RockBig001.obj", glm::vec3(2.0f, 0.2f, 2.0f), 0.2f);
+	Model Rock2("res/models/Rocks/RockBig002.obj", glm::vec3(2.0f, 0.05f, 2.0f), 0.2f);
 
 	// Draw in wireframe
 	///glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
 	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
-	PineTree3Snowy.setPosition(glm::vec3(4.2f, 0.f, 0.0f));
-	PineTree3Snowy.setScale(0.2f);
+	///PineTree3Snowy.setPosition(glm::vec3(4.2f, 0.f, 0.0f));
+	///PineTree3Snowy.setScale(0.2f);
 
 	//Init Mesh stuff
 	mesh.initVertArray();
 
-	std::vector<glm::vec3> x;
-	std::vector<glm::vec3> y;
+	Rock1.getATriangleFace();
+	//PineStump.DetectCollision(PineTree3Snowy);
 
-	x.push_back(glm::vec3(200, 300, 20));
-	x.push_back(glm::vec3(100, 100, 20));
-
-	y.push_back(glm::vec3(200, 180, 10));
-	y.push_back(glm::vec3(320, 180, 10));
-
-	Collision* col = new Collision();
-	col->detectCollision(x, y);
-
-	PineStump.DetectCollision(PineTree3Snowy);
-	PineTree1.DetectCollision(PineTree3Snowy);
-
+	int frame = 0;
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -193,11 +185,20 @@ int main()
 
 		//Camera Stuff to Shaders
 		camera.Update(shader, projection); //Do projection calculation also inside Camera class?!
+		//PineTree3Snowy.setPosition(camera.GetPosition());
+		if (frame++ >= 500) {
+			//Rock1.DetectCollision(Rock2);
+			frame = 0;
+			PineTree1.DetectCollision(PineTree3Snowy);
+			PineTree1.DetectCollision(PineStump);
+		}
 
 		//Just draw model nothin special with pos or scale
 		PineTree3Snowy.Draw(shader);
 		PineStump.Draw(shader);
 		PineTree1.Draw(shader);
+		Rock1.Draw(shader);
+		Rock2.Draw(shader);
 
 		//Water Mesh Rendering Stuff
 		mesh.disbaleShader();
