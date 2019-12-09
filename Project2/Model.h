@@ -34,6 +34,10 @@ class Model
 public:
 	/*  Functions   */
 	// Constructor, expects a filepath to a 3D model.
+	Model() {
+
+	}
+
 	Model(const char *path)
 	{
 		this->loadModel(path);
@@ -42,12 +46,30 @@ public:
 	Model(const char *path, glm::vec3 position, float scale = 1.0f)
 	{
 		this->_position = position;
+		this->_scale = scale;
+		this->_origin = position;
 		this->model = glm::translate(this->model, position);
 		this->model = glm::scale(this->model, glm::vec3(scale, scale, scale));
 		this->loadModel(path);
 		this->col = new que::Collision();
+		this->ProcessBoundingBox(this->_position);
 	}
 
+	void ProcessBoundingBox(glm::vec3 position) {
+		glm::vec3 Max, Min;
+		glm::vec3 pos = this->_position + position;
+
+		Max.x = (this->getModelVertices()[this->_MaxVertice.x].x + pos.x);
+		Max.y = (this->getModelVertices()[this->_MaxVertice.y].y + pos.y);
+		Max.z = (this->getModelVertices()[this->_MaxVertice.z].z + pos.z);
+
+		Min.x = (this->getModelVertices()[this->_MinVertice.x].x + pos.x);
+		Min.y = (this->getModelVertices()[this->_MinVertice.y].y + pos.y);
+		Min.z = (this->getModelVertices()[this->_MinVertice.z].z + pos.z);
+
+		this->_boundingBox.min = Min;
+		this->_boundingBox.max = Max;
+	}
 	void DetectCollision(Model SceneModel) {
 
 		std::cout << "--- Starting Collision Detection ---" << std::endl;
@@ -111,6 +133,7 @@ public:
 		newModel = glm::scale(newModel, glm::vec3(this->_scale, this->_scale, this->_scale));
 		this->model = newModel;
 		this->_position = position;
+		this->ProcessBoundingBox(position);
 	}
 	void setScale(float scale) {
 		glm::mat4 newModel;
@@ -126,6 +149,7 @@ public:
 	std::vector<glm::vec3> getModelVertices() { return this->_vertices; }
 
 	glm::vec3 getPosition() { return this->_position; }
+	glm::vec3 getOrigin() { return this->_origin; }
 	float getScale() { return this->_scale; }
 
 private:
@@ -138,9 +162,11 @@ private:
 	vector<Texture> textures_loaded;	// Stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
 	glm::mat4 model;
 	glm::vec3 _position;
+	glm::vec3 _origin;
 	float _scale;
 	std::vector<glm::vec3> _vertices;
 	std::vector<Face> _faces;
+	glm::vec3 _MinVertice, _MaxVertice;
 
 	/*  Functions   */
 	// Loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
@@ -291,6 +317,7 @@ private:
 		//Store BoundingBox
 		this->_boundingBox.min = Min;
 		this->_boundingBox.max = Max;
+		BoundingBoxPreperation();
 
 		// Return a mesh object created from the extracted mesh data
 		return Mesh(vertices, indices, textures);
@@ -338,6 +365,19 @@ private:
 		}
 
 		return textures;
+	}
+
+	// Peer
+	void BoundingBoxPreperation() {
+		for (int i = 0; i < this->getModelVertices().size(); i++) {
+			if (max(this->getModelVertices()[i].x + this->_position.x, this->_boundingBox.max.x)) this->_MaxVertice.x = i;
+			if (max(this->getModelVertices()[i].y + this->_position.y, this->_boundingBox.max.y)) this->_MaxVertice.y = i;
+			if (max(this->getModelVertices()[i].z + this->_position.z, this->_boundingBox.max.z)) this->_MaxVertice.z = i;
+
+			if (min(this->getModelVertices()[i].x + this->_position.x, this->_boundingBox.min.x)) this->_MinVertice.x = i;
+			if (min(this->getModelVertices()[i].y + this->_position.y, this->_boundingBox.min.y)) this->_MinVertice.y = i;
+			if (min(this->getModelVertices()[i].z + this->_position.z, this->_boundingBox.min.z)) this->_MinVertice.z = i;
+		}
 	}
 };
 

@@ -90,7 +90,7 @@ namespace que {
 		~Collision();
 
 		bool detectCollision(std::vector<Face> objectFaces, std::vector<glm::vec3> userVertices);
-		//void detectCollision(Model Object, Model User);
+		bool detectCollision(BoundingBox a, BoundingBox b);
 
 		bool test(glm::vec3 da, glm::vec3 db, glm::vec3 dc) {
 			glm::vec3 s = glm::dot(glm::cross(dc, db), glm::cross(da, db)) / glm::normalize(glm::cross(da, db));
@@ -137,7 +137,6 @@ namespace que {
 		bool lineLine(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4);
 
 		//True if collision is detected, false otherwise
-		bool detectCollision(BoundingBox a, BoundingBox b);
 		bool detectCollision(Sphere a, Sphere b);
 	};
 }

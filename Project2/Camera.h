@@ -2,6 +2,9 @@
 
 // Std. Includes
 #include <vector>
+#include <map>
+
+#include "Model.h"
 
 // GL Includes
 #define GLEW_STATIC
@@ -23,7 +26,7 @@ enum Camera_Movement
 // Default camera values
 const GLfloat YAW = -90.0f;
 const GLfloat PITCH = 0.0f;
-const GLfloat SPEED = 6.0f;
+const GLfloat SPEED = 1.0f;
 const GLfloat SENSITIVTY = 0.25f;
 const GLfloat ZOOM = 45.0f;
 
@@ -60,29 +63,54 @@ public:
 		return (projectionMatrix * this->GetViewMatrix());
 	}
 
+	void SetModel(Model* model) {
+		this->_camModel = model;
+		this->_camModel->setPosition(this->position);
+	}
+	void SetPosition(glm::vec3 pos) {
+		this->position = pos;
+	}
+
 	// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
 	void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
 	{
 		GLfloat velocity = this->movementSpeed * deltaTime;
+		bool Process = true;
+		glm::vec3 movementFB = this->front * velocity;
+		glm::vec3 movementLR = this->right * velocity;
 
-		if (direction == FORWARD)
-		{
-			this->position += this->front * velocity;
+		for (std::map<glm::vec3*, Model*>::iterator itr = this->_Models.begin(), itr_end = this->_Models.end(); itr != itr_end; ++itr) {
+			Model* SceneObj = itr->second;
+			Model* CameraObj = _camModel;
+			que::Collision col = que::Collision();
+
+			if (col.detectCollision(SceneObj->getBoundingBox(), CameraObj->getBoundingBox())) {
+				if (col.detectCollision(SceneObj->getModelFaces(), CameraObj->getModelVertices())) {
+					Process = false;
+				}
+			}
 		}
 
-		if (direction == BACKWARD)
-		{
-			this->position -= this->front * velocity;
-		}
-
-		if (direction == LEFT)
-		{
-			this->position -= this->right * velocity;
-		}
-
-		if (direction == RIGHT)
-		{
-			this->position += this->right * velocity;
+		if (Process) {
+			glm::vec3 pos = this->_camModel->getPosition();
+			switch (direction) {
+			case FORWARD:
+				this->position += movementFB;
+				this->_camModel->setPosition(pos += movementFB);
+				break;
+			case BACKWARD:
+				this->position -= movementFB;
+				this->_camModel->setPosition(pos -= movementFB);
+				break;
+			case LEFT:
+				this->position -= movementLR;
+				this->_camModel->setPosition(pos -= movementLR);
+				break;
+			case RIGHT:
+				this->position += movementLR;
+				this->_camModel->setPosition(pos += movementLR);
+				break;
+			}
 		}
 	}
 
@@ -141,6 +169,12 @@ public:
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 	}
+	void Update(Shader shader, glm::mat4 projection, std::map<glm::vec3*, Model*> hm) {
+		glm::mat4 view = this->GetViewMatrix();
+		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		this->_Models = hm;
+	}
 
 private:
 	// Camera Attributes
@@ -149,6 +183,8 @@ private:
 	glm::vec3 up;
 	glm::vec3 right;
 	glm::vec3 worldUp;
+	Model* _camModel;
+	std::map<glm::vec3*, Model*> _Models;
 
 	// Eular Angles
 	GLfloat yaw;

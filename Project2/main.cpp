@@ -1,5 +1,6 @@
 // Std. Includes
 #include <string>
+#include <map>
 
 // GLEW
 #define GLEW_STATIC
@@ -13,6 +14,8 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Collision.h"
+#include "ToolBox.h"
+#include "ComponentSystemManager.h"
 
 // GLM Mathemtics
 #include <glm/glm.hpp>
@@ -44,6 +47,21 @@ bool firstMouse = true;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
+
+//ComponentSystem
+ComponentSystemManager csm;
+std::vector<Entity> entities;
+
+#include "RenderObject.h"
+
+/*
+Basic Clothing (When no Armor)
+Change clothing on armor (Every armor piece looks different)
+Give the player a model that loads and that he walks around as!
+		V
+		Camera Position Seems to be FUCKED UP :?
+*/
+
 
 int main()
 {
@@ -98,53 +116,39 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	#pragma endregion
 
-	#pragma region Water Mesh
-	//Create Map
-	const int mapsize = 128; //8
-	const int start = 64;
-
-	LowPolyMeshLibrary::Map heightMap(mapsize + 1, mapsize + 1);
-	heightMap.setElement(0, 0, start);
-	heightMap.setElement(0, mapsize, start);
-	heightMap.setElement(mapsize, 0, start);
-	heightMap.setElement(mapsize, mapsize, start);
-	heightMap.generate(mapsize + 1, 1);
-	heightMap.capData(0, 255);
-	heightMap.smooth(1, 2);
-
-	vector<GLfloat> heightdata;
-	for (int y = 0; y != heightMap.getY(); y++)
-	{
-		for (int x = 0; x != heightMap.getX(); x++)
-		{
-			heightdata.push_back((GLfloat(heightMap.getElement(x, y))) / 255);
-		}
-	}
-
-	//Create Mesh
-	LowPolyMeshLibrary::Mesh mesh(mapsize, 2.0f);
-	glm::mat4 MeshModel;
-	MeshModel = glm::translate(MeshModel, glm::vec3(0, 0, 0));
-	MeshModel = glm::scale(MeshModel, glm::vec3(1, 1, 1));
-
-	mesh.genTriangleMesh(heightdata);
-	mesh.genTriangleNormals();
-	mesh.genShader();
-	#pragma endregion
-
-
 	// Setup and compile our shaders
 	Shader shader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 
-	// Load models
-	///Model ourModel("res/models/suit/nanosuit.obj");
-	Model PineTree3Snowy("res/models/OBJ/Alien/PineTree3Snowy.obj", glm::vec3(4.2f, 0.f, 0.0f), 0.2f);
+	#pragma region ComponentSystem
+	csm.Init();
 
-	Model PineTree1("res/models/OBJ/Evergreen/PineTree1.obj", glm::vec3(4.0f, 0.2f, 0.0f), 0.2f);
-	Model PineStump("res/models/OBJ/Pine/PineStump.obj", glm::vec3(0.0f, 0.f, 0.0f), 0.2f);
+	/* Register The Components & Systems*/
+	csm.RegisterComponent<RenderObject>();
+	///csm.RegisterSystem<Model>();
 
-	Model Rock1("res/models/Rocks/RockBig001.obj", glm::vec3(2.0f, 0.2f, 2.0f), 0.2f);
-	Model Rock2("res/models/Rocks/RockBig002.obj", glm::vec3(2.0f, 0.05f, 2.0f), 0.2f);
+	/* Create the Signatures */
+	Signature signature;
+	signature.set(csm.GetComponentType<RenderObject>());
+	///csm.SetSystemSignature<Model>(signature);
+	
+	auto csmModel = csm.CreateEntity();
+	csm.AddComponent(csmModel, RenderObject{ Model("res/models/OBJ/Alien/PineTree3Snowy.obj", glm::vec3(4.7f, 0.f, 0.0f), 0.2f)});
+	entities.push_back(csmModel);
+
+	auto csmModel = csm.CreateEntity();
+	csm.AddComponent(csmModel, RenderObject{ Model("res/models/OBJ/Evergreen/PineTree1.obj", glm::vec3(4.0f, 0.0f, 0.0f), 0.2f) });
+	entities.push_back(csmModel);
+
+	auto csmModel = csm.CreateEntity();
+	csm.AddComponent(csmModel, RenderObject{ Model("res/models/OBJ/Pine/PineStump.obj", glm::vec3(0.0f, 0.f, 0.0f), 0.2f) });
+	entities.push_back(csmModel);
+
+	auto csmModel = csm.CreateEntity();
+	csm.AddComponent(csmModel, RenderObject{ Model("res/models/Rocks/RockBig001.obj", glm::vec3(2.0f, 0.2f, 2.0f), 0.2f) });
+	entities.push_back(csmModel);
+	#pragma endregion
+
+	Model PlayerModel("res/models/OBJ/Alien/PineTree3Snowy.obj", glm::vec3(2.0f, 0.f, 0.0f), 0.2f);
 
 	// Draw in wireframe
 	///glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -154,11 +158,12 @@ int main()
 	///PineTree3Snowy.setPosition(glm::vec3(4.2f, 0.f, 0.0f));
 	///PineTree3Snowy.setScale(0.2f);
 
-	//Init Mesh stuff
-	mesh.initVertArray();
+	std::map<glm::vec3*, Model*> ht;
+	///ht[&PineTree3Snowy.getPosition()] = &PineTree3Snowy;
+	///ht[&PineTree1.getPosition()] = &PineTree1;
+	///ht[&PineStump.getPosition()] = &PineStump;
 
-	Rock1.getATriangleFace();
-	//PineStump.DetectCollision(PineTree3Snowy);
+	camera.SetModel(&PlayerModel);
 
 	int frame = 0;
 	// Game loop
@@ -184,33 +189,22 @@ int main()
 		shader.Use();
 
 		//Camera Stuff to Shaders
-		camera.Update(shader, projection); //Do projection calculation also inside Camera class?!
-		//PineTree3Snowy.setPosition(camera.GetPosition());
-		if (frame++ >= 500) {
-			//Rock1.DetectCollision(Rock2);
-			frame = 0;
-			PineTree1.DetectCollision(PineTree3Snowy);
-			PineTree1.DetectCollision(PineStump);
-		}
+		camera.Update(shader, projection, ht); //Do projection calculation also inside Camera class?!
 
 		//Just draw model nothin special with pos or scale
-		PineTree3Snowy.Draw(shader);
-		PineStump.Draw(shader);
-		PineTree1.Draw(shader);
-		Rock1.Draw(shader);
-		Rock2.Draw(shader);
+		for (auto& entity : entities) {
+			auto& Shader = shader;
+			auto& Model = csm.GetComponent<RenderObject>(entity).model;
 
-		//Water Mesh Rendering Stuff
-		mesh.disbaleShader();
-		mesh.enableShader();
-		mesh.setShaderUniformMatrix4((GLchar*)"model", MeshModel);
-		mesh.draw();
+			Model.Draw(Shader);
+		}
+		///PineTree3Snowy.Draw(shader);
+		PlayerModel.Draw(shader);
 
 		// Swap the buffers
 		glfwSwapBuffers(window);
 	}
 
-	mesh.disableVertArrays();
 	glfwTerminate();
 	return 0;
 }
@@ -302,42 +296,8 @@ Object loading in new thread get percentage text on screen :?
 
 -------------------------
 
-http://www.peroxide.dk/papers/collision/collision.pdf
-http://www.codercorner.com/SAP.pdf
-
--------------------------
-
-Collision Shit :? > https://www.youtube.com/watch?v=NGh-Vh_NYO0
-@Teddy C You need 8 vertices to make a cube, and these can be created from the max and min x, y and z values. For example, the front top left vertex of the box is (minX, maxY, minZ). The back right bottom vertex is (maxX, minY, maxZ) etc. The calculations with AABBs often don't require these vertices though, and are instead done with the 6 max/min values.
-For example, to check if 2 AABBs intersect:
-if(box1.minX < box2.maxX && box1.maxX > box2.minX){
-		 //boxes intersect on x axis
-}
-Do this for y and z as well, and if the boxes intersect on all 3 axis then the two AABBs are intersecting.
-
--------------------------
-
-How would i go about getting the sizeX, sizeY, and a sizeZ from an Entity in the openGL 3D game tutorial for a broad collision detection?
-@G4_Genocide When reading in the vertices in your OBJ loader keep track of the largest x, y and z values. So for each vertex that you read in you would do something like:
-if(vertex.x > maxX){
-	  maxX = vertex.x;
-}
-if(vertex.y > maY){
-	 maxY = vertex.y;
-}
-if(vertex.z > maxZ){
-	 maxZ = vertex.z;
-}
-Do the same for min values as well. When you've finished loading all the vertices you'll have the ma and min x,y,z values for that model.
-
--------------------------
-
 Update vbo shit
 http://wiki.lwjgl.org/wiki/The_Quad_updating_a_VBO_with_BufferSubData.html
-
--------------------------
-
-Triangle face collision
 
 -------------------------
 
