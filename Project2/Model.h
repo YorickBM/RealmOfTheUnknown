@@ -27,7 +27,7 @@
 
 using namespace std;
 
-GLint TextureFromFile(const char *path, string directory);
+///GLint TextureFromFile(const char *path, string directory);
 
 class Model
 {
@@ -41,7 +41,7 @@ public:
 	Model(const char *path)
 	{
 		this->loadModel(path);
-		this->col = new que::Collision();
+		this->GenerateMinAndMaxVertice();
 	}
 	Model(const char *path, glm::vec3 position, float scale = 1.0f)
 	{
@@ -51,40 +51,18 @@ public:
 		this->model = glm::translate(this->model, position);
 		this->model = glm::scale(this->model, glm::vec3(scale, scale, scale));
 		this->loadModel(path);
-		this->col = new que::Collision();
-		this->ProcessBoundingBox(this->_position);
+		this->GenerateMinAndMaxVertice();
 	}
+	Model(Model BaseModel, BoundingBox boundingBox) {
+		this->_position = BaseModel.getPosition();
+		this->_scale = BaseModel.getScale();
+		this->model = glm::translate(this->model, this->_position);
+		this->model = glm::scale(this->model, glm::vec3(this->_scale, this->_scale, this->_scale));
 
-	void ProcessBoundingBox(glm::vec3 position) {
-		glm::vec3 Max, Min;
-		glm::vec3 pos = this->_position + position;
+		this->_MinVertice = BaseModel.GetMinVertice();
+		this->_MaxVertice = BaseModel.GetMaxVertice();
 
-		Max.x = (this->getModelVertices()[this->_MaxVertice.x].x + pos.x);
-		Max.y = (this->getModelVertices()[this->_MaxVertice.y].y + pos.y);
-		Max.z = (this->getModelVertices()[this->_MaxVertice.z].z + pos.z);
-
-		Min.x = (this->getModelVertices()[this->_MinVertice.x].x + pos.x);
-		Min.y = (this->getModelVertices()[this->_MinVertice.y].y + pos.y);
-		Min.z = (this->getModelVertices()[this->_MinVertice.z].z + pos.z);
-
-		this->_boundingBox.min = Min;
-		this->_boundingBox.max = Max;
-	}
-	void DetectCollision(Model SceneModel) {
-
-		std::cout << "--- Starting Collision Detection ---" << std::endl;
-		/*for (int current = 0; current < SceneModel.getModelVertices().size(); current++) {
-			double x = this->col->CalcAngleSum(SceneModel.getModelVertices()[current],this->getModelVertices(), this->getModelVertices().size());
-			if (abs(x) < M_PI)
-				exit(1);
-			
-			std::cout << x << std::endl;
-			std::cout << "> " << SceneModel.getModelVertices()[current].x << std::endl;
-		}*/
-		this->col->detectCollision(SceneModel.getModelFaces(), this->getModelVertices());
-
-
-		std::cout << "--- Finished Collision Detection ---" << std::endl;
+		this->CreateBoundingBoxMesh(BaseModel.GetMaxVertice(), BaseModel.GetMinVertice());
 	}
 
 	// Draws the model, and thus all its meshes
@@ -105,35 +83,12 @@ public:
 		}
 	}
 
-	std::vector<glm::vec3> testList;
-	void getATriangleFace() {
-		for (GLuint i = 0; i < this->meshes.size(); i++)
-		{
-			for (int h = 0; h < this->meshes[i].indices.size(); h++) {
-				float x = this->meshes[i].vertices[h].Position.x;
-				float y = this->meshes[i].vertices[h].Position.y;
-				float z = this->meshes[i].vertices[h].Position.z;
-
-				glm::vec3 prod = glm::vec3(x, y, z);
-
-				if(std::find(testList.begin(), testList.end(), prod) == testList.end())
-					testList.push_back(prod);
-
-				///std::cout << x << ";" << y << ";" << z << std::endl;
-			}
-
-			std::cout << "Faces: " << _faces.size() << std::endl;
-			std::cout << "Vertices: " << testList.size() << std::endl;
-		}
-	}
-
 	void setPosition(glm::vec3 position) {
 		glm::mat4 newModel;
 		newModel = glm::translate(newModel, position);
 		newModel = glm::scale(newModel, glm::vec3(this->_scale, this->_scale, this->_scale));
 		this->model = newModel;
 		this->_position = position;
-		this->ProcessBoundingBox(position);
 	}
 	void setScale(float scale) {
 		glm::mat4 newModel;
@@ -143,8 +98,6 @@ public:
 		this->_scale = scale;
 	}
 
-	BoundingBox getBoundingBox() { return this->_boundingBox; }
-
 	std::vector<Face> getModelFaces() { return this->_faces; }
 	std::vector<glm::vec3> getModelVertices() { return this->_vertices; }
 
@@ -152,11 +105,146 @@ public:
 	glm::vec3 getOrigin() { return this->_origin; }
 	float getScale() { return this->_scale; }
 
-private:
-	que::Collision* col;
+	GLint TextureFromFile(const char *path, string directory)
+	{
+		//Generate texture ID and load texture data
+		string filename = string(path);
+		filename = directory + '/' + filename;
+		GLuint textureID;
+		glGenTextures(1, &textureID);
 
+		int width, height;
+
+		///std::cout << filename << std::endl;
+
+		unsigned char *image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+
+		// Assign texture to ID
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		// Parameters
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		SOIL_free_image_data(image);
+
+		return textureID;
+	}
+
+	void GenerateMinAndMaxVertice() {
+		std::vector<float> X, Y, Z;
+		for (glm::vec3 i : this->_vertices) {
+			X.push_back(i.x);
+			Y.push_back(i.y);
+			Z.push_back(i.z);
+		}
+
+		this->_MinVertice.x = *std::min_element(X.begin(), X.end());
+		this->_MinVertice.y = *std::min_element(Y.begin(), Y.end());
+		this->_MinVertice.z = *std::min_element(Z.begin(), Z.end());
+
+		this->_MaxVertice.x = *std::max_element(X.begin(), X.end());
+		this->_MaxVertice.y = *std::max_element(Y.begin(), Y.end());
+		this->_MaxVertice.z = *std::max_element(Z.begin(), Z.end());
+	}
+	void CreateBoundingBoxMesh() {
+		//Data To Fill
+		vector<Vertex> vertices;
+		vector<GLuint> indices;
+		vector<Texture> textures; //Boundingbox has Alpha Texture (So No Texture :?)
+
+		GLuint cube_elements[] = {
+			// front
+			0, 1, 2,
+			2, 3, 0,
+			// right
+			1, 5, 6,
+			6, 2, 1,
+			// back
+			7, 6, 5,
+			5, 4, 7,
+			// left
+			4, 0, 3,
+			3, 7, 4,
+			// bottom
+			4, 5, 1,
+			1, 0, 4,
+			// top
+			3, 2, 6,
+			6, 7, 3
+		};
+		for (GLuint i : cube_elements) indices.push_back(i);
+
+		//Create all points
+		Vertex vertex;
+		vertex.Position = glm::vec3(this->_MinVertice.x, this->_MaxVertice.y, this->_MaxVertice.z); vertices.push_back(vertex);
+		vertex.Position = glm::vec3(this->_MaxVertice.x, this->_MaxVertice.y, this->_MaxVertice.z); vertices.push_back(vertex);
+		vertex.Position = glm::vec3(this->_MaxVertice.x, this->_MinVertice.y, this->_MaxVertice.z); vertices.push_back(vertex);
+		vertex.Position = glm::vec3(this->_MinVertice.x, this->_MinVertice.y, this->_MaxVertice.z); vertices.push_back(vertex);
+
+		vertex.Position = glm::vec3(this->_MinVertice.x, this->_MaxVertice.y, this->_MinVertice.z); vertices.push_back(vertex);
+		vertex.Position = glm::vec3(this->_MaxVertice.x, this->_MaxVertice.y, this->_MinVertice.z); vertices.push_back(vertex);
+		vertex.Position = glm::vec3(this->_MaxVertice.x, this->_MinVertice.y, this->_MinVertice.z); vertices.push_back(vertex);
+		vertex.Position = glm::vec3(this->_MinVertice.x, this->_MinVertice.y, this->_MinVertice.z); vertices.push_back(vertex);
+
+		Mesh boundingbox(vertices, indices, textures);
+		this->meshes.push_back(boundingbox);
+	}
+	void CreateBoundingBoxMesh(glm::vec3 MaxVertice, glm::vec3 MinVertice) {
+		//Data To Fill
+		vector<Vertex> vertices;
+		vector<GLuint> indices;
+		vector<Texture> textures; //Boundingbox has Alpha Texture (So No Texture :?)
+
+		GLuint cube_elements[] = {
+			// front
+			0, 1, 2,
+			2, 3, 0,
+			// right
+			1, 5, 6,
+			6, 2, 1,
+			// back
+			7, 6, 5,
+			5, 4, 7,
+			// left
+			4, 0, 3,
+			3, 7, 4,
+			// bottom
+			4, 5, 1,
+			1, 0, 4,
+			// top
+			3, 2, 6,
+			6, 7, 3
+		};
+		for (GLuint i : cube_elements) indices.push_back(i);
+
+		//Create all points
+		Vertex vertex;
+		vertex.Position = glm::vec3(MinVertice.x, MaxVertice.y, MaxVertice.z); vertices.push_back(vertex);
+		vertex.Position = glm::vec3(MaxVertice.x, MaxVertice.y, MaxVertice.z); vertices.push_back(vertex);
+		vertex.Position = glm::vec3(MaxVertice.x, MinVertice.y, MaxVertice.z); vertices.push_back(vertex);
+		vertex.Position = glm::vec3(MinVertice.x, MinVertice.y, MaxVertice.z); vertices.push_back(vertex);
+
+		vertex.Position = glm::vec3(MinVertice.x, MaxVertice.y, MinVertice.z); vertices.push_back(vertex);
+		vertex.Position = glm::vec3(MaxVertice.x, MaxVertice.y, MinVertice.z); vertices.push_back(vertex);
+		vertex.Position = glm::vec3(MaxVertice.x, MinVertice.y, MinVertice.z); vertices.push_back(vertex);
+		vertex.Position = glm::vec3(MinVertice.x, MinVertice.y, MinVertice.z); vertices.push_back(vertex);
+
+		Mesh boundingbox(vertices, indices, textures);
+		this->meshes.push_back(boundingbox);
+	}
+
+	glm::vec3 GetMinVertice() { return this->_MinVertice; }
+	glm::vec3 GetMaxVertice() { return this->_MaxVertice; }
+
+	glm::vec3 _MinVertice, _MaxVertice;
+private:
 	/*  Model Data  */
-	BoundingBox _boundingBox;
+	vector<Mesh> BoundingBoxMeshes;
 	vector<Mesh> meshes;
 	string directory;
 	vector<Texture> textures_loaded;	// Stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
@@ -166,7 +254,6 @@ private:
 	float _scale;
 	std::vector<glm::vec3> _vertices;
 	std::vector<Face> _faces;
-	glm::vec3 _MinVertice, _MaxVertice;
 
 	/*  Functions   */
 	// Loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
@@ -233,9 +320,9 @@ private:
 			vector.z = mesh->mVertices[i].z;
 			vertex.Position = vector;
 
-			if (std::find(this->_vertices.begin(), this->_vertices.end(), (vertex.Position + this->_position)) == this->_vertices.end())
-				this->_vertices.push_back(vertex.Position + this->_position);
-			TempVertices.push_back(vertex.Position + this->_position);
+			if (std::find(this->_vertices.begin(), this->_vertices.end(), (vertex.Position)) == this->_vertices.end())
+				this->_vertices.push_back(vertex.Position);
+			TempVertices.push_back(vertex.Position );
 
 			//Face Creation
 			if (++q == 3) {
@@ -248,15 +335,6 @@ private:
 				q = 0;
 				TempVertices.clear();
 			}
-
-			//Get Max & Min Values;
-			Max.x = max(vector.x, Max.x);
-			Max.y = max(vector.y, Max.y);
-			Max.z = max(vector.z, Max.z);
-
-			Min.x = min(vector.x, Min.x);
-			Min.y = min(vector.y, Min.y);
-			Min.z = min(vector.z, Min.z);
 
 			// Normals
 			vector.x = mesh->mNormals[i].x;
@@ -315,9 +393,9 @@ private:
 		}
 
 		//Store BoundingBox
-		this->_boundingBox.min = Min;
-		this->_boundingBox.max = Max;
-		BoundingBoxPreperation();
+		///this->_boundingBox.min = this->_MaxVertice;
+		///this->_boundingBox.max = this->_MinVertice;
+		///BoundingBoxPreperation();
 
 		// Return a mesh object created from the extracted mesh data
 		return Mesh(vertices, indices, textures);
@@ -366,47 +444,4 @@ private:
 
 		return textures;
 	}
-
-	// Peer
-	void BoundingBoxPreperation() {
-		for (int i = 0; i < this->getModelVertices().size(); i++) {
-			if (max(this->getModelVertices()[i].x + this->_position.x, this->_boundingBox.max.x)) this->_MaxVertice.x = i;
-			if (max(this->getModelVertices()[i].y + this->_position.y, this->_boundingBox.max.y)) this->_MaxVertice.y = i;
-			if (max(this->getModelVertices()[i].z + this->_position.z, this->_boundingBox.max.z)) this->_MaxVertice.z = i;
-
-			if (min(this->getModelVertices()[i].x + this->_position.x, this->_boundingBox.min.x)) this->_MinVertice.x = i;
-			if (min(this->getModelVertices()[i].y + this->_position.y, this->_boundingBox.min.y)) this->_MinVertice.y = i;
-			if (min(this->getModelVertices()[i].z + this->_position.z, this->_boundingBox.min.z)) this->_MinVertice.z = i;
-		}
-	}
 };
-
-GLint TextureFromFile(const char *path, string directory)
-{
-	//Generate texture ID and load texture data
-	string filename = string(path);
-	filename = directory + '/' + filename;
-	GLuint textureID;
-	glGenTextures(1, &textureID);
-
-	int width, height;
-
-	///std::cout << filename << std::endl;
-
-	unsigned char *image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
-
-	// Assign texture to ID
-	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	// Parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	SOIL_free_image_data(image);
-
-	return textureID;
-}

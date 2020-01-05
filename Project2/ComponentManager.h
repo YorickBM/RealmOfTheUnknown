@@ -48,8 +48,16 @@ public:
 	}
 
 	template<typename T>
+	bool HasComponent(Entity entity)
+	{
+		return GetComponentArray<T>()->HasData(entity);
+	}
+
+	template<typename T>
 	T& GetComponent(Entity entity)
 	{
+		///if(GetComponentArray<T>()->GetData(entity) == NULL) assert(GetComponentArray<T>()->mEntityToIndexMap.find(entity) != mEntityToIndexMap.end() && "Retrieving non-existent component.");
+		
 		// Get a reference to a component from the array for an entity
 		return GetComponentArray<T>()->GetData(entity);
 	}

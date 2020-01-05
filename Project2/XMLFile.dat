@@ -1,0 +1,2 @@
+Tree1:ModelC("",pos,scale);CollisionC;BoundingBoxC,NonEntityC;
+Tree2:ModelC("",pos,scale);CollisionC;BoundingBoxC;EntityC;MomevementC(auto);

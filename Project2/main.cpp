@@ -1,4 +1,4 @@
-// Std. Includes
+﻿// Std. Includes
 #include <string>
 #include <map>
 
@@ -12,7 +12,7 @@
 // GL includes
 #include "Shader.h"
 #include "Camera.h"
-#include "Model.h"
+///#include "Model.h"
 #include "Collision.h"
 #include "ToolBox.h"
 #include "ComponentSystemManager.h"
@@ -37,34 +37,97 @@ int SCREEN_WIDTH, SCREEN_HEIGHT;
 // Function prototypes
 void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode);
 void MouseCallback(GLFWwindow *window, double xPos, double yPos);
-void DoMovement();
+void LoadModels();
 
 // Camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-bool keys[1024];
+bool keys[1024] = {false};
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
+std::unordered_map<int, Model> ModelList;
+std::unordered_map<int, int> ModelEntityList;
+
 //ComponentSystem
 ComponentSystemManager csm;
 std::vector<Entity> entities;
 
-#include "RenderObject.h"
+#include "Components.h"
+#include "Systems.h"
 
 /*
 Basic Clothing (When no Armor)
 Change clothing on armor (Every armor piece looks different)
-Give the player a model that loads and that he walks around as!
-		V
-		Camera Position Seems to be FUCKED UP :?
+Gravity for Camera
+Camera clipped to player model
+Movement Component
+- Keyboard Type ✓
+- Auto Type 
 */
-
 
 int main()
 {
+	#pragma region ComponentSystem
+	csm.Init();
+
+	/* Register The Components & Systems*/
+	csm.RegisterComponent<RenderObjectC>();
+	csm.RegisterComponent<CollisionC>();
+	csm.RegisterComponent<EntityC>();
+	csm.RegisterComponent<NonEntityC>();
+	csm.RegisterComponent<BoundingBoxC>();
+	csm.RegisterComponent<MovementC>();
+
+	auto renderSystem = csm.RegisterSystem<RenderSystem>();
+	{
+		Signature signature;
+		signature.set(csm.GetComponentType<RenderObjectC>());
+		csm.SetSystemSignature<RenderSystem>(signature);
+	}
+	renderSystem->Init();
+	
+	auto movementSystem = csm.RegisterSystem<MovementSystem>();
+	{
+		Signature signature;
+		signature.set(csm.GetComponentType<MovementC>());
+		csm.SetSystemSignature<MovementSystem>(signature);
+	}
+	///mSystem = movementSystem;
+	movementSystem->Init();
+
+	auto nonEntityColSystem = csm.RegisterSystem<NonEntityCollisionSystem>();
+	{
+		Signature signature;
+		signature.set(csm.GetComponentType<CollisionC>());
+		signature.set(csm.GetComponentType<BoundingBoxC>());
+		signature.set(csm.GetComponentType<NonEntityC>());
+		csm.SetSystemSignature<NonEntityCollisionSystem>(signature);
+	}
+	nonEntityColSystem->Init();
+
+	auto entityColSystem = csm.RegisterSystem<EntityCollisionSystem>();
+	{
+		Signature signature;
+		signature.set(csm.GetComponentType<CollisionC>());
+		signature.set(csm.GetComponentType<BoundingBoxC>());
+		signature.set(csm.GetComponentType<EntityC>());
+		csm.SetSystemSignature<EntityCollisionSystem>(signature);
+	}
+	entityColSystem->Init();
+
+	auto boundingBoxSystem = csm.RegisterSystem<BoundingBoxSystem>();
+	{
+		Signature signature;
+		signature.set(csm.GetComponentType<BoundingBoxC>());
+		signature.set(csm.GetComponentType<RenderObjectC>());
+		csm.SetSystemSignature<BoundingBoxSystem>(signature);
+	}
+
+	#pragma endregion
+
 	#pragma region Window Init
 	//Tools->Options->Debugging->Automatically (Last Line)
 	//Use above path to toggle if console should auto close or not.
@@ -119,51 +182,9 @@ int main()
 	// Setup and compile our shaders
 	Shader shader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 
-	#pragma region ComponentSystem
-	csm.Init();
-
-	/* Register The Components & Systems*/
-	csm.RegisterComponent<RenderObject>();
-	///csm.RegisterSystem<Model>();
-
-	/* Create the Signatures */
-	Signature signature;
-	signature.set(csm.GetComponentType<RenderObject>());
-	///csm.SetSystemSignature<Model>(signature);
-	
-	auto csmModel = csm.CreateEntity();
-	csm.AddComponent(csmModel, RenderObject{ Model("res/models/OBJ/Alien/PineTree3Snowy.obj", glm::vec3(4.7f, 0.f, 0.0f), 0.2f)});
-	entities.push_back(csmModel);
-
-	auto csmModel = csm.CreateEntity();
-	csm.AddComponent(csmModel, RenderObject{ Model("res/models/OBJ/Evergreen/PineTree1.obj", glm::vec3(4.0f, 0.0f, 0.0f), 0.2f) });
-	entities.push_back(csmModel);
-
-	auto csmModel = csm.CreateEntity();
-	csm.AddComponent(csmModel, RenderObject{ Model("res/models/OBJ/Pine/PineStump.obj", glm::vec3(0.0f, 0.f, 0.0f), 0.2f) });
-	entities.push_back(csmModel);
-
-	auto csmModel = csm.CreateEntity();
-	csm.AddComponent(csmModel, RenderObject{ Model("res/models/Rocks/RockBig001.obj", glm::vec3(2.0f, 0.2f, 2.0f), 0.2f) });
-	entities.push_back(csmModel);
-	#pragma endregion
-
-	Model PlayerModel("res/models/OBJ/Alien/PineTree3Snowy.obj", glm::vec3(2.0f, 0.f, 0.0f), 0.2f);
-
-	// Draw in wireframe
-	///glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-
-	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
-
-	///PineTree3Snowy.setPosition(glm::vec3(4.2f, 0.f, 0.0f));
-	///PineTree3Snowy.setScale(0.2f);
-
-	std::map<glm::vec3*, Model*> ht;
-	///ht[&PineTree3Snowy.getPosition()] = &PineTree3Snowy;
-	///ht[&PineTree1.getPosition()] = &PineTree1;
-	///ht[&PineStump.getPosition()] = &PineStump;
-
-	camera.SetModel(&PlayerModel);
+	LoadModels();
+	boundingBoxSystem->Init();
+	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 5.0f); //Render Distance
 
 	int frame = 0;
 	// Game loop
@@ -176,7 +197,7 @@ int main()
 
 		// Check and call events
 		glfwPollEvents();
-		DoMovement();
+		movementSystem->Update(deltaTime, keys, nonEntityColSystem->mEntities, camera);
 
 		// Clear the colorbuffer
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
@@ -189,17 +210,12 @@ int main()
 		shader.Use();
 
 		//Camera Stuff to Shaders
-		camera.Update(shader, projection, ht); //Do projection calculation also inside Camera class?!
+		camera.Update(shader, projection); //Do projection calculation also inside Camera class?!
 
 		//Just draw model nothin special with pos or scale
-		for (auto& entity : entities) {
-			auto& Shader = shader;
-			auto& Model = csm.GetComponent<RenderObject>(entity).model;
-
-			Model.Draw(Shader);
-		}
-		///PineTree3Snowy.Draw(shader);
-		PlayerModel.Draw(shader);
+		boundingBoxSystem->Update(shader);
+		renderSystem->Update(shader);
+		entityColSystem->Update(nonEntityColSystem->mEntities);
 
 		// Swap the buffers
 		glfwSwapBuffers(window);
@@ -209,49 +225,82 @@ int main()
 	return 0;
 }
 
-#pragma region SystemMovement
-// Moves/alters the camera positions based on user input
-bool MeshMode = false;
-int delay = 0;
-void DoMovement()
-{
-	// Camera controls
-	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP])
-	{
-		camera.ProcessKeyboard(FORWARD, deltaTime);
-	}
+#pragma region Model Creation
+void LoadModels() {
+	//Create Models
 
-	if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN])
-	{
-		camera.ProcessKeyboard(BACKWARD, deltaTime);
-	}
+	int id = 1;
 
-	if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT])
-	{
-		camera.ProcessKeyboard(LEFT, deltaTime);
-	}
+	//Model 1
+	Model model0 = Model("res/models/Trees/Type1/Alien/PineTree3Snowy.obj", glm::vec3(4.7f, 0.f, 0.0f), 0.2f);
+	ModelList[id] = model0;
 
-	if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT])
-	{
-		camera.ProcessKeyboard(RIGHT, deltaTime);
-	}
+	auto csmEntity0 = csm.CreateEntity();
+	csm.AddComponent(csmEntity0, RenderObjectC{ model0 });
+	csm.AddComponent(csmEntity0, NonEntityC{});
+	csm.AddComponent(csmEntity0, BoundingBoxC{
+		BoundingBox{csm.GetComponent<RenderObjectC>(csmEntity0).model.GetMaxVertice(),
+		csm.GetComponent<RenderObjectC>(csmEntity0).model.GetMinVertice()},
+		true });
+	csm.AddComponent(csmEntity0, CollisionC{});
+	ModelEntityList[id++] = csmEntity0;
 
-	#pragma region Polygon Mode Toggle
-	if (keys[GLFW_KEY_TAB]) {
-		if (!MeshMode && delay == 0) {
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			MeshMode = true; delay = 10;
-			return;
-		}else if(delay == 0){
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			MeshMode = false; delay = 10;
-			return;
-		}
-	}
-	if (delay > 0) delay--;
-	#pragma endregion
+	//Model 2
+	Model model1 = Model("res/models/Trees/Type1/Evergreen/PineTree1.obj", glm::vec3(4.0f, 0.0f, 0.0f), 0.2f);
+	ModelList[id] = model1;
+
+	auto csmEntity1 = csm.CreateEntity();
+	csm.AddComponent(csmEntity1, RenderObjectC{ model1 });
+	csm.AddComponent(csmEntity1, NonEntityC{});
+	csm.AddComponent(csmEntity1, BoundingBoxC{
+		BoundingBox{csm.GetComponent<RenderObjectC>(csmEntity1).model.GetMaxVertice(),
+		csm.GetComponent<RenderObjectC>(csmEntity1).model.GetMinVertice()},
+		true });
+	csm.AddComponent(csmEntity1, CollisionC{});
+	ModelEntityList[id++] = csmEntity1;
+
+	//Model 3
+	Model model2 = Model("res/models/Trees/Type1/Pine/PineStump.obj", glm::vec3(0.3f, 0.f, 0.6f), 0.2f);
+	ModelList[id] = model2;
+
+	auto csmEntity2 = csm.CreateEntity();
+	csm.AddComponent(csmEntity2, RenderObjectC{ model2 });
+	csm.AddComponent(csmEntity2, NonEntityC{});
+	csm.AddComponent(csmEntity2, CollisionC{});
+	csm.AddComponent(csmEntity2, BoundingBoxC{
+		BoundingBox{csm.GetComponent<RenderObjectC>(csmEntity2).model.GetMaxVertice(),
+		csm.GetComponent<RenderObjectC>(csmEntity2).model.GetMinVertice()},
+		true });
+	ModelEntityList[id++] = csmEntity2;
+
+	//Model 4
+	Model model3 = Model("res/models/Trees/Type1/Evergreen/PineTree2.obj", glm::vec3(0.f, 0.f, 0.f), 0.2f);
+	ModelList[id] = model3;
+
+	auto csmEntity3 = csm.CreateEntity();
+	csm.AddComponent(csmEntity3, RenderObjectC{ model3 });
+	csm.AddComponent(csmEntity3, NonEntityC{});
+	csm.AddComponent(csmEntity3, BoundingBoxC{
+		BoundingBox{csm.GetComponent<RenderObjectC>(csmEntity3).model.GetMaxVertice(),
+		csm.GetComponent<RenderObjectC>(csmEntity3).model.GetMinVertice()},
+		true });
+	csm.AddComponent(csmEntity3, CollisionC{});
+	ModelEntityList[id++] = csmEntity3;
+
+	//Player Entity
+	auto csmEntity4 = csm.CreateEntity();
+	csm.AddComponent(csmEntity4, RenderObjectC{ Model("res/models/Entity/Player/Male.obj", glm::vec3(2.0f, 0.2f, 2.0f), 0.2f) });
+	csm.AddComponent(csmEntity4, BoundingBoxC{ 
+		BoundingBox{csm.GetComponent<RenderObjectC>(csmEntity4).model.GetMaxVertice(), 
+		csm.GetComponent<RenderObjectC>(csmEntity4).model.GetMinVertice()}, 
+		false });
+	csm.AddComponent(csmEntity4, CollisionC{});
+	csm.AddComponent(csmEntity4, EntityC{});
+	csm.AddComponent(csmEntity4, MovementC{ MovementType::Keyboard });
+	entities.push_back(csmEntity4);
 }
-// Is called whenever a key is pressed/released via GLFW
+#pragma endregion
+
 void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
 	if (GLFW_KEY_ESCAPE == key && GLFW_PRESS == action)
@@ -288,7 +337,6 @@ void MouseCallback(GLFWwindow *window, double xPos, double yPos)
 
 	camera.ProcessMouseMovement(xOffset, yOffset);
 }
-#pragma endregion
 
 /*
 
@@ -303,5 +351,9 @@ http://wiki.lwjgl.org/wiki/The_Quad_updating_a_VBO_with_BufferSubData.html
 
 Assimp Animatie (Is in java :?)
 https://www.youtube.com/watch?v=fDmMH8_WRok
+
+-------------------------
+
+Get from server wich models need to be created and destroyed as entity :?
 
 */

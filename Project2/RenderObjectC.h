@@ -2,10 +2,6 @@
 #include "Model.h"
 
 /* Gives the Componenet Render Ability */
-struct RenderObject {
+struct RenderObjectC {
 	Model model;
-};
-
-struct Object {
-	int x;
 };

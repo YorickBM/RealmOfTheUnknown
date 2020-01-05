@@ -28,7 +28,7 @@ const GLfloat YAW = -90.0f;
 const GLfloat PITCH = 0.0f;
 const GLfloat SPEED = 1.0f;
 const GLfloat SENSITIVTY = 0.25f;
-const GLfloat ZOOM = 45.0f;
+const GLfloat ZOOM = 45.0f; //FOV
 
 // An abstract camera class that processes input and calculates the corresponding Eular Angles, Vectors and Matrices for use in OpenGL
 class Camera
@@ -68,50 +68,38 @@ public:
 		this->_camModel->setPosition(this->position);
 	}
 	void SetPosition(glm::vec3 pos) {
+		std::cout << "Modifying Camera Position" << std::endl;
 		this->position = pos;
+	}
+	void printPosition() {
+		std::cout << this->position.x << ";" << this->position.y << ";" << this->position.z << std::endl;
 	}
 
 	// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-	void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
+	void InteralProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
 	{
 		GLfloat velocity = this->movementSpeed * deltaTime;
-		bool Process = true;
-		glm::vec3 movementFB = this->front * velocity;
-		glm::vec3 movementLR = this->right * velocity;
 
-		for (std::map<glm::vec3*, Model*>::iterator itr = this->_Models.begin(), itr_end = this->_Models.end(); itr != itr_end; ++itr) {
-			Model* SceneObj = itr->second;
-			Model* CameraObj = _camModel;
-			que::Collision col = que::Collision();
-
-			if (col.detectCollision(SceneObj->getBoundingBox(), CameraObj->getBoundingBox())) {
-				if (col.detectCollision(SceneObj->getModelFaces(), CameraObj->getModelVertices())) {
-					Process = false;
-				}
-			}
-		}
-
-		if (Process) {
-			glm::vec3 pos = this->_camModel->getPosition();
-			switch (direction) {
+		switch (direction) {
 			case FORWARD:
-				this->position += movementFB;
-				this->_camModel->setPosition(pos += movementFB);
+				printPosition();
+				this->position += this->front * velocity;
 				break;
 			case BACKWARD:
-				this->position -= movementFB;
-				this->_camModel->setPosition(pos -= movementFB);
+				this->position -= this->front * velocity;
 				break;
 			case LEFT:
-				this->position -= movementLR;
-				this->_camModel->setPosition(pos -= movementLR);
+				this->position -= this->right * velocity;
 				break;
 			case RIGHT:
-				this->position += movementLR;
-				this->_camModel->setPosition(pos += movementLR);
+				this->position += this->right * velocity;
 				break;
-			}
 		}
+	}
+	void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime, bool isColliding)
+	{
+		if(!isColliding)
+			InteralProcessKeyboard(direction, deltaTime);
 	}
 
 	// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.

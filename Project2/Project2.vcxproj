@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -126,27 +126,40 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Chunk.h" />
+    <ClInclude Include="CImg.h" />
     <ClInclude Include="Collision.h" />
+    <ClInclude Include="CollisionC.h" />
     <ClInclude Include="CollisionExtra.h" />
+    <ClInclude Include="CollisionSystem.h" />
     <ClInclude Include="ComponentArray.h" />
     <ClInclude Include="ComponentManager.h" />
     <ClInclude Include="ECS.h" />
     <ClInclude Include="ComponentSystemManager.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="EntityC.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
-    <ClInclude Include="RenderObject.h" />
+    <ClInclude Include="Components.h" />
+    <ClInclude Include="MovementC.h" />
     <ClInclude Include="RayIntersect.h" />
+    <ClInclude Include="RenderObjectC.h" />
+    <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="SystemManager.h" />
+    <ClInclude Include="MovementSystem.h" />
+    <ClInclude Include="Systems.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="ToolBox.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="MovementSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\lamp.frag" />
@@ -155,6 +168,9 @@
     <None Include="res\shaders\lighting.vs" />
     <None Include="res\shaders\modelLoading.frag" />
     <None Include="res\shaders\modelLoading.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="XMLFile.dat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
