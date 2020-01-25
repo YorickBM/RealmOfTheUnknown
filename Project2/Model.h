@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <map>
 #include <vector>
+#include <unordered_map>
 
 #include <math.h>
 
@@ -16,6 +17,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include "SOIL2/SOIL2.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -43,21 +45,24 @@ public:
 		this->loadModel(path);
 		this->GenerateMinAndMaxVertice();
 	}
-	Model(const char *path, glm::vec3 position, float scale = 1.0f)
+	Model(const char *path, glm::vec3 position, float scale = 1.0f, bool DoCubeFaces = false)
 	{
 		this->_position = position;
 		this->_scale = scale;
 		this->_origin = position;
 		this->model = glm::translate(this->model, position);
 		this->model = glm::scale(this->model, glm::vec3(scale, scale, scale));
+		this->_DoCubeFaces = DoCubeFaces;
+
 		this->loadModel(path);
 		this->GenerateMinAndMaxVertice();
 	}
-	Model(Model BaseModel, BoundingBox boundingBox) {
+	Model(Model BaseModel, BoundingBox boundingBox, bool DoCubeFaces = false) {
 		this->_position = BaseModel.getPosition();
 		this->_scale = BaseModel.getScale();
 		this->model = glm::translate(this->model, this->_position);
 		this->model = glm::scale(this->model, glm::vec3(this->_scale, this->_scale, this->_scale));
+		this->_DoCubeFaces = DoCubeFaces;
 
 		this->_MinVertice = BaseModel.GetMinVertice();
 		this->_MaxVertice = BaseModel.GetMaxVertice();
@@ -89,6 +94,9 @@ public:
 		newModel = glm::scale(newModel, glm::vec3(this->_scale, this->_scale, this->_scale));
 		this->model = newModel;
 		this->_position = position;
+
+		this->_MinVerticeWithPos = this->_MinVertice + position;
+		this->_MaxVerticeWithPos = this->_MaxVertice + this->_MinVerticeWithPos;
 	}
 	void setScale(float scale) {
 		glm::mat4 newModel;
@@ -96,6 +104,10 @@ public:
 		newModel = glm::scale(newModel, glm::vec3(scale, scale, scale));
 		this->model = newModel;
 		this->_scale = scale;
+	}
+	void AddPosition(glm::vec3 position) {
+		this->_position += position;
+		setPosition(this->_position);
 	}
 
 	std::vector<Face> getModelFaces() { return this->_faces; }
@@ -150,49 +162,15 @@ public:
 		this->_MaxVertice.x = *std::max_element(X.begin(), X.end());
 		this->_MaxVertice.y = *std::max_element(Y.begin(), Y.end());
 		this->_MaxVertice.z = *std::max_element(Z.begin(), Z.end());
+
+		this->_MinVerticeWithPos = this->_MinVertice + this->_position;
+		this->_MaxVerticeWithPos = this->_MaxVertice + this->_position;
 	}
 	void CreateBoundingBoxMesh() {
-		//Data To Fill
-		vector<Vertex> vertices;
-		vector<GLuint> indices;
-		vector<Texture> textures; //Boundingbox has Alpha Texture (So No Texture :?)
+		GenerateMinAndMaxVertice();
+		CreateBoundingBoxMesh(this->GetMaxVertice(), this->GetMinVertice());
 
-		GLuint cube_elements[] = {
-			// front
-			0, 1, 2,
-			2, 3, 0,
-			// right
-			1, 5, 6,
-			6, 2, 1,
-			// back
-			7, 6, 5,
-			5, 4, 7,
-			// left
-			4, 0, 3,
-			3, 7, 4,
-			// bottom
-			4, 5, 1,
-			1, 0, 4,
-			// top
-			3, 2, 6,
-			6, 7, 3
-		};
-		for (GLuint i : cube_elements) indices.push_back(i);
-
-		//Create all points
-		Vertex vertex;
-		vertex.Position = glm::vec3(this->_MinVertice.x, this->_MaxVertice.y, this->_MaxVertice.z); vertices.push_back(vertex);
-		vertex.Position = glm::vec3(this->_MaxVertice.x, this->_MaxVertice.y, this->_MaxVertice.z); vertices.push_back(vertex);
-		vertex.Position = glm::vec3(this->_MaxVertice.x, this->_MinVertice.y, this->_MaxVertice.z); vertices.push_back(vertex);
-		vertex.Position = glm::vec3(this->_MinVertice.x, this->_MinVertice.y, this->_MaxVertice.z); vertices.push_back(vertex);
-
-		vertex.Position = glm::vec3(this->_MinVertice.x, this->_MaxVertice.y, this->_MinVertice.z); vertices.push_back(vertex);
-		vertex.Position = glm::vec3(this->_MaxVertice.x, this->_MaxVertice.y, this->_MinVertice.z); vertices.push_back(vertex);
-		vertex.Position = glm::vec3(this->_MaxVertice.x, this->_MinVertice.y, this->_MinVertice.z); vertices.push_back(vertex);
-		vertex.Position = glm::vec3(this->_MinVertice.x, this->_MinVertice.y, this->_MinVertice.z); vertices.push_back(vertex);
-
-		Mesh boundingbox(vertices, indices, textures);
-		this->meshes.push_back(boundingbox);
+		std::cout << "Vertices not yet created" << std::endl;
 	}
 	void CreateBoundingBoxMesh(glm::vec3 MaxVertice, glm::vec3 MinVertice) {
 		//Data To Fill
@@ -240,8 +218,20 @@ public:
 
 	glm::vec3 GetMinVertice() { return this->_MinVertice; }
 	glm::vec3 GetMaxVertice() { return this->_MaxVertice; }
+	glm::vec3 GetMinVerticeWithPos() { return this->_MinVerticeWithPos; }
+	glm::vec3 GetMaxVerticeWithPos() { return this->_MaxVerticeWithPos; }
 
-	glm::vec3 _MinVertice, _MaxVertice;
+	std::vector<glm::vec3> getCubeCorners(glm::vec2 position) { 
+		std::vector<glm::vec3> list; 
+		for (std::map<string, std::vector<glm::vec3>>::iterator it = this->_CubeSpecificCorners.begin(); it != this->_CubeSpecificCorners.end(); ++it) {
+			string x = it->first;
+			if(x == (glm::to_string(position)))
+				list = it->second;
+		}
+		return list; 
+	}
+
+	glm::vec3 _MinVertice, _MaxVertice, _MinVerticeWithPos, _MaxVerticeWithPos;
 private:
 	/*  Model Data  */
 	vector<Mesh> BoundingBoxMeshes;
@@ -254,6 +244,14 @@ private:
 	float _scale;
 	std::vector<glm::vec3> _vertices;
 	std::vector<Face> _faces;
+	std::map<string, std::vector<glm::vec3>> _CubeSpecificCorners;
+	std::map<int, std::vector<glm::vec3>> _CubeSpecificCorners2;
+	std::map<string, int> _CubeSpecificCorners3;
+
+	glm::vec3 front;
+	glm::vec3 right;
+	GLfloat movementSpeed;
+	bool _DoCubeFaces = false;
 
 	/*  Functions   */
 	// Loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
@@ -308,7 +306,10 @@ private:
 
 		// Walk through each of the mesh's vertices
 		int q = 0;
+		int u = 0;
 		std::vector<glm::vec3> TempVertices;
+		std::vector<glm::vec3> SecondTempVertices;
+
 		for (GLuint i = 0; i < mesh->mNumVertices; i++)
 		{
 			Vertex vertex;
@@ -320,9 +321,13 @@ private:
 			vector.z = mesh->mVertices[i].z;
 			vertex.Position = vector;
 
+			#pragma region Temporary Storage
 			if (std::find(this->_vertices.begin(), this->_vertices.end(), (vertex.Position)) == this->_vertices.end())
 				this->_vertices.push_back(vertex.Position);
-			TempVertices.push_back(vertex.Position );
+			TempVertices.push_back(vertex.Position);
+			if (std::find(SecondTempVertices.begin(), SecondTempVertices.end(), (vertex.Position)) == SecondTempVertices.end())
+				SecondTempVertices.push_back(vertex.Position);
+			#pragma endregion
 
 			//Face Creation
 			if (++q == 3) {
@@ -334,6 +339,18 @@ private:
 				_faces.push_back(TempFace);
 				q = 0;
 				TempVertices.clear();
+			}
+
+			//Square Face Creation
+			if (this->_DoCubeFaces && ++u == 6) {
+				glm::vec2 CenterPos(
+					(int)SecondTempVertices.at(0).x + .5f,
+					(int)SecondTempVertices.at(0).z + .5f
+				);
+
+				this->_CubeSpecificCorners[glm::to_string(CenterPos)] = SecondTempVertices;
+				u = 0;
+				SecondTempVertices.clear();
 			}
 
 			// Normals
@@ -391,11 +408,6 @@ private:
 			vector<Texture> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 			textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 		}
-
-		//Store BoundingBox
-		///this->_boundingBox.min = this->_MaxVertice;
-		///this->_boundingBox.max = this->_MinVertice;
-		///BoundingBoxPreperation();
 
 		// Return a mesh object created from the extracted mesh data
 		return Mesh(vertices, indices, textures);

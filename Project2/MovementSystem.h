@@ -16,4 +16,6 @@ public:
 private:
 	bool MeshMode = false;
 	GLfloat delay = 10;
+
+	glm::vec3 ProcessMovement(Camera_Movement direction, GLfloat deltaTime, glm::vec3 Front, glm::vec3 Right, GLfloat MovementSpeed);
 };

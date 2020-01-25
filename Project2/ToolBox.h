@@ -1,19 +1,45 @@
 #pragma once
-#include <iostream>
-#include <map>
+#include <string>
+#include "MovementC.h"
 
-#include "Model.h"
-#include <glm/glm.hpp>
-
-class HashMap {
-	std::map<glm::vec3 *, Model *> htmap;
-
+class EnumUtil {
 public:
-	void put(glm::vec3 *key, Model *value) {
-		htmap[key] = value;
-	}
+#pragma region MovementType
+	static string MovementTypeToString(int type) {
+		if (type == MovementType::Auto) {
+			return "Auto";
+		}
+		else if (type == MovementType::Keyboard) {
+			return "Keyboard";
+		}
 
-	const void *get(glm::vec3 *key) {
-		return htmap[key];
+		return "None";
+	}
+	static MovementType StringToMovementType(std::string enumName) {
+		if ((enumName == "Auto") == 1) {
+			return MovementType::Auto;
+		}
+		else if ((enumName == "Keyboard") == 1) {
+			return MovementType::Keyboard;
+		}
+
+		return MovementType::None;
+	}
+#pragma endregion
+
+};
+
+class ToolBox {
+public:
+	static std::vector<std::string> split(const std::string& s, char delimiter)
+	{
+		std::vector<std::string> tokens;
+		std::string token;
+		std::istringstream tokenStream(s);
+		while (std::getline(tokenStream, token, delimiter))
+		{
+			tokens.push_back(token);
+		}
+		return tokens;
 	}
 };

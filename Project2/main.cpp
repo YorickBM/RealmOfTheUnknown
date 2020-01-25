@@ -25,10 +25,6 @@
 // Other Libs
 #include "SOIL2/SOIL2.h"
 
-//LowPolyMesh Library
-#include <LPML/Map.h>
-#include <LPML/Mesh.h>
-
 // Properties
 const GLuint WIDTH = 800, HEIGHT = 600;
 const char* TITLE = "Realm Of The Unknown - Beta Release";
@@ -93,6 +89,8 @@ int main()
 	{
 		Signature signature;
 		signature.set(csm.GetComponentType<MovementC>());
+		signature.set(csm.GetComponentType<RenderObjectC>());
+		signature.set(csm.GetComponentType<CollisionC>());
 		csm.SetSystemSignature<MovementSystem>(signature);
 	}
 	///mSystem = movementSystem;
@@ -288,8 +286,9 @@ void LoadModels() {
 	ModelEntityList[id++] = csmEntity3;
 
 	//Player Entity
+	Model model4 = Model("res/models/Entity/Player/Male.obj", glm::vec3(0.0f, 0.0f, 3.0f), 0.1f);
 	auto csmEntity4 = csm.CreateEntity();
-	csm.AddComponent(csmEntity4, RenderObjectC{ Model("res/models/Entity/Player/Male.obj", glm::vec3(2.0f, 0.2f, 2.0f), 0.2f) });
+	csm.AddComponent(csmEntity4, RenderObjectC{ model4 });
 	csm.AddComponent(csmEntity4, BoundingBoxC{ 
 		BoundingBox{csm.GetComponent<RenderObjectC>(csmEntity4).model.GetMaxVertice(), 
 		csm.GetComponent<RenderObjectC>(csmEntity4).model.GetMinVertice()}, 
@@ -298,6 +297,7 @@ void LoadModels() {
 	csm.AddComponent(csmEntity4, EntityC{});
 	csm.AddComponent(csmEntity4, MovementC{ MovementType::Keyboard });
 	entities.push_back(csmEntity4);
+
 }
 #pragma endregion
 

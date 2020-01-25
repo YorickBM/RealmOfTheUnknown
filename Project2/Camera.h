@@ -82,7 +82,6 @@ public:
 
 		switch (direction) {
 			case FORWARD:
-				printPosition();
 				this->position += this->front * velocity;
 				break;
 			case BACKWARD:
@@ -98,8 +97,34 @@ public:
 	}
 	void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime, bool isColliding)
 	{
-		if(!isColliding)
-			InteralProcessKeyboard(direction, deltaTime);
+		InteralProcessKeyboard(direction, deltaTime);
+	}
+	void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
+	{
+		InteralProcessKeyboard(direction, deltaTime);
+	}
+
+	glm::vec3 VectorDifference(Camera_Movement direction, GLfloat deltaTime)
+	{
+		glm::vec3 _pos(0, 0, 0);
+		GLfloat velocity = this->movementSpeed * deltaTime;
+
+		switch (direction) {
+		case FORWARD:
+			_pos += this->front * velocity;
+			break;
+		case BACKWARD:
+			_pos -= this->front * velocity;
+			break;
+		case LEFT:
+			_pos -= this->right * velocity;
+			break;
+		case RIGHT:
+			_pos += this->right * velocity;
+			break;
+		}
+
+		return _pos;
 	}
 
 	// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
@@ -135,17 +160,20 @@ public:
 
 	}
 
-	GLfloat GetZoom()
-	{
+	GLfloat GetZoom() {
 		return this->zoom;
 	}
-	glm::vec3 GetPosition()
-	{
+	glm::vec3 GetPosition() {
 		return this->position;
 	}
-	glm::vec3 GetFront()
-	{
+	glm::vec3 GetFront() {
 		return this->front;
+	}
+	glm::vec3 GetRight() {
+		return this->right;
+	}
+	GLfloat GetMovementSpeed() {
+		return this->movementSpeed;
 	}
 
 	void Update(Shader shader, glm::mat4 projection, glm::mat4 view) {
@@ -162,6 +190,10 @@ public:
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 		this->_Models = hm;
+	}
+
+	void CollisionCheck() {
+
 	}
 
 private:

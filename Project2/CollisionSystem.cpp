@@ -11,22 +11,24 @@ void EntityCollisionSystem::Update(std::set<Entity> SceneEntities)
 	for (auto const& entity : mEntities)
 	{
 		try {
-			std::cout << "--- Starting Collision Detection ---" << std::endl;
-			auto model = csm.GetComponent<RenderObjectC>(entity).model;
-			auto BoundingBox = csm.GetComponent<BoundingBoxC>(entity).boundingBox;
-			auto CollisionComp = csm.GetComponent<CollisionC>(entity);
+			///std::cout << "--- Starting Collision Detection ---" << std::endl;
+			auto& model = csm.GetComponent<RenderObjectC>(entity).model;
+			auto& boundingBoxC = csm.GetComponent<BoundingBoxC>(entity);
+			auto& CollisionComp = csm.GetComponent<CollisionC>(entity);
 
 			for (auto const& sceneEntity : SceneEntities) {
-				auto SceneModel = csm.GetComponent<RenderObjectC>(sceneEntity).model;
-				auto SceneBoundingBox = csm.GetComponent<BoundingBoxC>(sceneEntity).boundingBox;
+				auto& SceneModel = csm.GetComponent<RenderObjectC>(sceneEntity).model;
+				auto& sceneBoundingBoxC = csm.GetComponent<BoundingBoxC>(sceneEntity);
 
-				if (col.detectCollision(BoundingBox, SceneBoundingBox))
-					if (col.detectCollision(SceneModel.getModelFaces(), model.getModelVertices()))
-						CollisionComp.isColliding = true;
-					else {}
-				else CollisionComp.isColliding = false;
+				if (col.detectCollision(boundingBoxC.boundingBox, sceneBoundingBoxC.boundingBox)) {
+					std::cout << "Bounding Box Collision" << std::endl;
+					sceneBoundingBoxC.isColliding = true;
+					if (col.detectCollision(SceneModel.getModelFaces(), model.getModelVertices())) {
+						std::cout << "Ray Casting Collision" << std::endl;
+					} else { model.setPosition(CollisionComp.NextPosition); }
+				} else { sceneBoundingBoxC.isColliding = false; model.setPosition(CollisionComp.NextPosition); }
 			}
-			std::cout << "--- Finished Collision Detection ---" << std::endl;
+			///std::cout << "--- Finished Collision Detection ---" << std::endl;
 		}
 		catch (exception ex) {
 			std::cout << "Error on getting model from Collision Entity/NonEntity" << std::endl;
@@ -50,9 +52,9 @@ void BoundingBoxSystem::Init()
 		auto boundingBox = csm.GetComponent<BoundingBoxC>(entity).boundingBox;
 		Model newModel(model, boundingBox);
 
-		csm.GetComponent<BoundingBoxC>(entity).model = newModel;
+		std::cout << glm::to_string(newModel.getPosition()) << std::endl;
 
-		auto oldMod = csm.GetComponent<BoundingBoxC>(entity).model;
+		csm.GetComponent<BoundingBoxC>(entity).BoundingBoxModel = newModel;
 	}
 }
 
@@ -60,10 +62,20 @@ void BoundingBoxSystem::Update(Shader shader)
 {
 	for (auto const& entity : mEntities)
 	{
-		auto model = csm.GetComponent<BoundingBoxC>(entity).model;
-		auto render = csm.GetComponent<BoundingBoxC>(entity).render;
+		auto& MainModel = csm.GetComponent<RenderObjectC>(entity).model;
+		auto& boundingBoxC = csm.GetComponent<BoundingBoxC>(entity);
+		auto& render = csm.GetComponent<BoundingBoxC>(entity).render;
+		auto& CollisionComp = csm.GetComponent<CollisionC>(entity);
 
-		if(render)
-			model.Draw(shader);
+		boundingBoxC.BoundingBoxModel.setPosition(MainModel.getPosition());
+		boundingBoxC.boundingBox.min = boundingBoxC.BoundingBoxModel.GetMinVerticeWithPos();
+		boundingBoxC.boundingBox.max = boundingBoxC.BoundingBoxModel.GetMaxVerticeWithPos();
+
+		
+		if (!boundingBoxC.isColliding)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		if (render)
+			boundingBoxC.BoundingBoxModel.Draw(shader);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 }

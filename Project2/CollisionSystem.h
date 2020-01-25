@@ -2,11 +2,13 @@
 #include "System.h"
 #include "Components.h"
 #include "ComponentSystemManager.h"
+#include "Camera.h"
 
 class EntityCollisionSystem : public System
 {
 public:
 	void Init();
+	void Update(std::set<Entity> SceneEntities, glm::vec3 nextPosition);
 	void Update(std::set<Entity> SceneEntities);
 
 private:
