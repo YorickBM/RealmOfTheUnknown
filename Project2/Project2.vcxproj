@@ -158,6 +158,8 @@
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="MovementSystem.cpp" />
   </ItemGroup>

@@ -18,6 +18,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include "SOIL2/SOIL2.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -232,6 +233,8 @@ public:
 	}
 
 	glm::vec3 _MinVertice, _MaxVertice, _MinVerticeWithPos, _MaxVerticeWithPos;
+
+
 private:
 	/*  Model Data  */
 	vector<Mesh> BoundingBoxMeshes;
@@ -270,6 +273,8 @@ private:
 		}
 		// Retrieve the directory path of the filepath
 		this->directory = path.substr(0, path.find_last_of('/'));
+
+
 
 		// Process ASSIMP's root node recursively
 		this->processNode(scene->mRootNode, scene);

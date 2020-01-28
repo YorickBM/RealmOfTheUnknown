@@ -117,6 +117,9 @@
     <ClInclude Include="Chunk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CImg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -133,6 +136,12 @@
     </ClCompile>
     <ClCompile Include="CollisionSystem.cpp">
       <Filter>Header Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Header Files\Mechanics</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Header Files\Mechanics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
