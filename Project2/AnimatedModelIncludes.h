@@ -1,0 +1,9 @@
+#pragma once
+#include "Animation.h"
+#include "AnimationShader.h"
+#include "AnimatedModel.h"
+#include "AnimationNode.h"
+#include "AnimationRenderer.h"
+#include "AnimationMesh.h"
+#include "AnimationEvaluator.h"
+#include "AnimChannel.h"

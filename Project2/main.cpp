@@ -24,6 +24,7 @@
 
 // Other Libs
 #include "SOIL2/SOIL2.h"
+#include "AnimationImporter.h"
 
 // Properties
 const GLuint WIDTH = 800, HEIGHT = 600;
@@ -184,6 +185,14 @@ int main()
 	boundingBoxSystem->Init();
 	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 5.0f); //Render Distance
 
+	//Animated Model
+	Shader animShader("res/shaders/skeletal_vs.vs", "res/shaders/fs.frag");
+	AnimatedModel* animatedModel1 = AnimationImporter::LoadAnimatedFile("res/bird.dae");
+	animatedModel1->SetShader(shader);
+	AnimationRenderer animRender; // < Need to redo this render cuz it be shit rn
+
+	animRender.Render(*(animatedModel1));
+
 	int frame = 0;
 	// Game loop
 	while (!glfwWindowShouldClose(window))
@@ -204,6 +213,8 @@ int main()
 		//Z-Buffer
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
+
+		///animatedModel1->Update(deltaTime);
 
 		shader.Use();
 

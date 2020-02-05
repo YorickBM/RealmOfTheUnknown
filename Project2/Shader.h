@@ -93,5 +93,9 @@ public:
 	{
 		glUseProgram(this->Program);
 	}
+
+	GLuint ID() {
+		return this->Program;
+	}
 };
 #endif

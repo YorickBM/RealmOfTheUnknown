@@ -34,6 +34,9 @@
     <Filter Include="Header Files\Systems">
       <UniqueIdentifier>{0179e5db-b11f-4bfe-9fe1-ac60afa7ff73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\AssimpAnimations">
+      <UniqueIdentifier>{bfd40ca4-83cc-4b91-b7bc-349fe786d17d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -120,6 +123,39 @@
     <ClInclude Include="CImg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AnimationMesh.h">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationModel.h">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationRenderer.h">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationNode.h">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatedModel.h">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationEvaluator.h">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimChannel.h">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationShader.h">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatedModelIncludes.h">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationImporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -137,11 +173,35 @@
     <ClCompile Include="CollisionSystem.cpp">
       <Filter>Header Files\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Header Files\Mechanics</Filter>
+    <ClCompile Include="AnimationMesh.cpp">
+      <Filter>Header Files\AssimpAnimations</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Header Files\Mechanics</Filter>
+    <ClCompile Include="AnimationModel.cpp">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationRenderer.cpp">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationNode.cpp">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedModel.cpp">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationEvaluator.cpp">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimChannel.cpp">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationShader.cpp">
+      <Filter>Header Files\AssimpAnimations</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationImporter.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
