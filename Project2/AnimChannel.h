@@ -2,6 +2,7 @@
 #include <vector>
 #include "glm\glm.hpp"
 #include "glm\gtc\quaternion.hpp"
+#include <string>
 
 struct VectorKey {
 	double time;

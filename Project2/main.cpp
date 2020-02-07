@@ -63,6 +63,8 @@ Camera clipped to player model
 Movement Component
 - Keyboard Type ✓
 - Auto Type 
+
+$(SolutionDir)$(Configuration)\
 */
 
 int main()

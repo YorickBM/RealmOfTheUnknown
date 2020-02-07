@@ -1,5 +1,6 @@
 #include "AnimationNode.h"
 #include <GL\glew.h>
+#include <string>
 
 AnimationNode::AnimationNode(std::string name)
 {
