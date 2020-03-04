@@ -1,59 +1,56 @@
 #include "Animation.h"
 
-void Animation::SetName(std::string name)
+#pragma region Animation
+Animation::Animation()
+{
+	name = "unknown";
+
+	startTime = 0;
+	endTime = 0;
+	speed = 0.25; //default is 0.25 ~ 24 frames per second
+	priority = 10; //default priority is 10
+	loop = false;
+}
+
+Animation::Animation(string name, vec2 times, float speed, int priority, bool loop)
+{
+	this->name = name;
+
+	startTime = times.x; //starting frame
+	endTime = times.y; //ending frame
+
+	this->speed = speed;
+
+	this->priority = priority;
+
+	this->loop = loop;
+}
+
+void Animation::setName(string name)
 {
 	this->name = name;
 }
 
-void Animation::SetTickRate(double rate)
+void Animation::setTime(vec2 frames)
 {
-	tick_rate = rate;
+	startTime = frames.x;
+	endTime = frames.y;
 }
 
-double Animation::GetTickRate()
+void Animation::setSpeed(float speed)
 {
-	return tick_rate;
+	this->speed = speed;
 }
 
-void Animation::AddChannel(AnimChannel * channel)
+void Animation::setPriority(int priority)
 {
-	channel_mapping[channel->name] = channels.size();
-	channels.emplace_back(std::move(channel));
+	this->priority = priority;
 }
 
-bool Animation::HasChannel(std::string name)
+void Animation::setLoop(bool loop)
 {
-	auto found = channel_mapping.find(name);
-	return (found != channel_mapping.end());
+	this->loop = loop;
 }
 
-AnimChannel& Animation::GetChannel(std::string name)
-{
-	auto found = channel_mapping.find(name);
-
-	assert(found != channel_mapping.end());
-
-	return *channels[found->second];
-}
-
-void Animation::SetDuration(double ticks)
-{
-	this->duration = ticks;
-}
-
-double Animation::GetDuration()
-{
-	return duration;
-}
-
-void Animation::ForEachChannel(const std::function<void(AnimChannel&)>& f)
-{
-	for (auto&& channel : channels) {
-		f(*channel);
-	}
-}
-
-std::string Animation::GetName()
-{
-	return name;
-}
+Animation::~Animation() {}
+#pragma endregion
