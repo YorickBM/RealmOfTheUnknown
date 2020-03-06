@@ -1,8 +1,8 @@
 #pragma once
-#include "Model.h"
+#include "AnimModel.h"
 
 /* Gives the Componenet Render Ability */
 struct RenderObjectC {
-	Model model;
+	AnimModel model;
 	bool MeshMode = false;
 };

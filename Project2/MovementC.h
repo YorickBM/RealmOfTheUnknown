@@ -4,7 +4,7 @@ struct MovementC {
 
 	glm::vec3 Front = glm::vec3(0, 0, 0);
 	glm::vec3 Right = glm::vec3(0, 0, 0);
-	GLfloat MovementSpeed = 0.f;
+	float MovementSpeed = 0.f;
 };
 
 enum MovementType {

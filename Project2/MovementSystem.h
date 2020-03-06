@@ -10,8 +10,8 @@ class MovementSystem : public System
 {
 public:
 	void Init();
-	void Update(GLfloat deltaTime, bool keys[1024], std::set<Entity> SceneEntities, 
-		Camera &camera);
+	void Update(GLfloat deltaTime, bool keys[1024], std::set<Entity> SceneEntities,
+		Camera& camera);
 
 private:
 	bool MeshMode = false;

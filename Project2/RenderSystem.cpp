@@ -5,7 +5,7 @@ extern ComponentSystemManager csm;
 void RenderSystem::Init()
 {
 }
-void RenderSystem::Update(Shader Shader)
+void RenderSystem::Update(ShaderLoader* Shader)
 {
 	for (auto const& entity : mEntities)
 	{

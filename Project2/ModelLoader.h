@@ -9,7 +9,7 @@
 #include <map>
 #include <vector>
 #include <unordered_map>
-//#include <math.h>
+//#include <cmath>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -64,9 +64,10 @@ private:
 public:
 	ModelLoader();
 
-	void loadModel(string path); //call this to load the model
+	bool loadModel(string path); //call this to load the model
 
 	void getModelData(Skeleton*& skeleton, vector < Mesh* >& meshes); //this method is used to get the loaded data and then to store it into the gameobject
+	void getModelData(Skeleton*& skeleton, vector < Mesh* >& meshes, vec3 position, float scale); //this method is used to get the loaded data and then to store it into the gameobject
 
 	~ModelLoader();
 };

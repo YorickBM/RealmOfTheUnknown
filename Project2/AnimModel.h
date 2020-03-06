@@ -11,18 +11,22 @@
 using namespace std;
 using namespace glm;
 
-class AnimMOdel {
+class AnimModel {
 public:
-	AnimMOdel() {}
-	AnimMOdel(string path) {
+	AnimModel() {}
+	AnimModel(string path) {
 		ModelLoader* loader = new ModelLoader();
 		this->modelLoader = loader;
 		this->localTransform = mat4(1.0);
 
 		this->modelLoader->loadModel(path); //load the model from the file
 		this->modelLoader->getModelData(this->skeleton, this->meshes); //get the loaded data and store it in this class
+
+		this->_scale = 1.0f;
+		this->_position = glm::vec3(0, 0, 0);
+		this->_path = path;
 	}
-	AnimMOdel(string path, glm::vec3 position, float scale) {
+	AnimModel(string path, glm::vec3 position, float scale) {
 		ModelLoader* loader = new ModelLoader();
 		this->modelLoader = loader;
 		this->localTransform = mat4(1.0);
@@ -31,7 +35,15 @@ public:
 
 		this->modelLoader->loadModel(path); //load the model from the file
 		this->modelLoader->getModelData(this->skeleton, this->meshes); //get the loaded data and store it in this class
+
+		this->_scale = scale;
+		this->_position = position;
+		this->_path = path;
 	}
+
+	vec3 GetPosition() { return this->_position; }
+	float GetScale() { return this->_scale; }
+	string GetPath() { return this->_path; }
 
 	void playAnimation(Animation* anim, bool reset = false)
 	{
@@ -59,7 +71,7 @@ public:
 	}
 	void applyLocalPosition(vec3 translation)
 	{
-		vec3 sc = vec3(0.2f, 0.2f, 0.2f);
+		vec3 sc = vec3(this->GetScale(), this->GetScale(), this->GetScale());
 		quat rot;
 		vec3 tran;
 		vec3 skew;
@@ -105,4 +117,8 @@ private:
 	vector < Mesh* > meshes; //here we keep meshes data
 	Skeleton* skeleton; //and a skeleton
 	mat4 localTransform;
+
+	vec3 _position;
+	float _scale;
+	string _path;
 };

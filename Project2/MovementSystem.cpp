@@ -30,7 +30,7 @@ glm::vec3 MovementSystem::ProcessMovement(Camera_Movement direction, GLfloat del
 
 int SceneDelay = 20;
 bool ShouldRender = false;
-void MovementSystem::Update(GLfloat deltaTime, bool keys[1024], std::set<Entity> SceneEntities, Camera &camera)
+void MovementSystem::Update(GLfloat deltaTime, bool keys[1024], std::set<Entity> SceneEntities, Camera& camera)
 {
 	if (delay > 0) delay--;
 	if (SceneDelay > 0) SceneDelay--;
@@ -44,7 +44,7 @@ void MovementSystem::Update(GLfloat deltaTime, bool keys[1024], std::set<Entity>
 	{
 		auto& MovementComponent = csm.GetComponent<MovementC>(entity);
 		auto& CollisionComponent = csm.GetComponent<CollisionC>(entity);
-		glm::vec3 ModelPosition = csm.GetComponent<RenderObjectC>(entity).model.getPosition();
+		//glm::vec3 ModelPosition = csm.GetComponent<RenderObjectC>(entity).model.getPosition();
 
 		MovementComponent.Front = camera.GetFront();
 		MovementComponent.Right = camera.GetRight();
@@ -54,25 +54,25 @@ void MovementSystem::Update(GLfloat deltaTime, bool keys[1024], std::set<Entity>
 		case MovementType::Keyboard:
 			if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP])
 			{
-				ModelPosition += (ProcessMovement(FORWARD, deltaTime, MovementComponent.Front, MovementComponent.Right, MovementComponent.MovementSpeed));
+				//ModelPosition += (ProcessMovement(FORWARD, deltaTime, MovementComponent.Front, MovementComponent.Right, MovementComponent.MovementSpeed));
 				///camera.InteralProcessKeyboard(FORWARD, deltaTime);
 			}
 			if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN])
 			{
-				ModelPosition += (ProcessMovement(BACKWARD, deltaTime, MovementComponent.Front, MovementComponent.Right, MovementComponent.MovementSpeed));
+				//ModelPosition += (ProcessMovement(BACKWARD, deltaTime, MovementComponent.Front, MovementComponent.Right, MovementComponent.MovementSpeed));
 				///camera.ProcessKeyboard(BACKWARD, deltaTime);
 			}
 			if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT])
 			{
-				ModelPosition += (ProcessMovement(LEFT, deltaTime, MovementComponent.Front, MovementComponent.Right, MovementComponent.MovementSpeed));
+				//ModelPosition += (ProcessMovement(LEFT, deltaTime, MovementComponent.Front, MovementComponent.Right, MovementComponent.MovementSpeed));
 				///camera.ProcessKeyboard(LEFT, deltaTime);
 			}
 			if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT])
 			{
-				ModelPosition += (ProcessMovement(RIGHT, deltaTime, MovementComponent.Front, MovementComponent.Right, MovementComponent.MovementSpeed));
+				//ModelPosition += (ProcessMovement(RIGHT, deltaTime, MovementComponent.Front, MovementComponent.Right, MovementComponent.MovementSpeed));
 				///camera.ProcessKeyboard(RIGHT, deltaTime);
 			}
-			CollisionComponent.NextPosition = ModelPosition;
+			//CollisionComponent.NextPosition = ModelPosition;
 			break;
 
 		case MovementType::Auto:
@@ -86,7 +86,7 @@ void MovementSystem::Update(GLfloat deltaTime, bool keys[1024], std::set<Entity>
 		csm.GetComponent<BoundingBoxC>(entity).render = ShouldRender;
 	}
 
-	#pragma region Polygon Mode Toggle
+#pragma region Polygon Mode Toggle
 	if (keys[GLFW_KEY_TAB]) {
 		if (!MeshMode && delay == 0) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -97,8 +97,8 @@ void MovementSystem::Update(GLfloat deltaTime, bool keys[1024], std::set<Entity>
 			MeshMode = false; delay = 10;
 		}
 	}
-	#pragma endregion
-	#pragma region Hitbox Mode Toggle 
+#pragma endregion
+#pragma region Hitbox Mode Toggle 
 	if (keys[GLFW_KEY_F3] && keys[GLFW_KEY_B]) {
 
 		if (!ShouldRender && SceneDelay == 0) {
@@ -109,5 +109,5 @@ void MovementSystem::Update(GLfloat deltaTime, bool keys[1024], std::set<Entity>
 		}
 
 	}
-	#pragma endregion
+#pragma endregion
 }

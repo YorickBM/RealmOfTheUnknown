@@ -11,7 +11,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include <math.h>
+#include <cmath>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -59,6 +59,7 @@ private:
 	vector < Vertex > vertices; //vector of vertices this mesh has
 	vector < GLuint > indices; //vector of indices for EBO
 	vector < Texture > textures; //textures this mesh has
+	vector < vec3 > translated; //vertices modified by model pos & scale
 
 	void setupMesh(); //here we generate VAO, VBO, EBO
 
@@ -66,6 +67,11 @@ public:
 	Mesh(vector < Vertex >& v, vector < unsigned int >& i, vector < Texture >& t);
 
 	void draw(ShaderLoader* shader); //here we render the mesh to the given shader
+
+	//Vertice's effected by model scale
+	//Vertice's effect by model position
+	vector<vec3> translateVertices(float scale, vec3 position);
+	vector<vec3> GetTranslatedVertices() { return translated; }
 
 	~Mesh();
 };

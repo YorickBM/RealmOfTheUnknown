@@ -4,8 +4,6 @@
 #include <vector>
 #include <map>
 
-#include "Model.h"
-
 // GL Includes
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -13,6 +11,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "ShaderLoader.h"
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement
@@ -63,10 +63,6 @@ public:
 		return (projectionMatrix * this->GetViewMatrix());
 	}
 
-	void SetModel(Model* model) {
-		this->_camModel = model;
-		this->_camModel->setPosition(this->position);
-	}
 	void SetPosition(glm::vec3 pos) {
 		std::cout << "Modifying Camera Position" << std::endl;
 		this->position = pos;
@@ -81,18 +77,18 @@ public:
 		GLfloat velocity = this->movementSpeed * deltaTime;
 
 		switch (direction) {
-			case FORWARD:
-				this->position += this->front * velocity;
-				break;
-			case BACKWARD:
-				this->position -= this->front * velocity;
-				break;
-			case LEFT:
-				this->position -= this->right * velocity;
-				break;
-			case RIGHT:
-				this->position += this->right * velocity;
-				break;
+		case FORWARD:
+			this->position += this->front * velocity;
+			break;
+		case BACKWARD:
+			this->position -= this->front * velocity;
+			break;
+		case LEFT:
+			this->position -= this->right * velocity;
+			break;
+		case RIGHT:
+			this->position += this->right * velocity;
+			break;
 		}
 	}
 	void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime, bool isColliding)
@@ -176,20 +172,14 @@ public:
 		return this->movementSpeed;
 	}
 
-	void Update(Shader shader, glm::mat4 projection, glm::mat4 view) {
-		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
+	void Update(ShaderLoader* shader, glm::mat4 projection, glm::mat4 view) {
+		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 	}
-	void Update(Shader shader, glm::mat4 projection) {
+	void Update(ShaderLoader* shader, glm::mat4 projection) {
 		glm::mat4 view = this->GetViewMatrix();
-		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
-	}
-	void Update(Shader shader, glm::mat4 projection, std::map<glm::vec3*, Model*> hm) {
-		glm::mat4 view = this->GetViewMatrix();
-		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
-		this->_Models = hm;
+		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 	}
 
 	void CollisionCheck() {
@@ -203,8 +193,6 @@ private:
 	glm::vec3 up;
 	glm::vec3 right;
 	glm::vec3 worldUp;
-	Model* _camModel;
-	std::map<glm::vec3*, Model*> _Models;
 
 	// Eular Angles
 	GLfloat yaw;

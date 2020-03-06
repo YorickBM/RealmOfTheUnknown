@@ -6,7 +6,7 @@
 #include <vector>
 #include <iostream>
 #include <list>
-#include <math.h>
+#include <cmath>
 #include <algorithm> 
 
 //GLM Includes
@@ -42,4 +42,3 @@ namespace que {
 		bool detectCollision(Sphere a, Sphere b);
 	};
 }
-

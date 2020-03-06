@@ -11,11 +11,11 @@
 
 // GL includes
 #include "Camera.h"
-#include "AnimMOdel.h"
+#include "AnimModel.h"
 #include "Collision.h"
 #include "ToolBox.h"
 #include "ComponentSystemManager.h"
-#include "Chunk.h"
+#include "ChunkManager.h"
 #include "ModelLoader.h";
 
 // GLM Mathemtics
@@ -34,7 +34,6 @@ int SCREEN_WIDTH, SCREEN_HEIGHT;
 // Function prototypes
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void MouseCallback(GLFWwindow* window, double xPos, double yPos);
-void LoadModels();
 
 // Camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -47,21 +46,10 @@ GLfloat lastFrame = 0.0f;
 
 //ComponentSystem
 ComponentSystemManager csm;
+ChunkManager cm;
 
 #include "Components.h"
 #include "Systems.h"
-
-/*
-Basic Clothing (When no Armor)
-Change clothing on armor (Every armor piece looks different)
-Gravity for Camera
-Camera clipped to player model
-Movement Component
-- Keyboard Type ✓
-- Auto Type
-
-$(SolutionDir)$(Configuration)\
-*/
 
 int main()
 {
@@ -177,14 +165,14 @@ int main()
 #pragma endregion
 
 	// Setup and compile our shaders
-	std::string s();
-	std::string c();
 	ShaderLoader* shaderLoader = new ShaderLoader();
 	shaderLoader->loadShaders("res/vertexShader.glsl", "res/fragmentShader.glsl");
 
+	cm.InitChunks("res/Chunks/ChunkData.txt", "res/Chunks/", 1.0f);
+
 	ModelLoader* modelLoader = new ModelLoader();
-	AnimMOdel model0("res/bird.dae", glm::vec3(0, 0, 0), 0.2f);
-	//AnimMOdel model0("res/models/Trees/Type1/Alien/PineTree3Snowy.dae", glm::vec3(0,0,0), 0.2f);
+	AnimModel model0("res/bird.dae", glm::vec3(0, 0, 0), 0.2f);
+	//AnimModel model0("res/models/Trees/Type1/Alien/PineTree3Snowy.dae", glm::vec3(0,0,0), 0.2f);
 	model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
 
 	///csm.InitEntities("res/System/Entities.txt");
@@ -225,6 +213,13 @@ int main()
 		mat4 objectModel; //model matrix
 		glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
 		model0.Draw(shaderLoader);
+
+		//Draw all Chunks
+		for (Chunk chunk : cm.GetChunks()) {
+			mat4 objectModel; //model matrix
+			glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
+			chunk.model.Draw(shaderLoader);
+		}
 
 		//Just draw model nothin special with pos or scale
 		//boundingBoxSystem->Update(shaderLoader);

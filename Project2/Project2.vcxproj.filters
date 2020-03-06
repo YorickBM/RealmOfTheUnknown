@@ -13,135 +13,141 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\Mechanics">
-      <UniqueIdentifier>{5a2e0d72-568b-42dc-ace6-617c90f6075f}</UniqueIdentifier>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{f9a60b00-f32a-49b1-a324-3629cbf0d640}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\ECS">
-      <UniqueIdentifier>{d96820ee-a7b7-43a2-998b-8add983bd95f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\ECS\Entity">
-      <UniqueIdentifier>{2416496c-c55b-491d-911e-516865deb177}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\ECS\Component">
-      <UniqueIdentifier>{7179e84a-1929-4d20-8f69-c2c13b8b4db6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\ECS\System">
-      <UniqueIdentifier>{f65a8430-bf38-48e6-a0df-461dc1e89a25}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Components">
+    <Filter Include="Header Files\Engine\Components">
       <UniqueIdentifier>{c70c054d-8297-4096-a598-cd5e050ef1c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Systems">
+    <Filter Include="Header Files\Engine\ECS">
+      <UniqueIdentifier>{d96820ee-a7b7-43a2-998b-8add983bd95f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\ECS\Entity">
+      <UniqueIdentifier>{2416496c-c55b-491d-911e-516865deb177}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\ECS\Component">
+      <UniqueIdentifier>{7179e84a-1929-4d20-8f69-c2c13b8b4db6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\ECS\System">
+      <UniqueIdentifier>{f65a8430-bf38-48e6-a0df-461dc1e89a25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Mechanics">
+      <UniqueIdentifier>{5a2e0d72-568b-42dc-ace6-617c90f6075f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Systems">
       <UniqueIdentifier>{0179e5db-b11f-4bfe-9fe1-ac60afa7ff73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{1fc56dd2-1732-4e16-941b-0a5bec3d042d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{ef849b94-9f16-4376-b59c-9e515992bdce}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ToolBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CollisionExtra.h">
-      <Filter>Header Files\Mechanics</Filter>
+      <Filter>Header Files\Engine\Mechanics</Filter>
     </ClInclude>
     <ClInclude Include="RayIntersect.h">
-      <Filter>Header Files\Mechanics</Filter>
+      <Filter>Header Files\Engine\Mechanics</Filter>
     </ClInclude>
     <ClInclude Include="Collision.h">
-      <Filter>Header Files\Mechanics</Filter>
+      <Filter>Header Files\Engine\Mechanics</Filter>
     </ClInclude>
     <ClInclude Include="ECS.h">
-      <Filter>Header Files\ECS</Filter>
+      <Filter>Header Files\Engine\ECS</Filter>
     </ClInclude>
     <ClInclude Include="EntityManager.h">
-      <Filter>Header Files\ECS\Entity</Filter>
+      <Filter>Header Files\Engine\ECS\Entity</Filter>
     </ClInclude>
     <ClInclude Include="Entity.h">
-      <Filter>Header Files\ECS\Entity</Filter>
+      <Filter>Header Files\Engine\ECS\Entity</Filter>
     </ClInclude>
     <ClInclude Include="ComponentArray.h">
-      <Filter>Header Files\ECS\Component</Filter>
+      <Filter>Header Files\Engine\ECS\Component</Filter>
     </ClInclude>
     <ClInclude Include="ComponentManager.h">
-      <Filter>Header Files\ECS\Component</Filter>
+      <Filter>Header Files\Engine\ECS\Component</Filter>
     </ClInclude>
     <ClInclude Include="System.h">
-      <Filter>Header Files\ECS\System</Filter>
+      <Filter>Header Files\Engine\ECS\System</Filter>
     </ClInclude>
     <ClInclude Include="SystemManager.h">
-      <Filter>Header Files\ECS\System</Filter>
+      <Filter>Header Files\Engine\ECS\System</Filter>
     </ClInclude>
     <ClInclude Include="ComponentSystemManager.h">
-      <Filter>Header Files\ECS</Filter>
+      <Filter>Header Files\Engine\ECS</Filter>
     </ClInclude>
     <ClInclude Include="Components.h">
-      <Filter>Header Files\Components</Filter>
+      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="Systems.h">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="RenderSystem.h">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="MovementSystem.h">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="RenderObjectC.h">
-      <Filter>Header Files\Components</Filter>
+      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="CollisionC.h">
-      <Filter>Header Files\Components</Filter>
+      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="EntityC.h">
-      <Filter>Header Files\Components</Filter>
+      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="CollisionSystem.h">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="MovementC.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Chunk.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CImg.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="Animation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Converter.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="AnimationMesh.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="AnimationShader.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="AnimModel.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Bone.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="CImg.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Converter.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="ModelLoader.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="ShaderLoader.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Skeleton.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolBox.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ChunkManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -150,34 +156,34 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Collision.cpp">
-      <Filter>Header Files\Mechanics</Filter>
+      <Filter>Header Files\Engine\Mechanics</Filter>
     </ClCompile>
     <ClCompile Include="RenderSystem.cpp">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="MovementSystem.cpp">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="CollisionSystem.cpp">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="Animation.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Bone.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="ModelLoader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="ShaderLoader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Skeleton.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -202,7 +208,7 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="XMLFile.dat">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </Xml>
   </ItemGroup>
 </Project>

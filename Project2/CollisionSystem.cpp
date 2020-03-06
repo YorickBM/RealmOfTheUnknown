@@ -23,10 +23,13 @@ void EntityCollisionSystem::Update(std::set<Entity> SceneEntities)
 				if (col.detectCollision(boundingBoxC.boundingBox, sceneBoundingBoxC.boundingBox)) {
 					std::cout << "Bounding Box Collision" << std::endl;
 					sceneBoundingBoxC.isColliding = true;
-					if (col.detectCollision(SceneModel.getModelFaces(), model.getModelVertices())) {
-						std::cout << "Ray Casting Collision" << std::endl;
-					} else { model.setPosition(CollisionComp.NextPosition); }
-				} else { sceneBoundingBoxC.isColliding = false; model.setPosition(CollisionComp.NextPosition); }
+					//if (col.detectCollision(SceneModel.getModelFaces(), model.getModelVertices())) {
+					//	std::cout << "Ray Casting Collision" << std::endl;
+					//} else { model.setPosition(CollisionComp.NextPosition); }
+				}
+				else {
+					//sceneBoundingBoxC.isColliding = false; model.setPosition(CollisionComp.NextPosition); 
+				}
 			}
 			///std::cout << "--- Finished Collision Detection ---" << std::endl;
 		}
@@ -50,15 +53,13 @@ void BoundingBoxSystem::Init()
 	{
 		auto model = csm.GetComponent<RenderObjectC>(entity).model;
 		auto boundingBox = csm.GetComponent<BoundingBoxC>(entity).boundingBox;
-		Model newModel(model, boundingBox);
+		//AnimModel newModel(model, boundingBox);
 
-		std::cout << glm::to_string(newModel.getPosition()) << std::endl;
-
-		csm.GetComponent<BoundingBoxC>(entity).BoundingBoxModel = newModel;
+		//csm.GetComponent<BoundingBoxC>(entity).BoundingBoxModel = newModel;
 	}
 }
 
-void BoundingBoxSystem::Update(Shader shader)
+void BoundingBoxSystem::Update(ShaderLoader* shader)
 {
 	for (auto const& entity : mEntities)
 	{
@@ -67,11 +68,6 @@ void BoundingBoxSystem::Update(Shader shader)
 		auto& render = csm.GetComponent<BoundingBoxC>(entity).render;
 		auto& CollisionComp = csm.GetComponent<CollisionC>(entity);
 
-		boundingBoxC.BoundingBoxModel.setPosition(MainModel.getPosition());
-		boundingBoxC.boundingBox.min = boundingBoxC.BoundingBoxModel.GetMinVerticeWithPos();
-		boundingBoxC.boundingBox.max = boundingBoxC.BoundingBoxModel.GetMaxVerticeWithPos();
-
-		
 		if (!boundingBoxC.isColliding)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		if (render)

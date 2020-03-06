@@ -26,6 +26,6 @@ class BoundingBoxSystem : public System
 {
 public:
 	void Init();
-	void Update(Shader shader);
+	void Update(ShaderLoader* shader);
 };
 

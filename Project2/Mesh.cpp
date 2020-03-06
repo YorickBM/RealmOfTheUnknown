@@ -81,4 +81,15 @@ void Mesh::draw(ShaderLoader* shader)
 	glBindVertexArray(0); //unbind VAO
 	glBindTexture(GL_TEXTURE_2D, 0); //unbind textures
 }
+
+vector<vec3> Mesh::translateVertices(float scale, vec3 position) {
+	translated.clear();
+	for (Vertex vertice : vertices) {
+		vec3 vertexPos(vertice.position);
+		vertexPos *= glm::vec3(scale, scale, scale);
+		vertexPos += position;
+		translated.push_back(vertexPos);
+	}
+	return translated;
+}
 #pragma endregion

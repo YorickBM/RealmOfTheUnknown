@@ -3,14 +3,14 @@
 #pragma region Model Loader
 ModelLoader::ModelLoader() {}
 
-void ModelLoader::loadModel(string path)
+bool ModelLoader::loadModel(string path)
 {
 	scene = import.ReadFile(path, aiProcess_Triangulate); //assimp loads the file
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) //if something gone wrong
 	{
 		cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl; //error
-		return;
+		return false;
 	}
 
 	directory = path.substr(0, path.find_last_of('/')); //get only the directory from the whole path to the file
@@ -21,11 +21,19 @@ void ModelLoader::loadModel(string path)
 	processMeshes(scene->mRootNode); //get meshes
 
 	skeleton = new Skeleton(bones);
+	return true;
 }
 
 void ModelLoader::getModelData(Skeleton*& skeleton, vector < Mesh* >& meshes)
 {
 	skeleton = this->skeleton;
+	meshes = this->meshes;
+}
+void ModelLoader::getModelData(Skeleton*& skeleton, vector < Mesh* >& meshes, vec3 position, float scale)
+{
+	skeleton = this->skeleton;
+	for (Mesh* mesh : this->meshes) //translate all the vertices quickly before giving the data back
+		mesh->translateVertices(scale, position);
 	meshes = this->meshes;
 }
 

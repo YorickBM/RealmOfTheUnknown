@@ -133,7 +133,7 @@
     <ClInclude Include="AnimModel.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="Chunk.h" />
+    <ClInclude Include="ChunkManager.h" />
     <ClInclude Include="CImg.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="CollisionC.h" />
@@ -154,7 +154,6 @@
     <ClInclude Include="RayIntersect.h" />
     <ClInclude Include="RenderObjectC.h" />
     <ClInclude Include="RenderSystem.h" />
-    <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="System.h" />

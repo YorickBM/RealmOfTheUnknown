@@ -9,7 +9,7 @@
 #include <map>
 #include <vector>
 #include <unordered_map>
-//#include <math.h>
+#include <cmath>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
