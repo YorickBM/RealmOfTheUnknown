@@ -178,6 +178,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Chunk_0X0.dae" />
+    <None Include="Chunk_1X0.dae" />
     <None Include="fragmentShader.glsl" />
     <None Include="vertexShader.glsl" />
   </ItemGroup>

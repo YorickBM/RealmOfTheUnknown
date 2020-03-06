@@ -196,6 +196,9 @@
     <None Include="fragmentShader.glsl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Chunk_1X0.dae">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="XMLFile.dat">

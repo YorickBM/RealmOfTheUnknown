@@ -166,9 +166,9 @@ int main()
 
 	// Setup and compile our shaders
 	ShaderLoader* shaderLoader = new ShaderLoader();
-	shaderLoader->loadShaders("res/vertexShader.glsl", "res/fragmentShader.glsl");
+	shaderLoader->loadShaders("vertexShader.glsl", "fragmentShader.glsl");
 
-	cm.InitChunks("res/Chunks/ChunkData.txt", "res/Chunks/", 1.0f);
+	cm.InitChunks("res/Chunks/ChunkData.txt", "", 1.0f);
 
 	ModelLoader* modelLoader = new ModelLoader();
 	AnimModel model0("res/bird.dae", glm::vec3(0, 0, 0), 0.2f);
