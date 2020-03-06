@@ -178,12 +178,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Chunk_0X0.dae" />
-    <None Include="res\shaders\lamp.frag" />
-    <None Include="res\shaders\lamp.vs" />
-    <None Include="res\shaders\lighting.frag" />
-    <None Include="res\shaders\lighting.vs" />
-    <None Include="res\shaders\modelLoading.frag" />
-    <None Include="res\shaders\modelLoading.vs" />
+    <None Include="fragmentShader.glsl" />
+    <None Include="vertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="XMLFile.dat" />

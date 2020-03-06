@@ -187,25 +187,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\modelLoading.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\shaders\modelLoading.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\shaders\lamp.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\shaders\lamp.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\shaders\lighting.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\shaders\lighting.vs">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="Chunk_0X0.dae">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="vertexShader.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="fragmentShader.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
