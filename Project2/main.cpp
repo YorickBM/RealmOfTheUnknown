@@ -172,7 +172,6 @@ int main()
 
 	ModelLoader* modelLoader = new ModelLoader();
 	AnimModel model0("res/bird.dae", glm::vec3(0, 0, 0), 0.2f);
-	//AnimModel model0("res/models/Trees/Type1/Alien/PineTree3Snowy.dae", glm::vec3(0,0,0), 0.2f);
 	model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
 
 	///csm.InitEntities("res/System/Entities.txt");

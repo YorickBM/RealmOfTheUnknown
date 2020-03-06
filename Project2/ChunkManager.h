@@ -18,34 +18,18 @@ public:
 	ChunkManager() {}
 
 	void InitChunks(string DataConf, string ModelPath, float scale) {
-		std::cout << "[ChunkManager] Loading File..." << std::endl;
-		string line;
-		vector<string> data;
-		ifstream myfile(DataConf);
-		if (myfile.is_open())
-		{
-			std::cout << "------" << std::endl;
-			while (getline(myfile, line))
-			{
-				std::cout << line << "\n";
-				data.push_back(line);
-			}
-			myfile.close();
-		}
-		std::cout << "[ChunkManager] Loaded File..." << std::endl;
-
 		int xMin = 0;
-		int xMax = 0;
+		int xMax = 1;
 		int yMin = 0;
-		int yMax = 0;
+		int yMax = 1;
 
-		for (std::string s : data) {
+		/*for (std::string s : data) {
 			vector<string> splited = split(s, '=');
 			if (splited[0] == "MaxWidth") xMax = std::stoi(splited[2]);
 			if (splited[0] == "MaxHeight") yMax = std::stoi(splited[2]);
 			if (splited[0] == "MinWidth") xMin = std::stoi(splited[2]);
 			if (splited[0] == "MinHeight") yMin = std::stoi(splited[2]);
-		}
+		}*///
 
 		for (int x = xMin; x < xMax; x++) {
 			for (int y = yMin; y < yMax; y++) {

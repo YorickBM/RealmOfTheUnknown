@@ -128,7 +128,7 @@ public:
 						glm::vec3 position(std::stof(coords.at(0)), std::stof(coords.at(1)), std::stof(coords.at(2)));
 						float scale = std::stof(componentData.at(6));
 
-						AddComponent(currentEntity, RenderObjectC{ Model(path.c_str(), position, scale) });
+						//AddComponent(currentEntity, RenderObjectC{ Model(path.c_str(), position, scale) });
 					}
 					else
 						if ((componentName == "NonEntityC") == 1) {
@@ -140,16 +140,16 @@ public:
 							}
 							else
 								if ((componentName == "BoundingBoxC") == 1) {
-									AddComponent(currentEntity, BoundingBoxC{
-										BoundingBox{
-											GetComponent<RenderObjectC>(currentEntity).model.GetMaxVertice(),
-											GetComponent<RenderObjectC>(currentEntity).model.GetMinVertice()
-										},
-										true, nullptr });
+									//AddComponent(currentEntity, BoundingBoxC{
+									//	BoundingBox{
+									//		GetComponent<RenderObjectC>(currentEntity).model.GetMaxVertice(),
+									//		GetComponent<RenderObjectC>(currentEntity).model.GetMinVertice()
+									//	},
+									//	true, nullptr });
 								}
 								else
 									if ((componentName == "CollisionC") == 1) {
-										AddComponent(currentEntity, CollisionC{ GetComponent<RenderObjectC>(currentEntity).model.getPosition(), false});
+										//AddComponent(currentEntity, CollisionC{ GetComponent<RenderObjectC>(currentEntity).model.getPosition(), false});
 									}
 									else
 										if ((componentName == "MovementC") == 1) {

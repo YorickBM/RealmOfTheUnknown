@@ -177,6 +177,7 @@
     <ClCompile Include="Skeleton.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Chunk_0X0.dae" />
     <None Include="res\shaders\lamp.frag" />
     <None Include="res\shaders\lamp.vs" />
     <None Include="res\shaders\lighting.frag" />

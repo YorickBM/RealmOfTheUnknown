@@ -205,6 +205,9 @@
     <None Include="res\shaders\lighting.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Chunk_0X0.dae">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="XMLFile.dat">
