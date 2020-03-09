@@ -177,8 +177,10 @@
     <ClCompile Include="Skeleton.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Chunk_0X0.dae" />
-    <None Include="Chunk_1X0.dae" />
+    <None Include="Chunk_0x0.dae" />
+    <None Include="Chunk_0x1.dae" />
+    <None Include="Chunk_1x0.dae" />
+    <None Include="Chunk_1x1.dae" />
     <None Include="fragmentShader.glsl" />
     <None Include="vertexShader.glsl" />
   </ItemGroup>

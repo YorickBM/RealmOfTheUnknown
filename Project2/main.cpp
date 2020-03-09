@@ -36,7 +36,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 void MouseCallback(GLFWwindow* window, double xPos, double yPos);
 
 // Camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0, 0, 0));
 bool keys[1024] = { false };
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
@@ -112,7 +112,6 @@ int main()
 	}
 
 #pragma endregion
-
 #pragma region Window Init
 	//Tools->Options->Debugging->Automatically (Last Line)
 	//Use above path to toggle if console should auto close or not.
@@ -168,10 +167,10 @@ int main()
 	ShaderLoader* shaderLoader = new ShaderLoader();
 	shaderLoader->loadShaders("vertexShader.glsl", "fragmentShader.glsl");
 
-	cm.InitChunks("res/Chunks/ChunkData.txt", "", 1.0f);
+	cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
 
 	ModelLoader* modelLoader = new ModelLoader();
-	AnimModel model0("res/bird.dae", glm::vec3(0, 0, 0), 0.2f);
+	AnimModel model0("tree.dae", glm::vec3(0, 0, 0), 0.2f);
 	model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
 
 	///csm.InitEntities("res/System/Entities.txt");
@@ -179,6 +178,8 @@ int main()
 
 	boundingBoxSystem->Init();
 	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 5.0f); //Render Distance
+
+	std::cout << cm.GetChunks().size() << std::endl;
 
 	int frame = 0;
 	// Game loop

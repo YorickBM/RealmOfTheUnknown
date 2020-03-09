@@ -187,16 +187,22 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Chunk_0X0.dae">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="vertexShader.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="fragmentShader.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Chunk_1X0.dae">
+    <None Include="Chunk_0x0.dae">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Chunk_0x1.dae">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Chunk_1x0.dae">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Chunk_1x1.dae">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

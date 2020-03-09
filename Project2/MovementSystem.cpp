@@ -32,6 +32,15 @@ int SceneDelay = 20;
 bool ShouldRender = false;
 void MovementSystem::Update(GLfloat deltaTime, bool keys[1024], std::set<Entity> SceneEntities, Camera& camera)
 {
+	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP]) {
+		camera.InteralProcessKeyboard(FORWARD, deltaTime); }
+	if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN]) {
+		camera.ProcessKeyboard(BACKWARD, deltaTime); }
+	if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT]) {
+		camera.ProcessKeyboard(LEFT, deltaTime); }
+	if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT]) {
+		camera.ProcessKeyboard(RIGHT, deltaTime); }
+
 	if (delay > 0) delay--;
 	if (SceneDelay > 0) SceneDelay--;
 	for (auto const& entity : SceneEntities)
@@ -55,22 +64,22 @@ void MovementSystem::Update(GLfloat deltaTime, bool keys[1024], std::set<Entity>
 			if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP])
 			{
 				//ModelPosition += (ProcessMovement(FORWARD, deltaTime, MovementComponent.Front, MovementComponent.Right, MovementComponent.MovementSpeed));
-				///camera.InteralProcessKeyboard(FORWARD, deltaTime);
+				camera.InteralProcessKeyboard(FORWARD, deltaTime);
 			}
 			if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN])
 			{
 				//ModelPosition += (ProcessMovement(BACKWARD, deltaTime, MovementComponent.Front, MovementComponent.Right, MovementComponent.MovementSpeed));
-				///camera.ProcessKeyboard(BACKWARD, deltaTime);
+				camera.ProcessKeyboard(BACKWARD, deltaTime);
 			}
 			if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT])
 			{
 				//ModelPosition += (ProcessMovement(LEFT, deltaTime, MovementComponent.Front, MovementComponent.Right, MovementComponent.MovementSpeed));
-				///camera.ProcessKeyboard(LEFT, deltaTime);
+				camera.ProcessKeyboard(LEFT, deltaTime);
 			}
 			if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT])
 			{
 				//ModelPosition += (ProcessMovement(RIGHT, deltaTime, MovementComponent.Front, MovementComponent.Right, MovementComponent.MovementSpeed));
-				///camera.ProcessKeyboard(RIGHT, deltaTime);
+				camera.ProcessKeyboard(RIGHT, deltaTime);
 			}
 			//CollisionComponent.NextPosition = ModelPosition;
 			break;

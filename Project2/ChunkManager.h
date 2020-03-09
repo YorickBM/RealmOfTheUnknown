@@ -21,7 +21,7 @@ public:
 		int xMin = 0;
 		int xMax = 2;
 		int yMin = 0;
-		int yMax = 1;
+		int yMax = 2;
 
 		/*for (std::string s : data) {
 			vector<string> splited = split(s, '=');
@@ -35,7 +35,7 @@ public:
 			for (int y = yMin; y < yMax; y++) {
 				std::cout << "[ChunkManager] Loading Chunk (" << std::to_string(x) << ";" << std::to_string(y) << ")!" << std::endl;
 
-				AnimModel chunkModel((ModelPath + "Chunk_" + std::to_string(x) + "X" + std::to_string(y) + ".dae"), glm::vec3(x * 16, 0, y * 16), 1.0f);
+				AnimModel chunkModel((ModelPath + "Chunk_" + std::to_string(x) + "x" + std::to_string(y) + ".dae"), glm::vec3((x) * scale, 0, (y) * scale), scale);
 				Chunks.insert(make_pair(to_string(vec2(x, y)), Chunk{ chunkModel }));
 			}
 		}
