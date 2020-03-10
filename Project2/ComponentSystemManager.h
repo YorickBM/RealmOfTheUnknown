@@ -127,37 +127,7 @@ public:
 						std::string path = "res/models/" + componentData.at(2);
 						glm::vec3 position(std::stof(coords.at(0)), std::stof(coords.at(1)), std::stof(coords.at(2)));
 						float scale = std::stof(componentData.at(6));
-
-						//AddComponent(currentEntity, RenderObjectC{ Model(path.c_str(), position, scale) });
 					}
-					else
-						if ((componentName == "NonEntityC") == 1) {
-							AddComponent(currentEntity, NonEntityC{});
-						}
-						else
-							if ((componentName == "EntityC") == 1) {
-								AddComponent(currentEntity, EntityC{});
-							}
-							else
-								if ((componentName == "BoundingBoxC") == 1) {
-									//AddComponent(currentEntity, BoundingBoxC{
-									//	BoundingBox{
-									//		GetComponent<RenderObjectC>(currentEntity).model.GetMaxVertice(),
-									//		GetComponent<RenderObjectC>(currentEntity).model.GetMinVertice()
-									//	},
-									//	true, nullptr });
-								}
-								else
-									if ((componentName == "CollisionC") == 1) {
-										//AddComponent(currentEntity, CollisionC{ GetComponent<RenderObjectC>(currentEntity).model.getPosition(), false});
-									}
-									else
-										if ((componentName == "MovementC") == 1) {
-											std::cout << componentData.at(componentData.size() - 1) << " < - > " << componentData.size() << std::endl;
-											MovementType type = EnumUtil::StringToMovementType(componentData.at(componentData.size() - 1));
-
-											AddComponent(currentEntity, MovementC{ type });
-										}
 				}
 			}
 			catch (exception ex) {

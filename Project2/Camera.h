@@ -17,6 +17,7 @@
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement
 {
+	NONE,
 	FORWARD,
 	BACKWARD,
 	LEFT,
@@ -72,32 +73,26 @@ public:
 	}
 
 	// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-	void InteralProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
+	vec3 ProcessKeyboard(Camera_Movement direction, GLfloat movementSpeed, GLfloat deltaTime, vec3 position)
 	{
-		GLfloat velocity = this->movementSpeed * deltaTime;
+		GLfloat velocity = movementSpeed * deltaTime;
 
 		switch (direction) {
 		case FORWARD:
-			this->position += this->front * velocity;
+			position += this->front * velocity;
 			break;
 		case BACKWARD:
-			this->position -= this->front * velocity;
+			position -= this->front * velocity;
 			break;
 		case LEFT:
-			this->position -= this->right * velocity;
+			position -= this->right * velocity;
 			break;
 		case RIGHT:
-			this->position += this->right * velocity;
+			position += this->right * velocity;
 			break;
 		}
-	}
-	void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime, bool isColliding)
-	{
-		InteralProcessKeyboard(direction, deltaTime);
-	}
-	void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
-	{
-		InteralProcessKeyboard(direction, deltaTime);
+
+		return position;
 	}
 
 	glm::vec3 VectorDifference(Camera_Movement direction, GLfloat deltaTime)

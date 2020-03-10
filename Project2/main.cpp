@@ -57,59 +57,36 @@ int main()
 	csm.Init();
 
 	/* Register The Components & Systems*/
-	csm.RegisterComponent<RenderObjectC>();
+	csm.RegisterComponent<TransformC>();
+	csm.RegisterComponent<MotionC>();
+	csm.RegisterComponent<ModelMeshC>();
 	csm.RegisterComponent<CollisionC>();
-	csm.RegisterComponent<EntityC>();
-	csm.RegisterComponent<NonEntityC>();
-	csm.RegisterComponent<BoundingBoxC>();
-	csm.RegisterComponent<MovementC>();
+	csm.RegisterComponent<HealthC>();
+	csm.RegisterComponent<AiC>();
+	csm.RegisterComponent<InputC>();
 
-	auto renderSystem = csm.RegisterSystem<RenderSystem>();
+	auto inputSystem = csm.RegisterSystem<InputSystem>();
 	{
 		Signature signature;
-		signature.set(csm.GetComponentType<RenderObjectC>());
-		csm.SetSystemSignature<RenderSystem>(signature);
+		signature.set(csm.GetComponentType<MotionC>());
+		signature.set(csm.GetComponentType<InputC>());
+		csm.SetSystemSignature<InputSystem>(signature);
 	}
-	renderSystem->Init();
+	inputSystem->Init();
 
 	auto movementSystem = csm.RegisterSystem<MovementSystem>();
 	{
 		Signature signature;
-		signature.set(csm.GetComponentType<MovementC>());
-		signature.set(csm.GetComponentType<RenderObjectC>());
-		signature.set(csm.GetComponentType<CollisionC>());
+		signature.set(csm.GetComponentType<MotionC>());
+		signature.set(csm.GetComponentType<TransformC>());
 		csm.SetSystemSignature<MovementSystem>(signature);
 	}
-	///mSystem = movementSystem;
 	movementSystem->Init();
 
-	auto nonEntityColSystem = csm.RegisterSystem<NonEntityCollisionSystem>();
-	{
-		Signature signature;
-		signature.set(csm.GetComponentType<CollisionC>());
-		signature.set(csm.GetComponentType<BoundingBoxC>());
-		signature.set(csm.GetComponentType<NonEntityC>());
-		csm.SetSystemSignature<NonEntityCollisionSystem>(signature);
-	}
-	nonEntityColSystem->Init();
-
-	auto entityColSystem = csm.RegisterSystem<EntityCollisionSystem>();
-	{
-		Signature signature;
-		signature.set(csm.GetComponentType<CollisionC>());
-		signature.set(csm.GetComponentType<BoundingBoxC>());
-		signature.set(csm.GetComponentType<EntityC>());
-		csm.SetSystemSignature<EntityCollisionSystem>(signature);
-	}
-	entityColSystem->Init();
-
-	auto boundingBoxSystem = csm.RegisterSystem<BoundingBoxSystem>();
-	{
-		Signature signature;
-		signature.set(csm.GetComponentType<BoundingBoxC>());
-		signature.set(csm.GetComponentType<RenderObjectC>());
-		csm.SetSystemSignature<BoundingBoxSystem>(signature);
-	}
+	auto currEntity = csm.CreateEntity();
+	csm.AddComponent(currEntity, MotionC{});
+	csm.AddComponent(currEntity, TransformC{ vec3(0) });
+	csm.AddComponent(currEntity, InputC{ Keyboard });
 
 #pragma endregion
 #pragma region Window Init
@@ -176,7 +153,6 @@ int main()
 	///csm.InitEntities("res/System/Entities.txt");
 	///cm.InitializeChunks("res/System/ChunkMap.png");
 
-	boundingBoxSystem->Init();
 	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 5.0f); //Render Distance
 
 	std::cout << cm.GetChunks().size() << std::endl;
@@ -192,7 +168,8 @@ int main()
 
 		// Check and call events
 		glfwPollEvents();
-		movementSystem->Update(deltaTime, keys, nonEntityColSystem->mEntities, camera);
+		inputSystem->Update(keys);
+		movementSystem->Update(deltaTime, camera);
 
 		// Clear the colorbuffer
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);

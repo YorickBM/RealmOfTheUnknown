@@ -1,7 +1,6 @@
 #pragma once
-#include "RenderSystem.h"
+#include "InputSystem.h"
 #include "MovementSystem.h"
-#include "CollisionSystem.h"
 
 /*
 >>> XSystem.h <<<
@@ -10,6 +9,7 @@
 #include "Components.h"
 #include "ComponentSystemManager.h"
 
+ComponentSystemManager csm;
 class XSystem : public System
 {
 public:
@@ -19,6 +19,7 @@ public:
 
 
 >>> XSystem.cpp <<<
+ComponentSystemManager csm;
 void XSystem::Init()
 {
 }
