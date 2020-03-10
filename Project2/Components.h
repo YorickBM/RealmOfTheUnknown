@@ -25,6 +25,11 @@ struct ModelMeshC {
 	AnimModel model;
 };
 
+struct RenderModeC {
+	bool MeshMode = false;
+	bool Boundingboxes = false;
+};
+
 struct HealthC {
 	int hp = 0;
 	int maxHp = 100;

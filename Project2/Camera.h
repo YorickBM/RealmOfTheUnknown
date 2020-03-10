@@ -65,7 +65,6 @@ public:
 	}
 
 	void SetPosition(glm::vec3 pos) {
-		std::cout << "Modifying Camera Position" << std::endl;
 		this->position = pos;
 	}
 	void printPosition() {

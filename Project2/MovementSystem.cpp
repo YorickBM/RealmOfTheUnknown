@@ -15,6 +15,6 @@ void MovementSystem::Update(float deltatime, Camera& camera)
 		transformC.position = camera.ProcessKeyboard(motionC.direction, motionC.movementSpeed, deltatime, transformC.position);
 
 		//Update Camera to Position cuz its the only thing we be moving atm (Seperate System Maybe?)
-		camera.SetPosition(transformC.position);
+		//camera.SetPosition(transformC.position);
 	}
 }

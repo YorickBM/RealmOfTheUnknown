@@ -101,6 +101,21 @@ public:
 		localTransform *= mat4_cast(conjugate(rot));
 	}
 
+	void SetPosition(vec3 position) {
+		vec3 sc = vec3(this->GetScale(), this->GetScale(), this->GetScale());
+		quat rot;
+		vec3 tran;
+		vec3 skew;
+		vec4 perspective;
+
+		decompose(localTransform, sc, rot, tran, skew, perspective);
+
+		localTransform = mat4(1.0);
+		localTransform *= glm::translate(localTransform, position);
+		localTransform *= glm::scale(localTransform, sc);
+		localTransform *= mat4_cast(conjugate(rot));
+	}
+
 	void Draw(ShaderLoader* shader)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "localTransform"), 1, GL_FALSE, value_ptr(this->localTransform));

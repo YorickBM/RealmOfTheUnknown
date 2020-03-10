@@ -36,7 +36,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 void MouseCallback(GLFWwindow* window, double xPos, double yPos);
 
 // Camera
-Camera camera(glm::vec3(0, 0, 0));
+Camera camera(glm::vec3(-2, 2, 0));
 bool keys[1024] = { false };
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
@@ -83,10 +83,14 @@ int main()
 	}
 	movementSystem->Init();
 
-	auto currEntity = csm.CreateEntity();
-	csm.AddComponent(currEntity, MotionC{});
-	csm.AddComponent(currEntity, TransformC{ vec3(0) });
-	csm.AddComponent(currEntity, InputC{ Keyboard });
+	auto modelSystem = csm.RegisterSystem<ModelMeshSystem>();
+	{
+		Signature signature;
+		signature.set(csm.GetComponentType<ModelMeshC>());
+		signature.set(csm.GetComponentType<TransformC>());
+		csm.SetSystemSignature<ModelMeshSystem>(signature);
+	}
+	modelSystem->Init();
 
 #pragma endregion
 #pragma region Window Init
@@ -146,8 +150,15 @@ int main()
 
 	cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
 
-	AnimModel model1("tree.fbx", glm::vec3(0, 0, 0), 0.2f);
-	AnimModel model0("tree.dae", glm::vec3(0, 0, 0), 0.2f);
+	auto currEntity = csm.CreateEntity();
+	csm.AddComponent(currEntity, MotionC{});
+	csm.AddComponent(currEntity, TransformC{ vec3(0) });
+	csm.AddComponent(currEntity, InputC{ Keyboard });
+
+	AnimModel camModel("tree.dae", glm::vec3(0, 0, 0), 0.2f);
+	csm.AddComponent(currEntity, ModelMeshC{ camModel });
+
+	AnimModel model0("tree.fbx", glm::vec3(0, 0, 0), 0.2f);
 	//model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
 
 	///csm.InitEntities("res/System/Entities.txt");
@@ -189,10 +200,9 @@ int main()
 
 		mat4 objectModel; //model matrix
 		glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
-		model1.Draw(shaderLoader);
-
-		glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
 		model0.Draw(shaderLoader);
+
+		modelSystem->Update(shaderLoader);
 
 		//Draw all Chunks
 		for (Chunk chunk : cm.GetChunks()) {

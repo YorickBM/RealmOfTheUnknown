@@ -1,6 +1,7 @@
 #pragma once
 #include "InputSystem.h"
 #include "MovementSystem.h"
+#include "ModelMeshSystem.h"
 
 /*
 >>> XSystem.h <<<
@@ -9,7 +10,6 @@
 #include "Components.h"
 #include "ComponentSystemManager.h"
 
-ComponentSystemManager csm;
 class XSystem : public System
 {
 public:
@@ -19,7 +19,7 @@ public:
 
 
 >>> XSystem.cpp <<<
-ComponentSystemManager csm;
+extern ComponentSystemManager csm;
 void XSystem::Init()
 {
 }
