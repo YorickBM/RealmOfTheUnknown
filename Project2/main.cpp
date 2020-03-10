@@ -169,9 +169,9 @@ int main()
 
 	cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
 
-	ModelLoader* modelLoader = new ModelLoader();
+	AnimModel model1("tree.fbx", glm::vec3(0, 0, 0), 0.2f);
 	AnimModel model0("tree.dae", glm::vec3(0, 0, 0), 0.2f);
-	model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
+	//model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
 
 	///csm.InitEntities("res/System/Entities.txt");
 	///cm.InitializeChunks("res/System/ChunkMap.png");
@@ -212,11 +212,13 @@ int main()
 
 		mat4 objectModel; //model matrix
 		glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
+		model1.Draw(shaderLoader);
+
+		glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
 		model0.Draw(shaderLoader);
 
 		//Draw all Chunks
 		for (Chunk chunk : cm.GetChunks()) {
-			mat4 objectModel; //model matrix
 			glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
 			chunk.model.Draw(shaderLoader);
 		}

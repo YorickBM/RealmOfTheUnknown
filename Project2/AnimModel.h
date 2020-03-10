@@ -44,6 +44,7 @@ public:
 	vec3 GetPosition() { return this->_position; }
 	float GetScale() { return this->_scale; }
 	string GetPath() { return this->_path; }
+	vector<Mesh*> GetMeshes() { return this->meshes; }
 
 	void playAnimation(Animation* anim, bool reset = false)
 	{

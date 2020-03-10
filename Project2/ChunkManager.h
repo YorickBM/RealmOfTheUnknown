@@ -23,20 +23,12 @@ public:
 		int yMin = 0;
 		int yMax = 2;
 
-		/*for (std::string s : data) {
-			vector<string> splited = split(s, '=');
-			if (splited[0] == "MaxWidth") xMax = std::stoi(splited[2]);
-			if (splited[0] == "MaxHeight") yMax = std::stoi(splited[2]);
-			if (splited[0] == "MinWidth") xMin = std::stoi(splited[2]);
-			if (splited[0] == "MinHeight") yMin = std::stoi(splited[2]);
-		}*///
-
 		for (int x = xMin; x < xMax; x++) {
 			for (int y = yMin; y < yMax; y++) {
 				std::cout << "[ChunkManager] Loading Chunk (" << std::to_string(x) << ";" << std::to_string(y) << ")!" << std::endl;
 
-				AnimModel chunkModel((ModelPath + "Chunk_" + std::to_string(x) + "x" + std::to_string(y) + ".dae"), glm::vec3((x) * scale, 0, (y) * scale), scale);
-				Chunks.insert(make_pair(to_string(vec2(x, y)), Chunk{ chunkModel }));
+				//AnimModel chunkModel((ModelPath + "Chunk_" + std::to_string(x) + "x" + std::to_string(y) + ".dae"), glm::vec3(0, 0, 0), 0.2f);
+				//Chunks.insert(make_pair(to_string(vec2(x, y)), Chunk{ chunkModel }));
 			}
 		}
 	}
@@ -57,9 +49,57 @@ public:
 		return localChunks;//*/ 
 	}
 
+	float GetHeight(glm::vec3 PlayerPosition) {
+
+		Chunk activeChunk = GetChunk(PlayerPosition); //Get Chunk where the player i currently in
+		vector<Mesh*> activeMeshes = activeChunk.model.GetMeshes();
+		vector<vec3> vertices = activeMeshes[activeMeshes.size() - 1]->GetTranslatedVertices(); //Get all vec3's of the chunk the player is in
+
+		//Get 4 closes vertices to player position
+
+		vec3 vecN0, vecN1, vecN2, vecN3;
+
+		float line12x, line03x = PlayerPosition.x;
+		float line12y, line03y = 0;
+
+		calculateLineVars(vecN1, vecN2, line12x, line12y);
+		calculateLineVars(vecN0, vecN3, line03x, line03y);
+
+		float PlayerY = PlayerPosition.y;
+		float PlayerZ = PlayerPosition.z;
+
+		calculateLineVars(vec3(0, line12x, line12y), vec3(0, line03x, line03y), PlayerZ, PlayerY, true);
+		return PlayerY;
+
+	}
+
 private:
+
 	map<string, Chunk> Chunks;
+
 	const int CHUNK_SIZE = 16;
+
+	void calculateLineVars(vec3 point1, vec3 point2, float& x, float& y, bool useZ = false, bool calcX = false) {
+
+		if (useZ && !calcX) {
+			float a = (point2.y - point1.y) / (point2.z - point1.z);
+			float b = point2.y - (a * point2.z);
+
+			y = a * x + b;
+		}
+		else if(!calcX){
+			float a = (point2.y - point1.y) / (point2.x - point1.x);
+			float b = point2.y - (a * point2.x);
+
+			y = a * x + b;
+		}
+		else if (useZ && calcX) {
+
+		}
+		else if (calcX) {
+
+		}
+	}
 
 	std::vector<std::string> split(std::string s, char seperator)
 	{
