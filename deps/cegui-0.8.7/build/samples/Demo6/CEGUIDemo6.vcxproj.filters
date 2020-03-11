@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\Yorick\source\repos\SchoolGame\deps\cegui-0.8.7\samples\Demo6\Sample_Demo6.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\Yorick\source\repos\SchoolGame\deps\cegui-0.8.7\samples\Demo6\Sample_Demo6.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Yorick\source\repos\SchoolGame\deps\cegui-0.8.7\samples\common\include\Sample.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Yorick\source\repos\SchoolGame\deps\cegui-0.8.7\samples\common\include\SampleBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Yorick\source\repos\SchoolGame\deps\cegui-0.8.7\samples\Demo6\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{A406C780-6356-37DC-B276-7AE00B49283E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{9D3D4A15-EF52-369C-AAC9-81022F188A2A}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

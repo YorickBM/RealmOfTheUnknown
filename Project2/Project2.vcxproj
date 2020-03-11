@@ -83,7 +83,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>$(SolutionDir)\deps\lib\32bit</AdditionalLibraryDirectories>
-      <AdditionalDependencies>LPML.lib;opengl32.lib;glew32s.lib;glfw3.lib;soil2-debug.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>LPML.lib;opengl32.lib;glew32s.lib;glfw3.lib;soil2-debug.lib;assimp-vc140-mt.lib;CEGUIOpenGLRenderer-0_d.lib;CEGUIBase-0_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -109,7 +109,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>$(SolutionDir)\deps\lib\32bit</AdditionalLibraryDirectories>
-      <AdditionalDependencies>LPML.lib;opengl32.lib;glew32s.lib;glfw3.lib;soil2-debug.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>LPML.lib;opengl32.lib;glew32s.lib;glfw3.lib;soil2-debug.lib;assimp-vc140-mt.lib;CEGUIBase-0.lib;CEGUIOpenGLRenderer-0.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

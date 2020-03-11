@@ -25,6 +25,8 @@
 
 // Other Libs
 #include "SOIL2/SOIL2.h"
+#include <CEGUI/CEGUI.h>
+#include <CEGUI/RendererModules/OpenGL/GL3Renderer.h>
 
 // Properties
 const GLuint WIDTH = 800, HEIGHT = 600;
@@ -198,6 +200,9 @@ int main()
 
 	std::cout << cm.GetChunks().size() << std::endl;
 	collisionSystem->Update();
+
+	//Temp UI
+	CEGUI::OpenGL3Renderer& myRenderer = CEGUI::OpenGL3Renderer::bootstrapSystem();
 
 	int frame = 0;
 	bool debuggerWindow = false;
