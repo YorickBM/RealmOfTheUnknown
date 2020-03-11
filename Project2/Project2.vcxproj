@@ -146,6 +146,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="Components.h" />
+    <ClInclude Include="GuiManager.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
     <ClInclude Include="imgui_impl_glfw_gl3.h" />
@@ -172,6 +173,7 @@
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
+    <ClCompile Include="GuiManager.cpp" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_demo.cpp" />
     <ClCompile Include="imgui_draw.cpp" />

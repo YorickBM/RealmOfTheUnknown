@@ -56,6 +56,7 @@ ChunkManager cm;
 //imGui 1.60
 #include "imgui.h"
 #include "imgui_impl_glfw_gl3.h"
+#include "GuiManager.h"
 
 int main()
 {
@@ -203,6 +204,7 @@ int main()
 
 	//Temp UI
 	CEGUI::OpenGL3Renderer& myRenderer = CEGUI::OpenGL3Renderer::bootstrapSystem();
+	GuiManager guiManager();
 
 	int frame = 0;
 	bool debuggerWindow = false;
@@ -247,6 +249,9 @@ int main()
 		}
 
 		shaderLoader->unuse();
+
+		/* UI Stuff here */
+		guiManager.init("");
 
 		/*ImGui_ImplGlfwGL3_NewFrame();
 		//Create GUI's
