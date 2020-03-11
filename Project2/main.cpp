@@ -165,7 +165,7 @@ int main()
 	csm.AddComponent(currEntity, TransformC{ vec3(0), 0.2f });
 	csm.AddComponent(currEntity, InputC{ Keyboard });
 
-	AnimModel camModel("tree.dae", glm::vec3(0, 0, 0), 0.2f);
+	AnimModel camModel("tree.dae", glm::vec3(0, 0.3f, 0), 0.2f);
 	csm.AddComponent(currEntity, ModelMeshC{ camModel, camModel.GetBoundingBoxModel() });
 	csm.AddComponent(currEntity, CollisionC{ SolidCollision, false });
 

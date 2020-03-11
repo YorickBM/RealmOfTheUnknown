@@ -42,10 +42,10 @@ void CollisionSystem::CollisionCheck()
 			//modelMeshCCol.BoundingBox.GenerateMinAndMaxVerticesTranslated(collisionC.boundingBox.min, collisionC.boundingBox.max);
 
 			if (col.detectCollision(collisionCCol.boundingBox, collisionC.boundingBox)) {
-				std::cout << collisionC.boundingBox.min.x << ";" << collisionC.boundingBox.min.y << ";" << collisionC.boundingBox.min.z << std::endl;
-				std::cout << collisionCCol.boundingBox.min.x << ";" << collisionCCol.boundingBox.min.y << ";" << collisionCCol.boundingBox.min.z << std::endl;
-				std::cout << "------------------------------"<< std::endl;
-				//transformC.position = modelMeshC.model.GetPosition();
+				//std::cout << collisionC.boundingBox.min.x << ";" << collisionC.boundingBox.min.y << ";" << collisionC.boundingBox.min.z << std::endl;
+				//std::cout << collisionCCol.boundingBox.min.x << ";" << collisionCCol.boundingBox.min.y << ";" << collisionCCol.boundingBox.min.z << std::endl;
+				//std::cout << "------------------------------"<< std::endl;
+				transformC.position = modelMeshC.model.GetPosition();
 
 				if (collisionC.type == RayCastingCollision) {
 					//col.detectCollision(facesof entityCol, vertices of entity);

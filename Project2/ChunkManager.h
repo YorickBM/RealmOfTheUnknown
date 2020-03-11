@@ -59,16 +59,20 @@ public:
 
 		vec3 vecN0, vecN1, vecN2, vecN3;
 
-		float line12x, line03x = PlayerPosition.x;
-		float line12y, line03y = 0;
+		float Ax, Bx = PlayerPosition.x; 
+		float Ay, By = 0;
+		float Az, Bz = 0;
 
-		calculateLineVars(vecN1, vecN2, line12x, line12y);
-		calculateLineVars(vecN0, vecN3, line03x, line03y);
+		calculateLineVars(vecN1, vecN2, Ax, Ay);//Punt Axy
+		calculateLineVars(vecN0, vecN3, Bx, By);//Punt Bxy
+
+		calculateLineVars(vecN0, vecN3, Az, Ay, true, true);//Punt Az
+		calculateLineVars(vecN0, vecN3, Bz, By, true, true);//Punt Bz
 
 		float PlayerY = PlayerPosition.y;
 		float PlayerZ = PlayerPosition.z;
 
-		calculateLineVars(vec3(0, line12x, line12y), vec3(0, line03x, line03y), PlayerZ, PlayerY, true);
+		calculateLineVars(vec3(Az, Ay, Az), vec3(Bx, By, Bz), PlayerZ, PlayerY, true);//Punt Bz
 		return PlayerY;
 
 	}
@@ -94,10 +98,14 @@ private:
 			y = a * x + b;
 		}
 		else if (useZ && calcX) {
-
+			float a = (point2.y - point1.y) / (point2.z - point1.z);
+			float b = point2.y - (a * point2.z);
+			x = (y - b) / a;
 		}
 		else if (calcX) {
-
+			float a = (point2.y - point1.y) / (point2.x - point1.x);
+			float b = point2.y - (a * point2.x);
+			x = (y - b) / a;
 		}
 	}
 
