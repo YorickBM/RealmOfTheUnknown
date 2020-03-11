@@ -72,6 +72,15 @@ public:
 	//Vertice's effect by model position
 	vector<vec3> translateVertices(float scale, vec3 position);
 	vector<vec3> GetTranslatedVertices() { return translated; }
+	vector<vec3> GetNonTranslatedVertices() { 
+		vector<vec3> verticePositions;
+
+		for(Vertex vertice : vertices) {
+			verticePositions.push_back(vertice.position);
+		}
+
+		return verticePositions; 
+	}
 
 	~Mesh();
 };

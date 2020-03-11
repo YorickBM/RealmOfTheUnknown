@@ -1,5 +1,6 @@
 #pragma once
 #include "CollisionExtra.h"
+#include "Components.h"
 #include "RayIntersect.h"
 
 // Std. Includes

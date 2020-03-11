@@ -42,17 +42,92 @@ public:
 		this->_path = path;
 		this->_origin = position;
 	}
-	AnimModel(vector<Mesh*> meshes, Skeleton* skeleton, glm::vec3 position, float scale) {}
+	AnimModel(Mesh* mesh, glm::vec3 position, float scale) {
+		this->localTransform = mat4(1.0);
+		applyLocalPosition(position);
+		applyLocalScale(scale);
+
+		this->meshes.push_back(mesh);
+
+		this->_scale = scale;
+		this->_position = position;
+		this->_origin = position;
+	}
 
 	vec3 GetPosition() { return this->_position; }
 	float GetScale() { return this->_scale; }
 	string GetPath() { return this->_path; }
 	vector<Mesh*> GetMeshes() { return this->meshes; }
+	vector<vec3> GetMinAndMaxVertice() { 
+		vector<vec3> minAndMax;
+		minAndMax.push_back(this->_MinVertice);
+		minAndMax.push_back(this->_MaxVertice);
+	
+		return minAndMax;
+	}
 	
 	AnimModel GetBoundingBoxModel() { 
-		//Generate it
+		return AnimModel(CreateBoundingBoxMesh(), this->GetPosition(), this->GetScale()); //Upload mesh vector in here
+	}
+	void GenerateMinAndMaxVertice() {
+		std::vector<float> X, Y, Z;
+		for (glm::vec3 i : this->meshes.at(meshes.size() - 1)->GetNonTranslatedVertices()) {
+			X.push_back(i.x);
+			Y.push_back(i.y);
+			Z.push_back(i.z);
+		}
 
-		return AnimModel(); //Upload mesh vector in here
+		this->_MinVertice.x = *std::min_element(X.begin(), X.end());
+		this->_MinVertice.y = *std::min_element(Y.begin(), Y.end());
+		this->_MinVertice.z = *std::min_element(Z.begin(), Z.end());
+
+		this->_MaxVertice.x = *std::max_element(X.begin(), X.end());
+		this->_MaxVertice.y = *std::max_element(Y.begin(), Y.end());
+		this->_MaxVertice.z = *std::max_element(Z.begin(), Z.end());
+	}
+	Mesh* CreateBoundingBoxMesh() {
+		//Data To Fill
+		vector<Vertex> vertices;
+		vector<GLuint> indices;
+		vector<Texture> textures; //Boundingbox has Alpha Texture (So No Texture :?)
+
+		GLuint cube_elements[] = {
+			// front
+			0, 1, 2,
+			2, 3, 0,
+			// right
+			1, 5, 6,
+			6, 2, 1,
+			// back
+			7, 6, 5,
+			5, 4, 7,
+			// left
+			4, 0, 3,
+			3, 7, 4,
+			// bottom
+			4, 5, 1,
+			1, 0, 4,
+			// top
+			3, 2, 6,
+			6, 7, 3
+		};
+		for (GLuint i : cube_elements) indices.push_back(i);
+		GenerateMinAndMaxVertice();
+
+		//Create all points
+		Vertex vertex;
+		vertex.position = glm::vec3(this->_MinVertice.x, this->_MaxVertice.y, this->_MaxVertice.z); vertices.push_back(vertex);
+		vertex.position = glm::vec3(this->_MaxVertice.x, this->_MaxVertice.y, this->_MaxVertice.z); vertices.push_back(vertex);
+		vertex.position = glm::vec3(this->_MaxVertice.x, this->_MinVertice.y, this->_MaxVertice.z); vertices.push_back(vertex);
+		vertex.position = glm::vec3(this->_MinVertice.x, this->_MinVertice.y, this->_MaxVertice.z); vertices.push_back(vertex);
+
+		vertex.position = glm::vec3(this->_MinVertice.x, this->_MaxVertice.y, this->_MinVertice.z); vertices.push_back(vertex);
+		vertex.position = glm::vec3(this->_MaxVertice.x, this->_MaxVertice.y, this->_MinVertice.z); vertices.push_back(vertex);
+		vertex.position = glm::vec3(this->_MaxVertice.x, this->_MinVertice.y, this->_MinVertice.z); vertices.push_back(vertex);
+		vertex.position = glm::vec3(this->_MinVertice.x, this->_MinVertice.y, this->_MinVertice.z); vertices.push_back(vertex);
+
+		Mesh* boundingbox = new Mesh(vertices, indices, textures);
+		return boundingbox;
 	}
 
 	void playAnimation(Animation* anim, bool reset = false)
@@ -146,4 +221,6 @@ private:
 	vec3 _origin;
 	float _scale;
 	string _path;
+
+	vec3 _MinVertice, _MaxVertice;
 };

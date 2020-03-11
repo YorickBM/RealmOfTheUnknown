@@ -1,14 +1,12 @@
 #pragma once
 #include "AnimModel.h"
 #include "Camera.h"
+#include "CollisionExtra.h"
 
 //Data
 enum AiType { Passive, Hostile };
 enum InputType { Keyboard };
-struct BoundingBoxS { //Non Translated Or Translated???
-	vec3 min = vec3(0);
-	vec3 max = vec3(0);
-};
+enum CollisionType { SolidCollision, RayCastingCollision };
 
 
 //Components
@@ -46,5 +44,10 @@ struct InputC {
 };
 
 struct CollisionC {
-	BoundingBoxS boundingBox; //BoundingBox Model of Model in ModelMeshC
+	BoundingBox boundingBox;
+	CollisionType type;
+};
+
+struct NonCollisionC {
+
 };

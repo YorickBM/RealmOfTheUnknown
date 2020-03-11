@@ -64,6 +64,7 @@ int main()
 	csm.RegisterComponent<HealthC>();
 	csm.RegisterComponent<AiC>();
 	csm.RegisterComponent<InputC>();
+	csm.RegisterComponent<NonCollisionC>();
 
 	auto inputSystem = csm.RegisterSystem<InputSystem>();
 	{
@@ -167,7 +168,7 @@ int main()
 
 	AnimModel camModel("tree.dae", glm::vec3(0, 0, 0), 0.2f);
 	csm.AddComponent(currEntity, ModelMeshC{ camModel, camModel.GetBoundingBoxModel() });
-	csm.AddComponent(currEntity, CollisionC{ BoundingBoxS{vec3(0,0,0), vec3(1,1,1)} });
+	csm.AddComponent(currEntity, CollisionC{ BoundingBox{camModel.GetMinAndMaxVertice().at(0), camModel.GetMinAndMaxVertice().at(1)}, SolidCollision });
 
 	AnimModel model0("tree.fbx", glm::vec3(0, 0, 0), 0.2f);
 	//model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
