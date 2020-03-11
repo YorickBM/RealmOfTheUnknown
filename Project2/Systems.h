@@ -2,6 +2,7 @@
 #include "InputSystem.h"
 #include "MovementSystem.h"
 #include "ModelMeshSystem.h"
+#include "CollisionSystem.h"
 
 /*
 >>> XSystem.h <<<

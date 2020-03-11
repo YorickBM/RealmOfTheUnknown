@@ -137,6 +137,7 @@
     <ClInclude Include="CImg.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="CollisionExtra.h" />
+    <ClInclude Include="CollisionSystem.h" />
     <ClInclude Include="ComponentArray.h" />
     <ClInclude Include="ComponentManager.h" />
     <ClInclude Include="Converter.h" />
@@ -163,6 +164,7 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />

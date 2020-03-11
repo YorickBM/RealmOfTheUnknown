@@ -25,6 +25,7 @@ public:
 		this->_scale = 1.0f;
 		this->_position = glm::vec3(0, 0, 0);
 		this->_path = path;
+		this->_origin = glm::vec3(0, 0, 0);
 	}
 	AnimModel(string path, glm::vec3 position, float scale) {
 		ModelLoader* loader = new ModelLoader();
@@ -39,12 +40,20 @@ public:
 		this->_scale = scale;
 		this->_position = position;
 		this->_path = path;
+		this->_origin = position;
 	}
+	AnimModel(vector<Mesh*> meshes, Skeleton* skeleton, glm::vec3 position, float scale) {}
 
 	vec3 GetPosition() { return this->_position; }
 	float GetScale() { return this->_scale; }
 	string GetPath() { return this->_path; }
 	vector<Mesh*> GetMeshes() { return this->meshes; }
+	
+	AnimModel GetBoundingBoxModel() { 
+		//Generate it
+
+		return AnimModel(); //Upload mesh vector in here
+	}
 
 	void playAnimation(Animation* anim, bool reset = false)
 	{
@@ -115,7 +124,6 @@ public:
 		localTransform *= glm::scale(localTransform, sc);
 		localTransform *= mat4_cast(conjugate(rot));
 	}
-
 	void Draw(ShaderLoader* shader)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "localTransform"), 1, GL_FALSE, value_ptr(this->localTransform));
@@ -135,6 +143,7 @@ private:
 	mat4 localTransform;
 
 	vec3 _position;
+	vec3 _origin;
 	float _scale;
 	string _path;
 };

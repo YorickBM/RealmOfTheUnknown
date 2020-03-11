@@ -5,7 +5,7 @@
 //Data
 enum AiType { Passive, Hostile };
 enum InputType { Keyboard };
-struct BoundingBoxS {
+struct BoundingBoxS { //Non Translated Or Translated???
 	vec3 min = vec3(0);
 	vec3 max = vec3(0);
 };
@@ -14,6 +14,7 @@ struct BoundingBoxS {
 //Components
 struct TransformC {
 	vec3 position;
+	float scale; 
 };
 
 struct MotionC {
@@ -23,6 +24,7 @@ struct MotionC {
 
 struct ModelMeshC {
 	AnimModel model;
+	AnimModel BoundingBox;
 };
 
 struct RenderModeC {
@@ -44,5 +46,5 @@ struct InputC {
 };
 
 struct CollisionC {
-	BoundingBoxS boundingBox;
+	BoundingBoxS boundingBox; //BoundingBox Model of Model in ModelMeshC
 };

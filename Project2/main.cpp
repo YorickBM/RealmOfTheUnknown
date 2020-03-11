@@ -28,7 +28,7 @@
 
 // Properties
 const GLuint WIDTH = 800, HEIGHT = 600;
-const char* TITLE = "Realm Of The Unknown - Beta Release";
+const char* TITLE = "Fighting Against The Coruption - (0.0.1)";
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
 // Function prototypes
@@ -92,6 +92,16 @@ int main()
 	}
 	modelSystem->Init();
 
+	auto collisionSystem = csm.RegisterSystem<CollisionSystem>(); //Model Postion Transformation in here ???
+	{
+		Signature signature;
+		signature.set(csm.GetComponentType<CollisionC>());
+		signature.set(csm.GetComponentType<ModelMeshC>());
+		signature.set(csm.GetComponentType<TransformC>());
+		csm.SetSystemSignature<CollisionSystem>(signature);
+	}
+	collisionSystem->Init();
+
 #pragma endregion
 #pragma region Window Init
 	//Tools->Options->Debugging->Automatically (Last Line)
@@ -152,11 +162,12 @@ int main()
 
 	auto currEntity = csm.CreateEntity();
 	csm.AddComponent(currEntity, MotionC{});
-	csm.AddComponent(currEntity, TransformC{ vec3(0) });
+	csm.AddComponent(currEntity, TransformC{ vec3(0), 0.2f });
 	csm.AddComponent(currEntity, InputC{ Keyboard });
 
 	AnimModel camModel("tree.dae", glm::vec3(0, 0, 0), 0.2f);
-	csm.AddComponent(currEntity, ModelMeshC{ camModel });
+	csm.AddComponent(currEntity, ModelMeshC{ camModel, camModel.GetBoundingBoxModel() });
+	csm.AddComponent(currEntity, CollisionC{ BoundingBoxS{vec3(0,0,0), vec3(1,1,1)} });
 
 	AnimModel model0("tree.fbx", glm::vec3(0, 0, 0), 0.2f);
 	//model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
@@ -179,8 +190,10 @@ int main()
 
 		// Check and call events
 		glfwPollEvents();
+
 		inputSystem->Update(keys);
 		movementSystem->Update(deltaTime, camera);
+		collisionSystem->Update();
 
 		// Clear the colorbuffer
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
@@ -209,11 +222,6 @@ int main()
 			glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
 			chunk.model.Draw(shaderLoader);
 		}
-
-		//Just draw model nothin special with pos or scale
-		//boundingBoxSystem->Update(shaderLoader);
-		//renderSystem->Update(shaderLoader);
-		//entityColSystem->Update(nonEntityColSystem->mEntities);
 
 		shaderLoader->unuse();
 
