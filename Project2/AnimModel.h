@@ -58,18 +58,18 @@ public:
 	float GetScale() { return this->_scale; }
 	string GetPath() { return this->_path; }
 	vector<Mesh*> GetMeshes() { return this->meshes; }
-	vector<vec3> GetMinAndMaxVertice() { 
-		vector<vec3> minAndMax;
-		minAndMax.push_back(this->_MinVertice);
-		minAndMax.push_back(this->_MaxVertice);
-	
-		return minAndMax;
+	vec3 GetMinAndMaxVertice(bool minValue) { 
+		vec3 min, max = vec3(0);
+		GenerateMinAndMaxVerticesTranslated(min, max, this->_position);
+
+		if (minValue) return min;
+		else return max;
 	}
 	
 	AnimModel GetBoundingBoxModel() { 
 		return AnimModel(CreateBoundingBoxMesh(), this->GetPosition(), this->GetScale()); //Upload mesh vector in here
 	}
-	void GenerateMinAndMaxVertice() {
+	void GenerateMinAndMaxVertices() {
 		std::vector<float> X, Y, Z;
 		for (glm::vec3 i : this->meshes.at(meshes.size() - 1)->GetNonTranslatedVertices()) {
 			X.push_back(i.x);
@@ -84,6 +84,24 @@ public:
 		this->_MaxVertice.x = *std::max_element(X.begin(), X.end());
 		this->_MaxVertice.y = *std::max_element(Y.begin(), Y.end());
 		this->_MaxVertice.z = *std::max_element(Z.begin(), Z.end());
+	}
+	void GenerateMinAndMaxVerticesTranslated(vec3& min, vec3& max, vec3 position) {
+		std::vector<float> Xt, Yt, Zt;
+		std::vector<vec3> verticest = this->meshes.at(meshes.size() - 1)->translateVertices(this->_scale, position);
+		std::cout << position.x << ";" << position.y << ";" << position.z << std::endl;
+		for (glm::vec3 i : verticest) {
+			Xt.push_back(i.x);
+			Yt.push_back(i.y);
+			Zt.push_back(i.z);
+		}
+		
+		min.x = *std::min_element(Xt.begin(), Xt.end());
+		min.y = *std::min_element(Yt.begin(), Yt.end());
+		min.z = *std::min_element(Zt.begin(), Zt.end());
+
+		max.x = *std::max_element(Xt.begin(), Xt.end());
+		max.y = *std::max_element(Yt.begin(), Yt.end());
+		max.z = *std::max_element(Zt.begin(), Zt.end());
 	}
 	Mesh* CreateBoundingBoxMesh() {
 		//Data To Fill
@@ -112,7 +130,7 @@ public:
 			6, 7, 3
 		};
 		for (GLuint i : cube_elements) indices.push_back(i);
-		GenerateMinAndMaxVertice();
+		GenerateMinAndMaxVertices();
 
 		//Create all points
 		Vertex vertex;
@@ -198,12 +216,26 @@ public:
 		localTransform *= glm::translate(localTransform, position);
 		localTransform *= glm::scale(localTransform, sc);
 		localTransform *= mat4_cast(conjugate(rot));
+
+		this->_position = position;
 	}
 	void Draw(ShaderLoader* shader)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "localTransform"), 1, GL_FALSE, value_ptr(this->localTransform));
 
 		this->skeleton->update(shader); //rendering the skeleton part
+
+		for (int i = 0; i < this->meshes.size(); i++) //loop through the meshes
+		{
+			this->meshes[i]->draw(shader); //rendering the mesh part
+		}
+	}
+	void Draw(ShaderLoader* shader, bool renderSkeleton)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "localTransform"), 1, GL_FALSE, value_ptr(this->localTransform));
+
+		if(renderSkeleton)
+			this->skeleton->update(shader); //rendering the skeleton part
 
 		for (int i = 0; i < this->meshes.size(); i++) //loop through the meshes
 		{

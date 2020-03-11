@@ -83,13 +83,13 @@ void Mesh::draw(ShaderLoader* shader)
 }
 
 vector<vec3> Mesh::translateVertices(float scale, vec3 position) {
-	translated.clear();
+	vector<vec3> returnvalue;
 	for (Vertex vertice : vertices) {
 		vec3 vertexPos(vertice.position);
 		vertexPos *= glm::vec3(scale, scale, scale);
 		vertexPos += position;
-		translated.push_back(vertexPos);
+		returnvalue.push_back(vertexPos);
 	}
-	return translated;
+	return returnvalue;
 }
 #pragma endregion

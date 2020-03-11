@@ -64,7 +64,6 @@ int main()
 	csm.RegisterComponent<HealthC>();
 	csm.RegisterComponent<AiC>();
 	csm.RegisterComponent<InputC>();
-	csm.RegisterComponent<NonCollisionC>();
 
 	auto inputSystem = csm.RegisterSystem<InputSystem>();
 	{
@@ -168,9 +167,14 @@ int main()
 
 	AnimModel camModel("tree.dae", glm::vec3(0, 0, 0), 0.2f);
 	csm.AddComponent(currEntity, ModelMeshC{ camModel, camModel.GetBoundingBoxModel() });
-	csm.AddComponent(currEntity, CollisionC{ BoundingBox{camModel.GetMinAndMaxVertice().at(0), camModel.GetMinAndMaxVertice().at(1)}, SolidCollision });
+	csm.AddComponent(currEntity, CollisionC{ SolidCollision, false });
 
 	AnimModel model0("tree.fbx", glm::vec3(0, 0, 0), 0.2f);
+	auto newEntity = csm.CreateEntity();
+	csm.AddComponent(newEntity, TransformC{ vec3(0), 0.2f });
+
+	csm.AddComponent(newEntity, ModelMeshC{ model0, model0.GetBoundingBoxModel() });
+	csm.AddComponent(newEntity, CollisionC{ SolidCollision, true });
 	//model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
 
 	///csm.InitEntities("res/System/Entities.txt");
@@ -179,6 +183,7 @@ int main()
 	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 5.0f); //Render Distance
 
 	std::cout << cm.GetChunks().size() << std::endl;
+	collisionSystem->Update();
 
 	int frame = 0;
 	// Game loop
@@ -194,7 +199,7 @@ int main()
 
 		inputSystem->Update(keys);
 		movementSystem->Update(deltaTime, camera);
-		collisionSystem->Update();
+		collisionSystem->CollisionCheck();
 
 		// Clear the colorbuffer
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
@@ -212,14 +217,11 @@ int main()
 		glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "view"), 1, GL_FALSE, value_ptr(camera.GetViewMatrix())); //send the view matrix to the shader
 		glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "projection"), 1, GL_FALSE, value_ptr(projection)); //send the projection matrix to the shader
 
-		mat4 objectModel; //model matrix
-		glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
-		model0.Draw(shaderLoader);
-
 		modelSystem->Update(shaderLoader);
 
 		//Draw all Chunks
 		for (Chunk chunk : cm.GetChunks()) {
+			mat4 objectModel;
 			glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
 			chunk.model.Draw(shaderLoader);
 		}

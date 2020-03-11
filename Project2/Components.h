@@ -44,10 +44,7 @@ struct InputC {
 };
 
 struct CollisionC {
-	BoundingBox boundingBox;
 	CollisionType type;
-};
-
-struct NonCollisionC {
-
+	bool staticCollision;
+	BoundingBox boundingBox;
 };
