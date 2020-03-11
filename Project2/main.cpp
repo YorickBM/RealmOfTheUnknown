@@ -51,6 +51,10 @@ ChunkManager cm;
 #include "Components.h"
 #include "Systems.h"
 
+//imGui 1.60
+#include "imgui.h"
+#include "imgui_impl_glfw_gl3.h"
+
 int main()
 {
 #pragma region ComponentSystem
@@ -153,6 +157,16 @@ int main()
 	// OpenGL options
 	glEnable(GL_DEPTH_TEST);
 #pragma endregion
+#pragma region ImGui
+	// Setup ImGui binding
+	//ImGui::CreateContext();
+	//ImGuiIO& io = ImGui::GetIO(); (void)io;
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+	//ImGui_ImplGlfwGL3_Init(window, true);
+
+	// Setup style
+	//ImGui::StyleColorsDark();
+#pragma endregion
 
 	// Setup and compile our shaders
 	ShaderLoader* shaderLoader = new ShaderLoader();
@@ -186,6 +200,7 @@ int main()
 	collisionSystem->Update();
 
 	int frame = 0;
+	bool debuggerWindow = false;
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -228,10 +243,24 @@ int main()
 
 		shaderLoader->unuse();
 
+		/*ImGui_ImplGlfwGL3_NewFrame();
+		//Create GUI's
+		{
+			ImGui::Begin("Debugger", &debuggerWindow);
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			ImGui::End();
+		}
+
+		//Render GUI's
+		ImGui::Render();
+		ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());*/
+
 		// Swap the buffers
 		glfwSwapBuffers(window);
 	}
 
+	//ImGui_ImplGlfwGL3_Shutdown();
+	//ImGui::DestroyContext();
 	glfwTerminate();
 	return 0;
 }

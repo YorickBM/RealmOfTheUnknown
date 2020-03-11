@@ -19,7 +19,7 @@ void ModelMeshSystem::Update(ShaderLoader* shaderLoader)
 		glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
 		modelMeshC.model.Draw(shaderLoader);
 
-		glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
-		modelMeshC.BoundingBox.Draw(shaderLoader, false);
+		//glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
+		//modelMeshC.BoundingBox.Draw(shaderLoader, false);
 	}
 }

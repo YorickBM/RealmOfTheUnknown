@@ -55,9 +55,28 @@ public:
 		vector<Mesh*> activeMeshes = activeChunk.model.GetMeshes();
 		vector<vec3> vertices = activeMeshes[activeMeshes.size() - 1]->GetTranslatedVertices(); //Get all vec3's of the chunk the player is in
 
-		//Get 4 closes vertices to player position
+		map<float, vec3> distancesWithPoint;
+		vector<float> distances;
+		for (vec3 point : vertices) {
+			float distanceF = distance(PlayerPosition, point);
+			distancesWithPoint[distanceF] = point;
+			distances.push_back(distanceF);
+		}
 
 		vec3 vecN0, vecN1, vecN2, vecN3;
+
+		for (int i = 0; i < 4; i++) {
+			float lowest = *std::min_element(distances.begin(), distances.end());
+			
+			vector<float>::iterator position = std::find(distances.begin(), distances.end(), lowest);
+			if (position != distances.end()) // == myVector.end() means the element was not found
+				distances.erase(position);
+
+			if (i == 0) vecN0 = distancesWithPoint.at(lowest);
+			if (i == 1) vecN1 = distancesWithPoint.at(lowest);
+			if (i == 2) vecN2 = distancesWithPoint.at(lowest);
+			if (i == 3) vecN3 = distancesWithPoint.at(lowest);
+		}
 
 		float Ax, Bx = PlayerPosition.x; 
 		float Ay, By = 0;
@@ -107,6 +126,10 @@ private:
 			float b = point2.y - (a * point2.x);
 			x = (y - b) / a;
 		}
+	}
+	float distance(vec3 p1, vec3 p2)
+	{
+		return sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2) + pow(p2.z - p1.z, 2) * 1.0);
 	}
 
 	std::vector<std::string> split(std::string s, char seperator)
