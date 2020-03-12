@@ -177,12 +177,15 @@ int main()
 
 	cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
 
+	auto currEntity0 = csm.CreateEntity();
+	csm.AddComponent(currEntity0, TransformC{ vec3(0), 0.2f });
+	AnimModel camModel("tree.dae", glm::vec3(0, 0.3f, 0), 0.2f);
+	csm.AddComponent(currEntity0, ModelMeshC{ camModel, camModel.GetBoundingBoxModel() });
+
 	auto currEntity = csm.CreateEntity();
 	csm.AddComponent(currEntity, MotionC{});
 	csm.AddComponent(currEntity, TransformC{ vec3(0), 0.2f });
 	csm.AddComponent(currEntity, InputC{ Keyboard });
-
-	AnimModel camModel("tree.dae", glm::vec3(0, 0.3f, 0), 0.2f);
 	csm.AddComponent(currEntity, ModelMeshC{ camModel, camModel.GetBoundingBoxModel() });
 	csm.AddComponent(currEntity, CollisionC{ SolidCollision, false });
 
@@ -203,8 +206,12 @@ int main()
 	collisionSystem->Update();
 
 	//Temp UI
-	CEGUI::OpenGL3Renderer& myRenderer = CEGUI::OpenGL3Renderer::bootstrapSystem();
-	GuiManager guiManager();
+	GuiManager guiManager;
+	guiManager.init("GUI");
+	guiManager.loadScheme("OgreTray.scheme");
+	guiManager.setFont("DejaVuSans-10");
+	CEGUI::PushButton* testButton = static_cast<CEGUI::PushButton*>(guiManager.createWidget("OgreTray/Button", glm::vec4(0.5f, 0.5f, 0.1f, 0.05f), glm::vec4(0), "TestButton"));
+	testButton->setText("Heeeey");
 
 	int frame = 0;
 	bool debuggerWindow = false;
@@ -231,6 +238,9 @@ int main()
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 
+		/* UI Stuff here */
+		guiManager.draw();
+
 		//Animated Model
 		shaderLoader->use();
 		//Camera Stuff to Shaders
@@ -249,9 +259,6 @@ int main()
 		}
 
 		shaderLoader->unuse();
-
-		/* UI Stuff here */
-		guiManager.init("");
 
 		/*ImGui_ImplGlfwGL3_NewFrame();
 		//Create GUI's
