@@ -205,14 +205,6 @@ int main()
 	std::cout << cm.GetChunks().size() << std::endl;
 	collisionSystem->Update();
 
-	//Temp UI
-	GuiManager guiManager;
-	guiManager.init("GUI");
-	guiManager.loadScheme("OgreTray.scheme");
-	guiManager.setFont("DejaVuSans-10");
-	CEGUI::PushButton* testButton = static_cast<CEGUI::PushButton*>(guiManager.createWidget("OgreTray/Button", glm::vec4(0.5f, 0.5f, 0.1f, 0.05f), glm::vec4(0), "TestButton"));
-	testButton->setText("Heeeey");
-
 	int frame = 0;
 	bool debuggerWindow = false;
 	// Game loop
@@ -239,7 +231,6 @@ int main()
 		glDepthFunc(GL_LESS);
 
 		/* UI Stuff here */
-		guiManager.draw();
 
 		//Animated Model
 		shaderLoader->use();
