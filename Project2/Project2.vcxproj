@@ -79,6 +79,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)deps\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/D _CRT_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -156,6 +157,8 @@
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="ModelMeshSystem.h" />
     <ClInclude Include="MovementSystem.h" />
+    <ClInclude Include="Nuklear.h" />
+    <ClInclude Include="nuklear_glfw_gl3.h" />
     <ClInclude Include="RayIntersect.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="Skeleton.h" />

@@ -25,11 +25,30 @@
 
 // Other Libs
 #include "SOIL2/SOIL2.h"
-#include <CEGUI/CEGUI.h>
-#include <CEGUI/RendererModules/OpenGL/GL3Renderer.h>
+
+#define NK_INCLUDE_FIXED_TYPES
+#define NK_INCLUDE_STANDARD_IO
+#define NK_INCLUDE_STANDARD_VARARGS
+#define NK_INCLUDE_DEFAULT_ALLOCATOR
+#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+#define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_DEFAULT_FONT
+#define NK_IMPLEMENTATION
+#define NK_GLFW_GL3_IMPLEMENTATION
+#define NK_KEYSTATE_BASED_INPUT
+
+#include "Nuklear.h"
+#include "nuklear_glfw_gl3.h"
+
+#define WINDOW_WIDTH 800 
+#define WINDOW_HEIGHT 600
+
+#define MAX_VERTEX_BUFFER 512 * 1024
+#define MAX_ELEMENT_BUFFER 128 * 1024
+
 
 // Properties
-const GLuint WIDTH = 800, HEIGHT = 600;
+const GLuint WIDTH = WINDOW_WIDTH, HEIGHT = WINDOW_HEIGHT;
 const char* TITLE = "Fighting Against The Coruption - (0.0.1)";
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
@@ -115,13 +134,19 @@ int main()
 	//Use above path to toggle if console should auto close or not.
 
 	// Init GLFW
-	glfwInit();
+	if (!glfwInit()) {
+		fprintf(stdout, "[GFLW] failed to init!\n");
+		exit(1);
+	}
+
 	// Set all the required options for GLFW
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+#endif
+	///glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, nullptr, nullptr);
@@ -135,7 +160,6 @@ int main()
 	}
 
 	glfwMakeContextCurrent(window);
-
 	glfwGetFramebufferSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
 
 	// Set the required callback functions
@@ -160,16 +184,34 @@ int main()
 	// OpenGL options
 	glEnable(GL_DEPTH_TEST);
 #pragma endregion
-#pragma region ImGui
-	// Setup ImGui binding
-	//ImGui::CreateContext();
-	//ImGuiIO& io = ImGui::GetIO(); (void)io;
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-	//ImGui_ImplGlfwGL3_Init(window, true);
+#pragma region Nuklear
+	struct nk_context* ctx;
+	struct nk_colorf bg;
+	ctx = nk_glfw3_init(window, NK_GLFW3_INSTALL_CALLBACKS);
+	/* Load Fonts: if none of these are loaded a default font will be used  */
+	/* Load Cursor: if you uncomment cursor loading please hide the cursor */
+	{struct nk_font_atlas* atlas;
+	nk_glfw3_font_stash_begin(&atlas);
+	/*struct nk_font *droid = nk_font_atlas_add_from_file(atlas, "../../../extra_font/DroidSans.ttf", 14, 0);*/
+	/*struct nk_font *roboto = nk_font_atlas_add_from_file(atlas, "../../../extra_font/Roboto-Regular.ttf", 14, 0);*/
+	/*struct nk_font *future = nk_font_atlas_add_from_file(atlas, "../../../extra_font/kenvector_future_thin.ttf", 13, 0);*/
+	/*struct nk_font *clean = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyClean.ttf", 12, 0);*/
+	/*struct nk_font *tiny = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyTiny.ttf", 10, 0);*/
+	/*struct nk_font *cousine = nk_font_atlas_add_from_file(atlas, "../../../extra_font/Cousine-Regular.ttf", 13, 0);*/
+	nk_glfw3_font_stash_end();
+	/*nk_style_load_all_cursors(ctx, atlas->cursors);*/
+	/*nk_style_set_font(ctx, &droid->handle);*/}
 
-	// Setup style
-	//ImGui::StyleColorsDark();
+#ifdef INCLUDE_STYLE
+	/*set_style(ctx, THEME_WHITE);*/
+	/*set_style(ctx, THEME_RED);*/
+	/*set_style(ctx, THEME_BLUE);*/
+	/*set_style(ctx, THEME_DARK);*/
+#endif
+	bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
 #pragma endregion
+
+	https://cpp.libhunt.com/imgui-alternatives
 
 	// Setup and compile our shaders
 	ShaderLoader* shaderLoader = new ShaderLoader();
@@ -218,6 +260,43 @@ int main()
 		// Check and call events
 		glfwPollEvents();
 
+		/* GUI */
+		if (nk_begin(ctx, "Demo", nk_rect(50, 50, 230, 250),
+			NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
+			NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
+		{
+			enum { EASY, HARD };
+			static int op = EASY;
+			static int property = 20;
+			nk_layout_row_static(ctx, 30, 80, 1);
+			if (nk_button_label(ctx, "button"))
+				fprintf(stdout, "button pressed\n");
+
+			nk_layout_row_dynamic(ctx, 30, 2);
+			if (nk_option_label(ctx, "easy", op == EASY)) op = EASY;
+			if (nk_option_label(ctx, "hard", op == HARD)) op = HARD;
+
+			nk_layout_row_dynamic(ctx, 25, 1);
+			nk_property_int(ctx, "Compression:", 0, &property, 100, 10, 1);
+
+			nk_layout_row_dynamic(ctx, 20, 1);
+			nk_label(ctx, "background:", NK_TEXT_LEFT);
+			nk_layout_row_dynamic(ctx, 25, 1);
+			if (nk_combo_begin_color(ctx, nk_rgb_cf(bg), nk_vec2(nk_widget_width(ctx), 400))) {
+				nk_layout_row_dynamic(ctx, 120, 1);
+				bg = nk_color_picker(ctx, bg, NK_RGBA);
+				nk_layout_row_dynamic(ctx, 25, 1);
+				bg.r = nk_propertyf(ctx, "#R:", 0, bg.r, 1.0f, 0.01f, 0.005f);
+				bg.g = nk_propertyf(ctx, "#G:", 0, bg.g, 1.0f, 0.01f, 0.005f);
+				bg.b = nk_propertyf(ctx, "#B:", 0, bg.b, 1.0f, 0.01f, 0.005f);
+				bg.a = nk_propertyf(ctx, "#A:", 0, bg.a, 1.0f, 0.01f, 0.005f);
+				nk_combo_end(ctx);
+			}
+		}
+		nk_end(ctx);
+		nk_glfw3_render(NK_ANTI_ALIASING_ON, 512 * 1024, 128 * 1024);
+
+		//Game Objects
 		inputSystem->Update(keys);
 		movementSystem->Update(deltaTime, camera);
 		collisionSystem->CollisionCheck();
@@ -229,8 +308,6 @@ int main()
 		//Z-Buffer
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
-
-		/* UI Stuff here */
 
 		//Animated Model
 		shaderLoader->use();
@@ -250,25 +327,13 @@ int main()
 		}
 
 		shaderLoader->unuse();
-
-		/*ImGui_ImplGlfwGL3_NewFrame();
-		//Create GUI's
-		{
-			ImGui::Begin("Debugger", &debuggerWindow);
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			ImGui::End();
-		}
-
-		//Render GUI's
-		ImGui::Render();
-		ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());*/
-
 		// Swap the buffers
 		glfwSwapBuffers(window);
 	}
 
 	//ImGui_ImplGlfwGL3_Shutdown();
 	//ImGui::DestroyContext();
+	nk_glfw3_shutdown();
 	glfwTerminate();
 	return 0;
 }
