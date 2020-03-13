@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 /*
  * Nuklear - 1.32.0 - public domain
  * no warrenty implied; use at your own risk.
@@ -491,4 +495,8 @@ void nk_glfw3_shutdown(void)
     memset(&glfw, 0, sizeof(glfw));
 }
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif

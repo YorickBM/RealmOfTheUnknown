@@ -211,7 +211,9 @@ int main()
 	bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
 #pragma endregion
 
-	https://cpp.libhunt.com/imgui-alternatives
+	//https://cpp.libhunt.com/imgui-alternatives
+	//https://sourceforge.net/projects/ctocpp/
+	//https://github.com/Tropby/NuklearCPP
 
 	// Setup and compile our shaders
 	ShaderLoader* shaderLoader = new ShaderLoader();
