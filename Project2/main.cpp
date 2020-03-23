@@ -1,4 +1,5 @@
-﻿// Std. Includes
+﻿#pragma region Includes
+// Std. Includes
 #include <string>
 #include <map>
 
@@ -26,26 +27,16 @@
 // Other Libs
 #include "SOIL2/SOIL2.h"
 
-#define NK_INCLUDE_FIXED_TYPES
-#define NK_INCLUDE_STANDARD_IO
-#define NK_INCLUDE_STANDARD_VARARGS
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
-#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-#define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_DEFAULT_FONT
-#define NK_IMPLEMENTATION
-#define NK_GLFW_GL3_IMPLEMENTATION
-#define NK_KEYSTATE_BASED_INPUT
+#include "Components.h"
+#include "Systems.h"
 
-#include "Nuklear.h"
-#include "nuklear_glfw_gl3.h"
-
+//imGui 1.60
+#include "imgui.h"
+#include "imgui_impl_glfw_gl3.h"
+#pragma endregion
+#pragma region Vars
 #define WINDOW_WIDTH 800 
 #define WINDOW_HEIGHT 600
-
-#define MAX_VERTEX_BUFFER 512 * 1024
-#define MAX_ELEMENT_BUFFER 128 * 1024
-
 
 // Properties
 const GLuint WIDTH = WINDOW_WIDTH, HEIGHT = WINDOW_HEIGHT;
@@ -68,18 +59,47 @@ GLfloat lastFrame = 0.0f;
 //ComponentSystem
 ComponentSystemManager csm;
 ChunkManager cm;
+#pragma endregion
+#pragma region NanoGui SHIT
+//GUI
+#if defined(NANOGUI_GLAD)
+#if defined(NANOGUI_SHARED) && !defined(GLAD_GLAPI_EXPORT)
+#define GLAD_GLAPI_EXPORT
+#endif
 
-#include "Components.h"
-#include "Systems.h"
+#include <glad/glad.h>
+#else
+#if defined(__APPLE__)
+#define GLFW_INCLUDE_GLCOREARB
+#else
+#define GL_GLEXT_PROTOTYPES
+#endif
+#endif
 
-//imGui 1.60
-#include "imgui.h"
-#include "imgui_impl_glfw_gl3.h"
-#include "GuiManager.h"
+#include <nanogui/nanogui.h>
+#include <iostream>
+using namespace nanogui;
+
+enum test_enum {
+	Item1 = 0,
+	Item2,
+	Item3
+};
+
+bool bvar = true;
+int ivar = 12345678;
+double dvar = 3.1415926;
+float fvar = (float)dvar;
+std::string strval = "A string";
+test_enum enumval = Item2;
+Color colval(0.5f, 0.5f, 0.7f, 1.f);
+
+Screen* screen = nullptr;
+#pragma endregion
 
 int main()
 {
-#pragma region ComponentSystem
+	#pragma region ComponentSystem
 	csm.Init();
 
 	/* Register The Components & Systems*/
@@ -128,47 +148,69 @@ int main()
 	}
 	collisionSystem->Init();
 
-#pragma endregion
-#pragma region Window Init
+	#pragma endregion
+	#pragma region Window Init
 	//Tools->Options->Debugging->Automatically (Last Line)
 	//Use above path to toggle if console should auto close or not.
 
-	// Init GLFW
+	#pragma region init GLFW
 	if (!glfwInit()) {
 		fprintf(stdout, "[GFLW] failed to init!\n");
 		exit(1);
 	}
-
+	glfwSetTime(0);
+	#pragma endregion
+	#pragma region glfwWindowHints
 	// Set all the required options for GLFW
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-	///glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
+	glfwWindowHint(GLFW_SAMPLES, 0);
+	glfwWindowHint(GLFW_RED_BITS, 8);
+	glfwWindowHint(GLFW_GREEN_BITS, 8);
+	glfwWindowHint(GLFW_BLUE_BITS, 8);
+	glfwWindowHint(GLFW_ALPHA_BITS, 8);
+	glfwWindowHint(GLFW_STENCIL_BITS, 8);
+	glfwWindowHint(GLFW_DEPTH_BITS, 24);
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+	#pragma endregion
+	#pragma region Create GLFW Window & Make Window Context Current
 	// Create a GLFWwindow object that we can use for GLFW's functions
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, nullptr, nullptr);
-
-	if (nullptr == window)
-	{
+	if (nullptr == window) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
-
 		return -1;
 	}
 
 	glfwMakeContextCurrent(window);
-	glfwGetFramebufferSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
+	#pragma endregion
+	#pragma region NANOGUI SCREEN INIT
+	#if defined(NANOGUI_GLAD)
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+			throw std::runtime_error("Could not initialize GLAD!");
+		glGetError(); // pull and ignore unhandled errors like GL_INVALID_ENUM
+	#endif
+	glClearColor(0.2f, 0.25f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 
+	// Create a nanogui screen and pass the glfw pointer to initialize
+	screen = new Screen();
+	screen->initialize(window, true);
+
+	#pragma endregion
+	#pragma region FrameBuffer & Mouse/Keyboard -Callbacks & GLFW Options
+	glfwGetFramebufferSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
 	// Set the required callback functions
 	glfwSetKeyCallback(window, KeyCallback);
 	glfwSetCursorPosCallback(window, MouseCallback);
 
 	// GLFW Options
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
+	#pragma endregion
+	#pragma region GLEW
 	// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
 	glewExperimental = GL_TRUE;
 	// Initialize GLEW to setup the OpenGL Function pointers
@@ -177,48 +219,22 @@ int main()
 		std::cout << "Failed to initialize GLEW" << std::endl;
 		return -1;
 	}
-
+	#pragma endregion
+	#pragma region OpenGL Options
 	// Define the viewport dimensions
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
 	// OpenGL options
 	glEnable(GL_DEPTH_TEST);
-#pragma endregion
-#pragma region Nuklear
-	struct nk_context* ctx;
-	struct nk_colorf bg;
-	ctx = nk_glfw3_init(window, NK_GLFW3_INSTALL_CALLBACKS);
-	/* Load Fonts: if none of these are loaded a default font will be used  */
-	/* Load Cursor: if you uncomment cursor loading please hide the cursor */
-	{struct nk_font_atlas* atlas;
-	nk_glfw3_font_stash_begin(&atlas);
-	/*struct nk_font *droid = nk_font_atlas_add_from_file(atlas, "../../../extra_font/DroidSans.ttf", 14, 0);*/
-	/*struct nk_font *roboto = nk_font_atlas_add_from_file(atlas, "../../../extra_font/Roboto-Regular.ttf", 14, 0);*/
-	/*struct nk_font *future = nk_font_atlas_add_from_file(atlas, "../../../extra_font/kenvector_future_thin.ttf", 13, 0);*/
-	/*struct nk_font *clean = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyClean.ttf", 12, 0);*/
-	/*struct nk_font *tiny = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyTiny.ttf", 10, 0);*/
-	/*struct nk_font *cousine = nk_font_atlas_add_from_file(atlas, "../../../extra_font/Cousine-Regular.ttf", 13, 0);*/
-	nk_glfw3_font_stash_end();
-	/*nk_style_load_all_cursors(ctx, atlas->cursors);*/
-	/*nk_style_set_font(ctx, &droid->handle);*/}
-
-#ifdef INCLUDE_STYLE
-	/*set_style(ctx, THEME_WHITE);*/
-	/*set_style(ctx, THEME_RED);*/
-	/*set_style(ctx, THEME_BLUE);*/
-	/*set_style(ctx, THEME_DARK);*/
-#endif
-	bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
+	#pragma endregion
 #pragma endregion
 
-	//https://cpp.libhunt.com/imgui-alternatives
-	//https://sourceforge.net/projects/ctocpp/
-	//https://github.com/Tropby/NuklearCPP
-
+	#pragma region Shaders
 	// Setup and compile our shaders
 	ShaderLoader* shaderLoader = new ShaderLoader();
 	shaderLoader->loadShaders("vertexShader.glsl", "fragmentShader.glsl");
+	#pragma endregion
 
+	#pragma region Entity Creation & Chunk Loading
 	cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
 
 	auto currEntity0 = csm.CreateEntity();
@@ -244,16 +260,19 @@ int main()
 	///csm.InitEntities("res/System/Entities.txt");
 	///cm.InitializeChunks("res/System/ChunkMap.png");
 
-	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 5.0f); //Render Distance
+	#pragma endregion
 
-	std::cout << cm.GetChunks().size() << std::endl;
+	#pragma region Pre Game Loop
+	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 5.0f); //Render Distance
 	collisionSystem->Update();
 
 	int frame = 0;
 	bool debuggerWindow = false;
+	#pragma endregion
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
+		#pragma region Frame & Poll Events
 		// Set frame time
 		GLfloat currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
@@ -261,48 +280,22 @@ int main()
 
 		// Check and call events
 		glfwPollEvents();
+		#pragma endregion
+		#pragma region GUI
 
 		/* GUI */
-		if (nk_begin(ctx, "Demo", nk_rect(50, 50, 230, 250),
-			NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
-			NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
-		{
-			enum { EASY, HARD };
-			static int op = EASY;
-			static int property = 20;
-			nk_layout_row_static(ctx, 30, 80, 1);
-			if (nk_button_label(ctx, "button"))
-				fprintf(stdout, "button pressed\n");
+		screen->drawContents();
+		screen->drawWidgets();
 
-			nk_layout_row_dynamic(ctx, 30, 2);
-			if (nk_option_label(ctx, "easy", op == EASY)) op = EASY;
-			if (nk_option_label(ctx, "hard", op == HARD)) op = HARD;
-
-			nk_layout_row_dynamic(ctx, 25, 1);
-			nk_property_int(ctx, "Compression:", 0, &property, 100, 10, 1);
-
-			nk_layout_row_dynamic(ctx, 20, 1);
-			nk_label(ctx, "background:", NK_TEXT_LEFT);
-			nk_layout_row_dynamic(ctx, 25, 1);
-			if (nk_combo_begin_color(ctx, nk_rgb_cf(bg), nk_vec2(nk_widget_width(ctx), 400))) {
-				nk_layout_row_dynamic(ctx, 120, 1);
-				bg = nk_color_picker(ctx, bg, NK_RGBA);
-				nk_layout_row_dynamic(ctx, 25, 1);
-				bg.r = nk_propertyf(ctx, "#R:", 0, bg.r, 1.0f, 0.01f, 0.005f);
-				bg.g = nk_propertyf(ctx, "#G:", 0, bg.g, 1.0f, 0.01f, 0.005f);
-				bg.b = nk_propertyf(ctx, "#B:", 0, bg.b, 1.0f, 0.01f, 0.005f);
-				bg.a = nk_propertyf(ctx, "#A:", 0, bg.a, 1.0f, 0.01f, 0.005f);
-				nk_combo_end(ctx);
-			}
-		}
-		nk_end(ctx);
-		nk_glfw3_render(NK_ANTI_ALIASING_ON, 512 * 1024, 128 * 1024);
-
+		#pragma endregion
+		#pragma region Game Objects
 		//Game Objects
 		inputSystem->Update(keys);
 		movementSystem->Update(deltaTime, camera);
 		collisionSystem->CollisionCheck();
 
+		#pragma endregion
+		#pragma region Draw Models
 		// Clear the colorbuffer
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -331,15 +324,14 @@ int main()
 		shaderLoader->unuse();
 		// Swap the buffers
 		glfwSwapBuffers(window);
+		#pragma endregion
 	}
 
-	//ImGui_ImplGlfwGL3_Shutdown();
-	//ImGui::DestroyContext();
-	nk_glfw3_shutdown();
 	glfwTerminate();
 	return 0;
 }
 
+#pragma region Key & Mouse Callback
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
 	if (GLFW_KEY_ESCAPE == key && GLFW_PRESS == action)
@@ -376,3 +368,4 @@ void MouseCallback(GLFWwindow* window, double xPos, double yPos)
 
 	camera.ProcessMouseMovement(xOffset, yOffset);
 }
+#pragma endregion
