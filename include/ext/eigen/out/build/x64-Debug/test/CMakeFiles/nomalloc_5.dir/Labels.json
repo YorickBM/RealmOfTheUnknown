@@ -1,0 +1,16 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen/test/nomalloc.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"BuildOfficial"
+		],
+		"name" : "nomalloc_5"
+	}
+}

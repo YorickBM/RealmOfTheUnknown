@@ -1,0 +1,16 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen/test/determinant.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"BuildOfficial"
+		],
+		"name" : "determinant_6"
+	}
+}

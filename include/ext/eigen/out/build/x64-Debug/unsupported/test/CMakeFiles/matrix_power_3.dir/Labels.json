@@ -1,0 +1,16 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen/unsupported/test/matrix_power.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"BuildUnsupported"
+		],
+		"name" : "matrix_power_3"
+	}
+}

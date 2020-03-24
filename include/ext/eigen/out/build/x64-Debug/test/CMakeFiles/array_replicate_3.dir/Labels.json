@@ -1,0 +1,16 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen/test/array_replicate.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"BuildOfficial"
+		],
+		"name" : "array_replicate_3"
+	}
+}
