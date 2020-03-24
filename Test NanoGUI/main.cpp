@@ -55,10 +55,6 @@ const GLuint WIDTH = 800, HEIGHT = 600;
 const char* TITLE = "Fighting Against The Coruption - (0.0.1)";
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
-// Function prototypes
-void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
-void MouseCallback(GLFWwindow* window, double xPos, double yPos);
-
 // Camera
 Camera camera(glm::vec3(-2, 2, 0));
 bool keys[1024] = { false };
