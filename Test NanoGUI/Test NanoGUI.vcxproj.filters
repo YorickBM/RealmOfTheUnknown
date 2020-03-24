@@ -1,0 +1,296 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{85a9be94-c930-49b5-9617-9ea8ef684676}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{942c4c3f-90db-490f-bbb6-6a7837d8500d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Model">
+      <UniqueIdentifier>{38f460c6-5892-4a89-9a38-d88f512e59e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Model">
+      <UniqueIdentifier>{7d56355f-bcf5-4024-97ea-65249bac14de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Other">
+      <UniqueIdentifier>{a6cd4655-b5ad-4a0b-b674-f0ee582a328d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\AnimOther">
+      <UniqueIdentifier>{4830e98b-fa89-4ec2-b130-34e87366bddd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EntityComponentSystem">
+      <UniqueIdentifier>{dbafa4b0-3545-437c-be9a-e1fbdafc4c77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EntityComponentSystem\Functionality">
+      <UniqueIdentifier>{78e70044-0cbd-46e4-8f40-8de05ce1f19c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EntityComponentSystem\Components">
+      <UniqueIdentifier>{0cfca73b-d10a-49bb-bc10-af186d0dc4a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EntityComponentSystem\Systems">
+      <UniqueIdentifier>{8cd0e8f1-1a29-4162-b5c7-c32b5128e6c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Other\Tools">
+      <UniqueIdentifier>{5f76d0b2-7f52-4adf-9c00-3f067a22f36b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Other\Mechanics">
+      <UniqueIdentifier>{e30c9c5c-e6e3-48cf-b6de-4920a805952f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EntityComponentSystem\Functionality\Component">
+      <UniqueIdentifier>{e4b5a143-05f3-40d9-9d09-11a7877fa75b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EntityComponentSystem\Functionality\Entity">
+      <UniqueIdentifier>{2d1bb9a0-b09f-4fbf-a894-2221ad0f6946}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EntityComponentSystem\Functionality\System">
+      <UniqueIdentifier>{e29a39be-e569-4ebc-807f-de9b10bbf764}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\EntityComponentSystem">
+      <UniqueIdentifier>{fc7bb0dc-4eef-498c-ba3d-9cf6fca6087a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\EntityComponentSystem\Systems">
+      <UniqueIdentifier>{3f958407-8451-4b72-92d2-6786ee523390}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{b808fe28-b077-4905-b824-d20a54673af1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Models">
+      <UniqueIdentifier>{19b64795-06e1-4e8f-ac21-076071c74b83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Models\Chunks">
+      <UniqueIdentifier>{1da5e25b-192f-4e70-80cd-fb1fcc24b330}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\DLL&quot;s">
+      <UniqueIdentifier>{4b0a65e3-8b6e-49e0-a420-e2194b686ae0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Models\Scene">
+      <UniqueIdentifier>{dfe16319-a139-4fda-a539-17142e22aefb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Models\Scene\Trees">
+      <UniqueIdentifier>{d7c4ae36-f5df-4c1e-ae25-de175e03e692}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Models\Test">
+      <UniqueIdentifier>{1e4cf12a-4d1e-4c09-80d1-9ef7e53a59cf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Test NanoGUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files\Engine\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Bone.cpp">
+      <Filter>Source Files\Engine\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\Engine\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelLoader.cpp">
+      <Filter>Source Files\Engine\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderLoader.cpp">
+      <Filter>Source Files\Engine\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>Source Files\Engine\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Header Files\Engine\Other\Mechanics</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionSystem.cpp">
+      <Filter>Source Files\EntityComponentSystem\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem.cpp">
+      <Filter>Source Files\EntityComponentSystem\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelMeshSystem.cpp">
+      <Filter>Source Files\EntityComponentSystem\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementSystem.cpp">
+      <Filter>Source Files\EntityComponentSystem\Systems</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Animation.h">
+      <Filter>Header Files\Engine\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Bone.h">
+      <Filter>Header Files\Engine\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files\Engine\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>Header Files\Engine\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderLoader.h">
+      <Filter>Header Files\Engine\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>Header Files\Engine\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationMesh.h">
+      <Filter>Header Files\Engine\AnimOther</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationShader.h">
+      <Filter>Header Files\Engine\AnimOther</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimModel.h">
+      <Filter>Header Files\Engine\AnimOther</Filter>
+    </ClInclude>
+    <ClInclude Include="ChunkManager.h">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionSystem.h">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem.h">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelMeshSystem.h">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementSystem.h">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Systems.h">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Components.h">
+      <Filter>Header Files\EntityComponentSystem\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolBox.h">
+      <Filter>Header Files\Engine\Other\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Engine\Other\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Converter.h">
+      <Filter>Header Files\Engine\Other\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="CImg.h">
+      <Filter>Header Files\Engine\Other\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\Engine\Other\Mechanics</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Header Files\Engine\Other\Mechanics</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionExtra.h">
+      <Filter>Header Files\Engine\Other\Mechanics</Filter>
+    </ClInclude>
+    <ClInclude Include="RayIntersect.h">
+      <Filter>Header Files\Engine\Other\Mechanics</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentArray.h">
+      <Filter>Header Files\EntityComponentSystem\Functionality\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentManager.h">
+      <Filter>Header Files\EntityComponentSystem\Functionality\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header Files\EntityComponentSystem\Functionality\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>Header Files\EntityComponentSystem\Functionality\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>Header Files\EntityComponentSystem\Functionality\System</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemManager.h">
+      <Filter>Header Files\EntityComponentSystem\Functionality\System</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentSystemManager.h">
+      <Filter>Header Files\EntityComponentSystem\Functionality</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS.h">
+      <Filter>Header Files\EntityComponentSystem\Functionality</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fragmentShader.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="vertexShader.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Chunk_0x0.dae">
+      <Filter>Resource Files\Models\Chunks</Filter>
+    </None>
+    <None Include="Chunk_0x1.dae">
+      <Filter>Resource Files\Models\Chunks</Filter>
+    </None>
+    <None Include="Chunk_1x0.dae">
+      <Filter>Resource Files\Models\Chunks</Filter>
+    </None>
+    <None Include="Chunk_1x1.dae">
+      <Filter>Resource Files\Models\Chunks</Filter>
+    </None>
+    <None Include="assimp-vc140-mt.dll">
+      <Filter>Resource Files\DLL"s</Filter>
+    </None>
+    <None Include="freetype_d.dll">
+      <Filter>Resource Files\DLL"s</Filter>
+    </None>
+    <None Include="glew_d.dll">
+      <Filter>Resource Files\DLL"s</Filter>
+    </None>
+    <None Include="glew32.dll">
+      <Filter>Resource Files\DLL"s</Filter>
+    </None>
+    <None Include="glfw_d.dll">
+      <Filter>Resource Files\DLL"s</Filter>
+    </None>
+    <None Include="glfw3.dll">
+      <Filter>Resource Files\DLL"s</Filter>
+    </None>
+    <None Include="jpeg_d.dll">
+      <Filter>Resource Files\DLL"s</Filter>
+    </None>
+    <None Include="libexpat_d.dll">
+      <Filter>Resource Files\DLL"s</Filter>
+    </None>
+    <None Include="libpng_d.dll">
+      <Filter>Resource Files\DLL"s</Filter>
+    </None>
+    <None Include="nanogui.dll">
+      <Filter>Resource Files\DLL"s</Filter>
+    </None>
+    <None Include="pcre_d.dll">
+      <Filter>Resource Files\DLL"s</Filter>
+    </None>
+    <None Include="SILLY_d.dll">
+      <Filter>Resource Files\DLL"s</Filter>
+    </None>
+    <None Include="zlib_d.dll">
+      <Filter>Resource Files\DLL"s</Filter>
+    </None>
+    <None Include="test.dae">
+      <Filter>Resource Files\Models\Test</Filter>
+    </None>
+    <None Include="tree.dae">
+      <Filter>Resource Files\Models\Test</Filter>
+    </None>
+    <None Include="test.fbx">
+      <Filter>Resource Files\Models\Test</Filter>
+    </None>
+    <None Include="tree.fbx">
+      <Filter>Resource Files\Models\Test</Filter>
+    </None>
+  </ItemGroup>
+</Project>
