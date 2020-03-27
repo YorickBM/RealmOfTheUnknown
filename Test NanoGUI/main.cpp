@@ -83,7 +83,6 @@ float fvar = (float)dvar;
 std::string strval = "A string";
 test_enum enumval = Item2;
 Color colval(0.5f, 0.5f, 0.7f, 1.f);
-
 Screen* screen = nullptr;
 
 //OpenGL

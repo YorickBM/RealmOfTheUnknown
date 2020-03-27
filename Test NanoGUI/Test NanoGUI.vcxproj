@@ -73,6 +73,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)include\ext\glfw\include;$(SolutionDir)include\ext\eigen;$(SolutionDir)include\ext\nanovg\src</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -91,13 +92,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Yorick\source\repos\Test NanoGUI\include;D:\Yorick\source\repos\Test NanoGUI\include\ext\nanovg\src;D:\Yorick\source\repos\Test NanoGUI\include\ext\glfw\include;$(SolutionDir)include\;$(SolutionDir)inlucde\ext\nanovg\src;$(SolutionDir)inlucde\ext\glfw\include;D:\Yorick\source\repos\Test NanoGUI\include\ext\eigen;$(SolutionDir)inlucde\ext\eigen;$(SolutionDir)inlucde\ext\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include\;$(SolutionDir)inlucde\ext\nanovg\src;$(SolutionDir)inlucde\ext\glfw\include;$(SolutionDir)inlucde\ext\eigen;$(SolutionDir)inlucde\ext\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;nanogui.lib;glew32s.lib;glfw3.lib;soil2-debug.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\Yorick\source\repos\Test NanoGUI\lib\32bit;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\32bit;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -166,14 +167,6 @@
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="C:\Users\yoric\Desktop\nanoGUI\nanogui\build\nanogui.vcxproj">
-      <Project>{5324fe96-565f-3aad-af57-990bb32551f7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\yoric\Desktop\nanoGUI\nanogui\build\ZERO_CHECK.vcxproj">
-      <Project>{543f8a7b-417b-3b5c-8a34-877187a1854e}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
