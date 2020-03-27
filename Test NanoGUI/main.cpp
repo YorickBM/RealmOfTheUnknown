@@ -37,6 +37,9 @@
 #pragma endregion
 #include <nanogui/nanogui.h>
 
+#define NANOVG_GL3_IMPLEMENTATION	// Use GL2 implementation.
+#include <nanovg_gl.h>
+
 //Personal Includes
 #include "Components.h"
 #include "Systems.h"
@@ -47,6 +50,9 @@
 #include "ComponentSystemManager.h"
 #include "ChunkManager.h"
 #include "ModelLoader.h";
+#include "GLTexture.h"
+
+#include "InventoryTheme.h"
 #pragma endregion
 using namespace nanogui;
 #pragma region Vars
@@ -76,17 +82,44 @@ enum test_enum {
     Item3
 };
 
+enum res_enum {
+    resolution_1 = 0,
+    resolution_2,
+    resolution_3,
+    resolution_4,
+    resolution_5,
+    resolution_6,
+    resolution_7,
+    resolution_8,
+    resolution_9,
+    resolution_10,
+    resolution_11,
+    resolution_12,
+    resolution_13,
+    resolution_14,
+    resolution_15,
+    resolution_16,
+    resolution_17,
+    resolution_18,
+    resolution_19
+};
+
 bool bvar = true;
 int ivar = 12345678;
 double dvar = 3.1415926;
 float fvar = (float)dvar;
 std::string strval = "A string";
-test_enum enumval = Item2;
+res_enum enumval = resolution_2;
 Color colval(0.5f, 0.5f, 0.7f, 1.f);
 Screen* screen = nullptr;
 
 //OpenGL
 bool CLOSEWINDOW = false;
+
+//NanoGUI Images
+using imagesDataType = vector<pair<GLTexture, GLTexture::handleType>>;
+imagesDataType mImagesData;
+int mCurrentImage;
 #pragma endregion
 
 int main(int /* argc */, char** /* argv */) {
@@ -140,7 +173,29 @@ int main(int /* argc */, char** /* argv */) {
     collisionSystem->Init();
 
     #pragma endregion
-
+#pragma region Resolutions
+    std::vector<std::string> resolutions;
+    resolutions.push_back("640x360");
+    resolutions.push_back("800x600");
+    resolutions.push_back("1024x768");
+    resolutions.push_back("1280x720");
+    resolutions.push_back("1280x800");
+    resolutions.push_back("1280x1024");
+    resolutions.push_back("1360x768");
+    resolutions.push_back("1366x768");
+    resolutions.push_back("1440x900");
+    resolutions.push_back("1536x864");
+    resolutions.push_back("1600x600");
+    resolutions.push_back("1680x1050");
+    resolutions.push_back("1920x1080");
+    resolutions.push_back("1920x1200");
+    resolutions.push_back("2048x1152");
+    resolutions.push_back("2560x1080");
+    resolutions.push_back("2560x1440");
+    resolutions.push_back("3440x1440");
+    resolutions.push_back("3840x2160");
+#pragma endregion
+    
     #pragma region Initialize glfw
     glfwInit();
     glfwSetTime(0);
@@ -203,7 +258,7 @@ int main(int /* argc */, char** /* argv */) {
     #pragma endregion
     #pragma region FrameBuffer
     glfwGetFramebufferSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    ///glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     #pragma endregion
     #pragma region OpenGL Options
     // Define the viewport dimensions
@@ -226,7 +281,7 @@ int main(int /* argc */, char** /* argv */) {
     gui->addVariable("double", dvar)->setSpinnable(true);
 
     gui->addGroup("Complex types");
-    gui->addVariable("Enumeration", enumval, enabled)->setItems({ "Item 1", "Item 2", "Item 3" });
+    gui->addVariable("Enumeration", enumval, enabled)->setItems(resolutions);
     gui->addVariable("Color", colval)
         ->setFinalCallback([](const Color& c) {
         std::cout << "ColorPicker Final Callback: ["
@@ -237,7 +292,53 @@ int main(int /* argc */, char** /* argv */) {
             });
 
     gui->addGroup("Other widgets");
-    gui->addButton("A button", []() { std::cout << "Button pressed." << std::endl; })->setTooltip("Testing a much longer tooltip, that will wrap around to new lines multiple times.");;
+    gui->addButton("A button", []() { std::cout << "Button pressed." << std::endl; })->setTooltip("Testing a much longer tooltip, that will wrap around to new lines multiple times.");; // Not an error <<
+
+    //vector<pair<int, string>> icons = loadImageDirectory(screen->nvgContext(), "icons");
+    string resourcesFolderPath("resources/");
+
+    Window* settingsWindow = gui->addWindow(Eigen::Vector2i(10, 10), "Inventory");
+    settingsWindow->setLayout(new GroupLayout());
+    nanogui::ref<CustomTheme> theme = new CustomTheme(screen->nvgContext());
+    settingsWindow->setTheme(theme);
+    PopupButton* imagePanelBtn = new PopupButton(settingsWindow, "Screen Resolution");
+    Popup* popup = imagePanelBtn->popup();
+    VScrollPanel* vscroll = new VScrollPanel(popup);
+    ImagePanel* imgPanel = new ImagePanel(vscroll);
+    ///imgPanel->setImages(icons);
+    popup->setFixedSize(Vector2i(245, 150));
+
+    ///Window* imageWindow = gui->addWindow(Eigen::Vector2i(10, 10), "Selected Image");
+    ///imageWindow->setPosition(Vector2i(100, 100));
+    ///imageWindow->setLayout(new GroupLayout());
+
+    // Load all of the images by creating a GLTexture object and saving the pixel data
+    ///for (auto& icon : icons) {
+    ///    GLTexture texture(icon.second);
+    ///    auto data = texture.load(resourcesFolderPath + icon.second + ".png");
+    ///    mImagesData.emplace_back(std::move(texture), std::move(data));
+    ///}
+    ///auto imageView = new ImageView(imageWindow, mImagesData[0].first.texture());
+    ///mCurrentImage = 0;
+    /// Change the active textures.
+    ///imageView->setGridThreshold(20);
+    ///imageView->setPixelInfoThreshold(20);
+    ///imageView->setPixelInfoCallback(
+    ///    [gui, imageView](const Vector2i& index) -> pair<string, Color> {
+    ///        auto& imageData = mImagesData[mCurrentImage].second;
+    ///        auto& textureSize = imageView->imageSize();
+    ///        string stringData;
+    ///        uint16_t channelSum = 0;
+    ///        for (int i = 0; i != 4; ++i) {
+    ///            auto& channelData = imageData[4 * index.y() * textureSize.x() + 4 * index.x() + i];
+    ///            channelSum += channelData;
+    ///            stringData += (to_string(static_cast<int>(channelData)) + "\n");
+    ///        }
+    ///        float intensity = static_cast<float>(255 - (channelSum / 4)) / 255.0f;
+    ///        float colorScale = intensity > 0.5f ? (intensity + 1) / 2 : intensity / 2;
+    ///        Color textColor = Color(colorScale, 1.0f);
+    ///        return { stringData, textColor };
+    ///    });
 
     screen->setVisible(true);
     screen->performLayout();
@@ -255,8 +356,8 @@ int main(int /* argc */, char** /* argv */) {
                 firstMouse = false;
             }
 
-            GLfloat xOffset = x - lastX;
-            GLfloat yOffset = lastY - y;  // Reversed since y-coordinates go from bottom to left
+            double xOffset = x - lastX;
+            double yOffset = lastY - y;  // Reversed since y-coordinates go from bottom to left
 
             lastX = x;
             lastY = y;
@@ -330,7 +431,7 @@ int main(int /* argc */, char** /* argv */) {
 
     auto currEntity0 = csm.CreateEntity();
     csm.AddComponent(currEntity0, TransformC{ vec3(0), 0.2f });
-    AnimModel camModel("tree.dae", glm::vec3(0, 0.3f, 0), 0.2f);
+    AnimModel camModel("resources/tree.dae", glm::vec3(0, 0.3f, 0), 0.2f);
     csm.AddComponent(currEntity0, ModelMeshC{ camModel, camModel.GetBoundingBoxModel() });
 
     auto currEntity = csm.CreateEntity();
@@ -340,7 +441,7 @@ int main(int /* argc */, char** /* argv */) {
     csm.AddComponent(currEntity, ModelMeshC{ camModel, camModel.GetBoundingBoxModel() });
     csm.AddComponent(currEntity, CollisionC{ SolidCollision, false });
 
-    AnimModel model0("tree.fbx", glm::vec3(0, 0, 0), 0.2f);
+    AnimModel model0("resources/tree.fbx", glm::vec3(0, 0, 0), 0.2f);
     auto newEntity = csm.CreateEntity();
     csm.AddComponent(newEntity, TransformC{ vec3(0), 0.2f });
 

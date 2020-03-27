@@ -85,6 +85,9 @@
     <Filter Include="Resource Files\Models\Test">
       <UniqueIdentifier>{1e4cf12a-4d1e-4c09-80d1-9ef7e53a59cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\NanoGui Engine">
+      <UniqueIdentifier>{79616592-b1bb-4e96-ba9b-cdf205a8ebd1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp">
@@ -220,6 +223,12 @@
     </ClInclude>
     <ClInclude Include="ECS.h">
       <Filter>Header Files\EntityComponentSystem\Functionality</Filter>
+    </ClInclude>
+    <ClInclude Include="GLTexture.h">
+      <Filter>Source Files\NanoGui Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="InventoryTheme.h">
+      <Filter>Source Files\NanoGui Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
