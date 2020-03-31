@@ -230,6 +230,12 @@
     <ClInclude Include="InventoryTheme.h">
       <Filter>Source Files\NanoGui Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Inventory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyGLCanvas.h">
+      <Filter>Source Files\NanoGui Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragmentShader.glsl">

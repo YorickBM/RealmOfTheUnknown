@@ -190,11 +190,13 @@
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="GLTexture.h" />
     <ClInclude Include="InputSystem.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="InventoryTheme.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="ModelMeshSystem.h" />
     <ClInclude Include="MovementSystem.h" />
+    <ClInclude Include="MyGLCanvas.h" />
     <ClInclude Include="RayIntersect.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="Skeleton.h" />

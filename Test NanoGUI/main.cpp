@@ -37,9 +37,6 @@
 #pragma endregion
 #include <nanogui/nanogui.h>
 
-#define NANOVG_GL3_IMPLEMENTATION	// Use GL2 implementation.
-#include <nanovg_gl.h>
-
 //Personal Includes
 #include "Components.h"
 #include "Systems.h"
@@ -53,11 +50,12 @@
 #include "GLTexture.h"
 
 #include "InventoryTheme.h"
+#include "Inventory.h"
 #pragma endregion
 using namespace nanogui;
 #pragma region Vars
 // Properties
-const GLuint WIDTH = 800, HEIGHT = 600;
+const GLuint WIDTH = 1024, HEIGHT = 768;
 const char* TITLE = "Fighting Against The Coruption - (0.0.1)";
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
@@ -267,8 +265,12 @@ int main(int /* argc */, char** /* argv */) {
     glEnable(GL_DEPTH_TEST);
     #pragma endregion
     #pragma region NanoGui GUI
+    //Create Inventory
+    Inventory* inv = new Inventory(screen, Vector2i(15,15));
+    inv->ShowInfo(true);
+
     // Create nanogui gui
-    bool enabled = true;
+    /*bool enabled = true;
     FormHelper* gui = new FormHelper(screen);
     Window* nanoguiWindow = gui->addWindow(Eigen::Vector2i(10, 10), "Form helper example");
     gui->addGroup("Basic types");
@@ -294,7 +296,11 @@ int main(int /* argc */, char** /* argv */) {
     gui->addGroup("Other widgets");
     gui->addButton("A button", []() { std::cout << "Button pressed." << std::endl; })->setTooltip("Testing a much longer tooltip, that will wrap around to new lines multiple times.");; // Not an error <<
 
-    //vector<pair<int, string>> icons = loadImageDirectory(screen->nvgContext(), "icons");
+    vector<pair<int, string>> icons;
+    icons.push_back(make_pair(0, "test"));
+    icons.push_back(make_pair(1, "test"));
+    icons.push_back(make_pair(3, "test"));
+
     string resourcesFolderPath("resources/");
 
     Window* settingsWindow = gui->addWindow(Eigen::Vector2i(10, 10), "Inventory");
@@ -308,40 +314,41 @@ int main(int /* argc */, char** /* argv */) {
     ///imgPanel->setImages(icons);
     popup->setFixedSize(Vector2i(245, 150));
 
-    ///Window* imageWindow = gui->addWindow(Eigen::Vector2i(10, 10), "Selected Image");
-    ///imageWindow->setPosition(Vector2i(100, 100));
-    ///imageWindow->setLayout(new GroupLayout());
+    Window* imageWindow = gui->addWindow(Eigen::Vector2i(200, 10));
+    imageWindow->setPosition(Vector2i(100, 100));
+    imageWindow->setLayout(new GroupLayout());
 
     // Load all of the images by creating a GLTexture object and saving the pixel data
-    ///for (auto& icon : icons) {
-    ///    GLTexture texture(icon.second);
-    ///    auto data = texture.load(resourcesFolderPath + icon.second + ".png");
-    ///    mImagesData.emplace_back(std::move(texture), std::move(data));
-    ///}
-    ///auto imageView = new ImageView(imageWindow, mImagesData[0].first.texture());
-    ///mCurrentImage = 0;
+    for (auto& icon : icons) {
+        GLTexture texture(icon.second);
+        auto data = texture.load(resourcesFolderPath + icon.second + ".png");
+        mImagesData.emplace_back(std::move(texture), std::move(data));
+    }
+    auto imageView = new ImageView(imageWindow, mImagesData[0].first.texture());
+    mCurrentImage = 0;
     /// Change the active textures.
-    ///imageView->setGridThreshold(20);
-    ///imageView->setPixelInfoThreshold(20);
-    ///imageView->setPixelInfoCallback(
-    ///    [gui, imageView](const Vector2i& index) -> pair<string, Color> {
-    ///        auto& imageData = mImagesData[mCurrentImage].second;
-    ///        auto& textureSize = imageView->imageSize();
-    ///        string stringData;
-    ///        uint16_t channelSum = 0;
-    ///        for (int i = 0; i != 4; ++i) {
-    ///            auto& channelData = imageData[4 * index.y() * textureSize.x() + 4 * index.x() + i];
-    ///            channelSum += channelData;
-    ///            stringData += (to_string(static_cast<int>(channelData)) + "\n");
-    ///        }
-    ///        float intensity = static_cast<float>(255 - (channelSum / 4)) / 255.0f;
-    ///        float colorScale = intensity > 0.5f ? (intensity + 1) / 2 : intensity / 2;
-    ///        Color textColor = Color(colorScale, 1.0f);
-    ///        return { stringData, textColor };
-    ///    });
+    imageView->setGridThreshold(20);
+    imageView->setPixelInfoThreshold(20);
+    imageView->setPixelInfoCallback(
+        [gui, imageView](const Vector2i& index) -> pair<string, Color> {
+            auto& imageData = mImagesData[mCurrentImage].second;
+            auto& textureSize = imageView->imageSize();
+            string stringData;
+            uint16_t channelSum = 0;
+            for (int i = 0; i != 4; ++i) {
+                auto& channelData = imageData[4 * index.y() * textureSize.x() + 4 * index.x() + i];
+                channelSum += channelData;
+                stringData += (to_string(static_cast<int>(channelData)) + "\n");
+            }
+            float intensity = static_cast<float>(255 - (channelSum / 4)) / 255.0f;
+            float colorScale = intensity > 0.5f ? (intensity + 1) / 2 : intensity / 2;
+            Color textColor = Color(colorScale, 1.0f);
+            return { stringData, textColor };
+        });
+    gui->addGroup("Lorem Ipsum");
 
     screen->setVisible(true);
-    screen->performLayout();
+    screen->performLayout();//*/
     //nanoguiWindow->center();
     #pragma endregion
     #pragma region glfw Callbacks to NanoGUI & ECS
@@ -403,7 +410,7 @@ int main(int /* argc */, char** /* argv */) {
 
     glfwSetDropCallback(window,
         [](GLFWwindow*, int count, const char** filenames) {
-            screen->dropCallbackEvent(count, filenames);
+           screen->dropCallbackEvent(count, filenames);
         }
     );
 
@@ -415,7 +422,7 @@ int main(int /* argc */, char** /* argv */) {
 
     glfwSetFramebufferSizeCallback(window,
         [](GLFWwindow*, int width, int height) {
-            screen->resizeCallbackEvent(width, height);
+           screen->resizeCallbackEvent(width, height);
         }
     );
     #pragma endregion
@@ -467,15 +474,9 @@ int main(int /* argc */, char** /* argv */) {
 
         //Clear Buffers & Color
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         #pragma endregion
-        #pragma region GUI
 
-        /* GUI */
-        screen->drawContents();
-        screen->drawWidgets();
-
-        #pragma endregion
         #pragma region Game Objects
         //Game Objects
         inputSystem->Update(keys);
@@ -506,13 +507,16 @@ int main(int /* argc */, char** /* argv */) {
         }
 
         shaderLoader->unuse();
-        // Swap the buffers
-        glfwSwapBuffers(window);
         #pragma endregion
 
-        if(CLOSEWINDOW) glfwSetWindowShouldClose(window, GL_TRUE);
-    }
+        //screen->drawContents();
+        //screen->drawWidgets();
+        inv->render();
 
+        if(CLOSEWINDOW) glfwSetWindowShouldClose(window, GL_TRUE);
+        // Swap the buffers
+        glfwSwapBuffers(window);
+    }
     // Terminate GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();
     return 0;
