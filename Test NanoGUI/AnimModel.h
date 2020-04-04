@@ -88,7 +88,7 @@ public:
 	void GenerateMinAndMaxVerticesTranslated(vec3& min, vec3& max, vec3 position) {
 		std::vector<float> Xt, Yt, Zt;
 		std::vector<vec3> verticest = this->meshes.at(meshes.size() - 1)->translateVertices(this->_scale, position);
-		std::cout << position.x << ";" << position.y << ";" << position.z << std::endl;
+		///std::cout << position.x << ";" << position.y << ";" << position.z << std::endl;
 		for (glm::vec3 i : verticest) {
 			Xt.push_back(i.x);
 			Yt.push_back(i.y);

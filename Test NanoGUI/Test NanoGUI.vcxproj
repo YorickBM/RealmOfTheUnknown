@@ -185,6 +185,7 @@
     <ClInclude Include="Components.h" />
     <ClInclude Include="ComponentSystemManager.h" />
     <ClInclude Include="Converter.h" />
+    <ClInclude Include="CustomGrid.h" />
     <ClInclude Include="ECS.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="MovementSystem.h" />
     <ClInclude Include="MyGLCanvas.h" />
     <ClInclude Include="RayIntersect.h" />
+    <ClInclude Include="Settings.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="System.h" />

@@ -68,7 +68,7 @@ public:
 		this->position = pos;
 	}
 	void printPosition() {
-		std::cout << this->position.x << ";" << this->position.y << ";" << this->position.z << std::endl;
+		///std::cout << this->position.x << ";" << this->position.y << ";" << this->position.z << std::endl;
 	}
 
 	// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
