@@ -40,31 +40,26 @@ public:
 		_screen = screen;
 		_backgroundImage = new Window(_screen, "");
 
-
-		//Init BackgroundImage
-		GLTexture texture("backgroundSlot");
-		auto data = texture.load("resources/MineRender5.png");
-		mImagesDataStartScreen.emplace_back(std::move(texture), std::move(data));
-
 		//SetupLayout
 		_backgroundImage->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum, 0, -1));
-		_backgroundImage->setFixedSize({ width,height });
 
 		//Render Background Image
-		ImageView* backgroundImg = new ImageView(_backgroundImage, mImagesDataStartScreen[0].first.texture());
+		ImageView* backgroundImg = new ImageView(_backgroundImage, mImagesDataStartScreen[NanoUtility::LoadImage("MineRender5", mImagesDataStartScreen)].first.texture());
 		_backgroundImage->center();
 
 		//SetupLayout
 		_selectionMenu = new Window(_screen, "");
 		_selectionMenu->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum, 0, -1));
 
-		NanoUtility::button(_selectionMenu, "Start Game", {}, [this]() { this->closeStartScreen(); });
-		NanoUtility::emptySpace(_selectionMenu);
-		NanoUtility::button(_selectionMenu, "Settings Menu", {}, [this]() {});
-		NanoUtility::emptySpace(_selectionMenu);
-		NanoUtility::button(_selectionMenu, "Exit", {}, [this, window]() { glfwSetWindowShouldClose(window, GL_TRUE); });
+		Vector2i btnSize = Vector2i( 150, 30 );
+		NanoUtility::button(_selectionMenu, "Start Game", {}, [this]() { this->closeStartScreen(); }, "comic-sans", 24, Color(255, 255, 255, 255))->setFixedSize(btnSize);
+		NanoUtility::title(_selectionMenu, " ", "sans-bold", 5);
+		NanoUtility::button(_selectionMenu, "Settings Menu", {}, [this]() {}, "comic-sans", 24, Color(255, 255, 255, 255))->setFixedSize(btnSize);
+		NanoUtility::title(_selectionMenu, " ", "sans-bold", 5);
+		NanoUtility::button(_selectionMenu, "Exit", {}, [this, window]() { glfwSetWindowShouldClose(window, GL_TRUE); }, "comic-sans", 24, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 
 		_selectionMenu->center();
+		applyCustomTheme(_selectionMenu);
 
 		_screen->setVisible(true);
 		_screen->performLayout();
@@ -84,8 +79,11 @@ public:
 	 Realign the inventory too the center of the window.
 	 */
 	void realignWindows(int width, int height) {
-		_backgroundImage->center();
-		_selectionMenu->center();
+		Vector2i imgSizeWidget = _backgroundImage->size();
+		_backgroundImage->setPosition({ width / 2 - imgSizeWidget.x() / 2, height / 2 - imgSizeWidget.y() / 2 });
+
+		Vector2i menuSizeWidget = _selectionMenu->size();
+		_selectionMenu->setPosition({ width / 2 - menuSizeWidget.x() / 2, height / 2 - menuSizeWidget.y() / 2 });
 	}
 	
 	/*
@@ -105,6 +103,29 @@ private:
 
 	Window* _backgroundImage;
 	Window* _selectionMenu;
+
+	void applyCustomTheme(Window* window) {
+		//*
+		window->theme()->mTransparent = Color(29, 0);
+		window->theme()->mWindowFillUnfocused = Color(255, 0);
+		window->theme()->mWindowFillFocused = Color(255, 0);
+		window->theme()->mBorderMedium = Color(255, 0);
+		window->theme()->mBorderDark = Color(255, 0);
+		window->theme()->mBorderLight = Color(255, 0);
+		window->theme()->mDropShadow = Color(255, 0);
+
+		window->theme()->mButtonCornerRadius = 5;
+
+		window->theme()->mButtonGradientTopUnfocused = Color(160, 51, 47, 255);
+		window->theme()->mButtonGradientBotUnfocused = Color(160, 51, 47, 255);
+
+		window->theme()->mButtonGradientTopFocused = Color(82, 74, 102, 255);
+		window->theme()->mButtonGradientBotFocused = Color(82, 74, 102, 255);
+
+		window->theme()->mButtonGradientTopPushed = Color(255, 255, 255, 255);
+		window->theme()->mButtonGradientBotPushed = Color(255, 255, 255, 255);
+		//*/
+	}
 };
 
 class LoadingScreen {
@@ -131,6 +152,9 @@ public:
 		_selectionMenu->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum, 0, -1));
 
 		_loadingText = NanoUtility::title(_selectionMenu, "........................................................................................", "sans-bold", 24);
+		Vector2i imgSizeWidget = _backgroundImage->size();
+		_backgroundImage->setPosition({ width / 2 - imgSizeWidget.x() / 2, height / 2 - imgSizeWidget.y() / 2 });
+
 		_selectionMenu->setPosition({ 240, height - 40 });
 
 		applyCustomTheme(_selectionMenu);
@@ -159,13 +183,7 @@ public:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		#pragma endregion
 
-		_loadingText->setCaption(text);
-		int length = _loadingText->caption().size();
-		std::cout << length << std::endl;
-		_selectionMenu->setPosition({ 240, height - 40 });
-		_backgroundImage->center();
 		render();
-
 		glfwSwapBuffers(window);
 	}
 
@@ -173,7 +191,10 @@ public:
 	 Realign the inventory too the center of the window.
 	 */
 	void realignWindows(int width, int height) {
-		_backgroundImage->center();
+		Vector2i imgSizeWidget = _backgroundImage->size();
+		_backgroundImage->setPosition({ width / 2 - imgSizeWidget.x() / 2, height / 2 - imgSizeWidget.y() / 2 });
+
+		_selectionMenu->setPosition({ 240, height - 40 });
 	}
 
 	/*

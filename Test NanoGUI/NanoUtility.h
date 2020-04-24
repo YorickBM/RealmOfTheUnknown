@@ -101,7 +101,7 @@ public:
 		return button;
 	}
 
-	static int LoadImage(string texturePath, imagesDataType mImagesData) {
+	static int LoadImage(string texturePath, imagesDataType& mImagesData) {
 		GLTexture texture(texturePath);
 		auto data = texture.load("resources/" + texturePath + ".png");
 		mImagesData.emplace_back(std::move(texture), std::move(data));

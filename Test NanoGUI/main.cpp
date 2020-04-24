@@ -359,8 +359,11 @@ int main(int /* argc */, char** /* argv */) {
     glfwSetFramebufferSizeCallback(window,
         [](GLFWwindow*, int width, int height) {
            screen->resizeCallbackEvent(width, height);
-           inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT);
-           startScreen->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT);
+           inv->realignWindows(width, height);
+           startScreen->realignWindows(width, height);
+
+           loadingScreen->realignWindows(width, height);
+           loadingScreen->render();
         }
     );
     #pragma endregion
@@ -394,7 +397,7 @@ int main(int /* argc */, char** /* argv */) {
     }
 
     if (!glfwWindowShouldClose(window)) {
-        loadingScreen->specialRender(window, "Loading Shaders", SCREEN_WIDTH, SCREEN_HEIGHT);
+        loadingScreen->specialRender(window, "Loading Shaders", width, height);
 
         #pragma region Shaders
         // Setup and compile our shaders
@@ -403,7 +406,7 @@ int main(int /* argc */, char** /* argv */) {
         #pragma endregion
 
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        loadingScreen->specialRender(window, "Loading Model Data", SCREEN_WIDTH, SCREEN_HEIGHT);
+        loadingScreen->specialRender(window, "Loading Model Data", width, height);
 
         #pragma region Entity Creation & Chunk Loading
         cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
@@ -436,7 +439,7 @@ int main(int /* argc */, char** /* argv */) {
 
 
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        loadingScreen->specialRender(window, "Initializing Scene", SCREEN_WIDTH, SCREEN_HEIGHT);
+        loadingScreen->specialRender(window, "Initializing Scene", width, height);
         std::this_thread::sleep_for(std::chrono::milliseconds(1490));
 
         #pragma region Pre Game Loop
