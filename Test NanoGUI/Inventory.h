@@ -57,9 +57,11 @@ public:
 	 Create basic inventory with all empty slots & info Widget.
 	 Also creates a toolbar
 	 */
-	Inventory(Screen *screen, Vector2i position = Vector2i(15,15)) {
+	Inventory(Screen *screen, int width, int height, Vector2i position = Vector2i(15,15)) {
 		_screen = screen;
 		_customGrid = new CustomGrid(screen);
+		tempWidth = width;
+		tempHeight = height;
 
 		//Create info Screen
 		_infoBackgroundWindow = new Window(_screen, "");
@@ -208,6 +210,8 @@ public:
 
 		_screen->setVisible(true);
 		_screen->performLayout();
+
+		Hide();
 	}
 
 	/*
@@ -236,13 +240,17 @@ public:
 	 Realign the inventory too the center of the window.
 	 */
 	void realignWindows(int width, int height) {
+		//Info Widget Offset (When not shown set to 0,0)
+		Vector2i infoOffset = Vector2i(_infoBackgroundWindow->width() / 2 + 10, 0);
+		if (!_infoBackgroundWindow->visible()) infoOffset = Vector2i(0, 0);
+
 		//Inventory
 		_backpackBackgroundWindow->center();
-		_backpacContextTopWindow->setPosition(_backpackBackgroundWindow->position() + Vector2i(0, 0) - Vector2i(_infoBackgroundWindow->width() / 2 + 10, 0));
-		_backpacContextBottomWindow->setPosition(_backpackBackgroundWindow->position() + Vector2i(0, _backpacContextTopWindow->height()) - Vector2i(_infoBackgroundWindow->width() / 2 + 10, 0));
+		_backpacContextTopWindow->setPosition(_backpackBackgroundWindow->position() + Vector2i(0, 0) - infoOffset);
+		_backpacContextBottomWindow->setPosition(_backpackBackgroundWindow->position() + Vector2i(0, _backpacContextTopWindow->height()) - infoOffset);
 		for (pair<int, Window*> pair : _invRows)
-			pair.second->setPosition(_backpackBackgroundWindow->position() + Vector2i(0, _backpacContextTopWindow->height()) - Vector2i(_infoBackgroundWindow->width() / 2 + 10, 0) + Vector2i(0, 4 + (pair.first * 90)));
-		_backpackBackgroundWindow->setPosition(_backpackBackgroundWindow->position() + Vector2i(0, 0) - Vector2i(_infoBackgroundWindow->width() / 2 + 10, 0));
+			pair.second->setPosition(_backpackBackgroundWindow->position() + Vector2i(0, _backpacContextTopWindow->height()) + Vector2i(0, 4 + (pair.first * 90)) - infoOffset);
+		_backpackBackgroundWindow->setPosition(_backpackBackgroundWindow->position() + Vector2i(0, 0) - infoOffset);
 
 		//Toolbar
 		_toolBarBackgroundWindow->center();
@@ -256,6 +264,9 @@ public:
 		_infoContextTopWindow->setPosition(_infoBackgroundWindow->position() + Vector2i(0, 0) + Vector2i(_backpackBackgroundWindow->width() / 2 + 10, 0));
 		_infoContextBottomWindow->setPosition(_infoBackgroundWindow->position() + Vector2i(0, _infoContextTopWindow->height()) + Vector2i(_backpackBackgroundWindow->width() / 2 + 10, 0));
 		_infoBackgroundWindow->setPosition(_infoBackgroundWindow->position() + Vector2i(0, 0) + Vector2i(_backpackBackgroundWindow->width() / 2 + 10, 0));
+
+		tempWidth = width;
+		tempHeight = height;
 	}
 
 	/*
@@ -302,14 +313,13 @@ public:
 		if (GLFW_KEY_I == key && GLFW_PRESS == action)
 		{
 			if (!_backpackBackgroundWindow->visible() && frame <= 0) {
-				ShowInventory(true);
-				ShowInfo(true);
+				ShowWithInfo();
+				realignWindows(tempWidth, tempHeight);
 
 				frame = 10;
 			}
 			else if(frame <= 0){
-				ShowInventory(false);
-				ShowInfo(false);
+				Hide();
 
 				frame = 10;
 			}
@@ -326,6 +336,28 @@ public:
 
 		for (pair<int, Window*> pair : _invRows)
 			pair.second->setVisible(show);
+	}
+
+	/*
+	 Hide the Inventory & Info Widgets
+	 */
+	void Hide() {
+		ShowInfo(false);
+		ShowInventory(false);
+	}
+	/*
+	 Show ONLY the Inventory Widgets
+	 */
+	void Show() {
+		ShowInfo(false);
+		ShowInventory(true);
+	}
+	/*
+	  Show the Inventory & Info Widgets
+	 */
+	void ShowWithInfo() {
+		ShowInfo(true);
+		ShowInventory(true);
 	}
 
 private:
@@ -441,11 +473,18 @@ private:
 		selectItem->setCallback([slotNum, this, frontImage]() {
 			frontImage->bindImage(mImagesData[_items[slotNum].imgLocation].first.texture());
 
-			if(_items[slotNum].name != "none")
+			if (_items[slotNum].name != "none" && _backpackBackgroundWindow->visible()) {
 				UpdateInfo(_items[slotNum].name, _items[slotNum].imgLocation,
-				_items[slotNum].stat1, _items[slotNum].icon1, 
-				_items[slotNum].stat2, _items[slotNum].icon2, 
-				_items[slotNum].stat3, _items[slotNum].icon3); 
+					_items[slotNum].stat1, _items[slotNum].icon1,
+					_items[slotNum].stat2, _items[slotNum].icon2,
+					_items[slotNum].stat3, _items[slotNum].icon3);
+				ShowInfo(true);
+				realignWindows(tempWidth, tempHeight);
+			}
+			else {
+				ShowInfo(false);
+				realignWindows(tempWidth, tempHeight);
+			}
 			
 			std::cout << "Slot ->" << slotNum << std::endl; });
 
@@ -517,4 +556,7 @@ private:
 
 	map<int, ImageView*> _slotImages;
 	int frame = 0;
+
+	int tempWidth = 0;
+	int tempHeight = 0;
 };

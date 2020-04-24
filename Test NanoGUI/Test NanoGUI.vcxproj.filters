@@ -88,6 +88,9 @@
     <Filter Include="Source Files\NanoGui Engine">
       <UniqueIdentifier>{79616592-b1bb-4e96-ba9b-cdf205a8ebd1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\LIB">
+      <UniqueIdentifier>{8c02886d-73c0-4129-ba92-0ea1cbd45a20}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp">
@@ -242,6 +245,12 @@
     <ClInclude Include="Settings.h">
       <Filter>Source Files\NanoGui Engine</Filter>
     </ClInclude>
+    <ClInclude Include="NanoUtility.h">
+      <Filter>Source Files\NanoGui Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenManager.h">
+      <Filter>Source Files\NanoGui Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragmentShader.glsl">
@@ -313,5 +322,55 @@
     <None Include="tree.fbx">
       <Filter>Resource Files\Models\Test</Filter>
     </None>
+    <None Include="..\lib\32bit\assimp-vc140-mt.exp">
+      <Filter>Resource Files\LIB</Filter>
+    </None>
+    <None Include="..\lib\32bit\nanogui.exp">
+      <Filter>Resource Files\LIB</Filter>
+    </None>
+    <None Include="..\lib\32bit\nanogui.ilk">
+      <Filter>Resource Files\LIB</Filter>
+    </None>
+    <None Include="..\lib\32bit\nanogui.pdb">
+      <Filter>Resource Files\LIB</Filter>
+    </None>
+    <None Include="..\lib\32bit\soil2-debug.idb">
+      <Filter>Resource Files\LIB</Filter>
+    </None>
+    <None Include="..\lib\32bit\vc120.pdb">
+      <Filter>Resource Files\LIB</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\lib\32bit\assimp-vc140-mt.lib">
+      <Filter>Resource Files\LIB</Filter>
+    </Library>
+    <Library Include="..\lib\32bit\glew32.lib">
+      <Filter>Resource Files\LIB</Filter>
+    </Library>
+    <Library Include="..\lib\32bit\glew32s.lib">
+      <Filter>Resource Files\LIB</Filter>
+    </Library>
+    <Library Include="..\lib\32bit\glfw3.lib">
+      <Filter>Resource Files\LIB</Filter>
+    </Library>
+    <Library Include="..\lib\32bit\glfw3dll.lib">
+      <Filter>Resource Files\LIB</Filter>
+    </Library>
+    <Library Include="..\lib\32bit\LowPolyMeshLibrary.lib">
+      <Filter>Resource Files\LIB</Filter>
+    </Library>
+    <Library Include="..\lib\32bit\LPML.lib">
+      <Filter>Resource Files\LIB</Filter>
+    </Library>
+    <Library Include="..\lib\32bit\nanogui.lib">
+      <Filter>Resource Files\LIB</Filter>
+    </Library>
+    <Library Include="..\lib\32bit\soil2.lib">
+      <Filter>Resource Files\LIB</Filter>
+    </Library>
+    <Library Include="..\lib\32bit\soil2-debug.lib">
+      <Filter>Resource Files\LIB</Filter>
+    </Library>
   </ItemGroup>
 </Project>
