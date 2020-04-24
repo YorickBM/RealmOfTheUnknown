@@ -116,6 +116,7 @@ Color colval(0.5f, 0.5f, 0.7f, 1.f);
 Screen* screen = nullptr;
 Screen* startScreenScreen = nullptr;
 Screen* loadingScreenScreen = nullptr;
+Screen* startScreenImgScreen = nullptr;
 
 Inventory* inv;
 StartScreen* startScreen;
@@ -249,6 +250,8 @@ int main(int /* argc */, char** /* argv */) {
     screen->initialize(window, true);
     startScreenScreen = new Screen();
     startScreenScreen->initialize(window, true);
+    startScreenImgScreen = new Screen();
+    startScreenImgScreen->initialize(window, true);
     loadingScreenScreen = new Screen();
     loadingScreenScreen->initialize(window, true);
 
@@ -283,7 +286,7 @@ int main(int /* argc */, char** /* argv */) {
     inv = new Inventory(screen, SCREEN_WIDTH, SCREEN_HEIGHT);
     inv->ShowInfo();
 
-    startScreen = new StartScreen(startScreenScreen, SCREEN_WIDTH, SCREEN_HEIGHT, window);
+    startScreen = new StartScreen(startScreenScreen, SCREEN_WIDTH, SCREEN_HEIGHT, window, startScreenImgScreen);
     loadingScreen = new LoadingScreen(loadingScreenScreen, SCREEN_WIDTH, SCREEN_HEIGHT);
     #pragma endregion
     #pragma region glfw Callbacks to NanoGUI & ECS
@@ -439,7 +442,7 @@ int main(int /* argc */, char** /* argv */) {
 
 
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        loadingScreen->specialRender(window, "Initializing Scene", width, height);
+        loadingScreen->specialRender(window, "Loading complete", width, height);
         std::this_thread::sleep_for(std::chrono::milliseconds(1490));
 
         #pragma region Pre Game Loop
