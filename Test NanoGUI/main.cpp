@@ -19,6 +19,10 @@
 //Other Libs
 #include "SOIL2/SOIL2.h"
 
+//Sleep Stuff
+#include <thread>
+#include <chrono>
+
 //Nano Gui
 #pragma region NanoGUI Settings (GLAD & Appel & Prototypes)
 #if defined(NANOGUI_GLAD)
@@ -50,11 +54,12 @@
 
 #include "InventoryTheme.h"
 #include "Inventory.h"
+#include "ScreenManager.h"
 #pragma endregion
 using namespace nanogui;
 #pragma region Vars
 // Properties
-const GLuint WIDTH = 1280, HEIGHT = 1024;
+const GLuint WIDTH = 1280, HEIGHT = 800; //1280x1024 <- lower then this = customScale
 const char* TITLE = "Fighting Against The Coruption - (0.0.1)";
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
@@ -109,12 +114,21 @@ std::string strval = "A string";
 res_enum enumval = resolution_2;
 Color colval(0.5f, 0.5f, 0.7f, 1.f);
 Screen* screen = nullptr;
-
-//OpenGL
-bool CLOSEWINDOW = false;
+Screen* startScreenScreen = nullptr;
+Screen* loadingScreenScreen = nullptr;
 
 Inventory* inv;
+StartScreen* startScreen;
+LoadingScreen* loadingScreen;
+
 #pragma endregion
+
+void LoadingScreenFunc(GLFWwindow* window, bool run) {
+    
+}
+
+void test() {
+}
 
 int main(int /* argc */, char** /* argv */) {
     #pragma region ComponentSystem
@@ -233,6 +247,10 @@ int main(int /* argc */, char** /* argv */) {
     // Create a nanogui screen and pass the glfw pointer to initialize
     screen = new Screen();
     screen->initialize(window, true);
+    startScreenScreen = new Screen();
+    startScreenScreen->initialize(window, true);
+    loadingScreenScreen = new Screen();
+    loadingScreenScreen->initialize(window, true);
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
@@ -262,14 +280,18 @@ int main(int /* argc */, char** /* argv */) {
     #pragma endregion
     #pragma region NanoGui GUI
     //Create Inventory
-    inv = new Inventory(screen, Vector2i(15,15));
+    inv = new Inventory(screen, SCREEN_WIDTH, SCREEN_HEIGHT);
     inv->ShowInfo();
+
+    startScreen = new StartScreen(startScreenScreen, SCREEN_WIDTH, SCREEN_HEIGHT, window);
+    loadingScreen = new LoadingScreen(loadingScreenScreen, SCREEN_WIDTH, SCREEN_HEIGHT);
     #pragma endregion
     #pragma region glfw Callbacks to NanoGUI & ECS
     glfwSetCursorPosCallback(window,
         [](GLFWwindow*, double x, double y) {
             inv->getScreen()->cursorPosCallbackEvent(x, y);
             inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT); //Prevent the movement this way
+            startScreen->getScreen()->cursorPosCallbackEvent(x, y);
 
             if (firstMouse)
             {
@@ -291,13 +313,16 @@ int main(int /* argc */, char** /* argv */) {
     glfwSetMouseButtonCallback(window,
         [](GLFWwindow*, int button, int action, int modifiers) {
             screen->mouseButtonCallbackEvent(button, action, modifiers);
+            startScreen->getScreen()->mouseButtonCallbackEvent(button, action, modifiers);
         }
     );
 
-    glfwSetKeyCallback(window,
-        [](GLFWwindow*, int key, int scancode, int action, int mods) {
+    glfwSetKeyCallback(window,[](GLFWwindow* window, int key, int scancode, int action, int mods) {
             screen->keyCallbackEvent(key, scancode, action, mods);
             inv->keyCallbackEvent(key, scancode, action, mods);
+            startScreen->getScreen()->keyCallbackEvent(key, scancode, action, mods);
+
+            ///if(key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, GL_TRUE);
 
             if (key >= 0 && key < 1024)
             {
@@ -335,47 +360,12 @@ int main(int /* argc */, char** /* argv */) {
         [](GLFWwindow*, int width, int height) {
            screen->resizeCallbackEvent(width, height);
            inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT);
+           startScreen->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT);
         }
     );
     #pragma endregion
 
-    #pragma region Shaders
-    // Setup and compile our shaders
-    ShaderLoader* shaderLoader = new ShaderLoader();
-    shaderLoader->loadShaders("vertexShader.glsl", "fragmentShader.glsl");
-    #pragma endregion
-    #pragma region Entity Creation & Chunk Loading
-    cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
-    ///csm.InitEntities("res/System/Entities.txt");
-
-    auto currEntity0 = csm.CreateEntity();
-    csm.AddComponent(currEntity0, TransformC{ vec3(0), 0.2f });
-    AnimModel camModel("resources/tree.dae", glm::vec3(0, 0.3f, 0), 0.2f);
-    csm.AddComponent(currEntity0, ModelMeshC{ camModel, camModel.GetBoundingBoxModel() });
-
-    auto currEntity = csm.CreateEntity();
-    csm.AddComponent(currEntity, MotionC{});
-    csm.AddComponent(currEntity, TransformC{ vec3(0), 0.2f });
-    csm.AddComponent(currEntity, InputC{ Keyboard });
-    csm.AddComponent(currEntity, ModelMeshC{ camModel, camModel.GetBoundingBoxModel() });
-    csm.AddComponent(currEntity, CollisionC{ SolidCollision, false });
-
-    AnimModel model0("resources/tree.fbx", glm::vec3(0, 0, 0), 0.2f);
-    auto newEntity = csm.CreateEntity();
-    csm.AddComponent(newEntity, TransformC{ vec3(0), 0.2f });
-
-    csm.AddComponent(newEntity, ModelMeshC{ model0, model0.GetBoundingBoxModel() });
-    csm.AddComponent(newEntity, CollisionC{ SolidCollision, true });
-    #pragma endregion
-    //model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
-
-    #pragma region Pre Game Loop
-    glm::mat4 projection = glm::perspective(camera.GetZoom(), static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT), 0.1f, 5.0f); //Render Distance
-    collisionSystem->Update();
-    inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT);
-    #pragma endregion
-    // Game loop
-    while (!glfwWindowShouldClose(window)) {
+    while (startScreen->IsActive() && !glfwWindowShouldClose(window)) {
         #pragma region Frame & Poll Events & Clear Buffers/Color
         // Set frame time
         GLfloat currentFrame = glfwGetTime();
@@ -389,44 +379,126 @@ int main(int /* argc */, char** /* argv */) {
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         #pragma endregion
-
         #pragma region Game Objects
         //Game Objects
         inputSystem->Update(keys);
         movementSystem->Update(deltaTime, camera);
         collisionSystem->CollisionCheck();
 
-        #pragma endregion
-        #pragma region Draw Models
-        //Z-Buffer
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LESS);
+    #pragma endregion
 
-        //Animated Model
-        shaderLoader->use();
-        //Camera Stuff to Shaders
-        camera.Update(shaderLoader, projection); //Do projection calculation also inside Camera class?!
+        startScreen->render();
 
-        glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "view"), 1, GL_FALSE, value_ptr(camera.GetViewMatrix())); //send the view matrix to the shader
-        glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "projection"), 1, GL_FALSE, value_ptr(projection)); //send the projection matrix to the shader
-
-        modelSystem->Update(shaderLoader);
-
-        //Draw all Chunks
-        for (Chunk chunk : cm.GetChunks()) {
-            mat4 objectModel;
-            glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
-            chunk.model.Draw(shaderLoader);
-        }
-
-        shaderLoader->unuse();
-        #pragma endregion
-
-        inv->render();
-
-        if(CLOSEWINDOW) glfwSetWindowShouldClose(window, GL_TRUE);
         // Swap the buffers
         glfwSwapBuffers(window);
+    }
+
+    if (!glfwWindowShouldClose(window)) {
+        loadingScreen->specialRender(window, "Loading Shaders", SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        #pragma region Shaders
+        // Setup and compile our shaders
+        ShaderLoader* shaderLoader = new ShaderLoader();
+        shaderLoader->loadShaders("vertexShader.glsl", "fragmentShader.glsl");
+        #pragma endregion
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        loadingScreen->specialRender(window, "Loading Model Data", SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        #pragma region Entity Creation & Chunk Loading
+        cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
+        ///csm.InitEntities("res/System/Entities.txt");
+
+        auto currEntity0 = csm.CreateEntity();
+        csm.AddComponent(currEntity0, TransformC{ vec3(0), 0.2f });
+        AnimModel camModel("resources/tree.dae", glm::vec3(0, 0.3f, 0), 0.2f);
+        csm.AddComponent(currEntity0, ModelMeshC{ camModel, camModel.GetBoundingBoxModel() });
+
+        auto currEntity = csm.CreateEntity();
+        csm.AddComponent(currEntity, MotionC{});
+        csm.AddComponent(currEntity, TransformC{ vec3(0), 0.2f });
+        csm.AddComponent(currEntity, InputC{ Keyboard });
+        csm.AddComponent(currEntity, ModelMeshC{ camModel, camModel.GetBoundingBoxModel() });
+        csm.AddComponent(currEntity, CollisionC{ SolidCollision, false });
+
+        AnimModel model0("resources/tree.fbx", glm::vec3(0, 0, 0), 0.2f);
+        auto newEntity = csm.CreateEntity();
+        csm.AddComponent(newEntity, TransformC{ vec3(0), 0.2f });
+
+        csm.AddComponent(newEntity, ModelMeshC{ model0, model0.GetBoundingBoxModel() });
+        csm.AddComponent(newEntity, CollisionC{ SolidCollision, true });
+        #pragma endregion
+        //model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
+
+        //Add temp items
+        inv->SetItem(0, Item{ "Item in Inv", "desc", "test2" });
+        inv->SetItem(50, Item{ "Item in Toolbar", "desc", "test2" });
+
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        loadingScreen->specialRender(window, "Initializing Scene", SCREEN_WIDTH, SCREEN_HEIGHT);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1490));
+
+        #pragma region Pre Game Loop
+        glm::mat4 projection = glm::perspective(camera.GetZoom(), static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT), 0.1f, 5.0f); //Render Distance
+        collisionSystem->Update();
+        inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT);
+        inv->Hide();
+        #pragma endregion
+
+        // Game loop
+        while (!glfwWindowShouldClose(window)) {
+            #pragma region Frame & Poll Events & Clear Buffers/Color
+            // Set frame time
+            GLfloat currentFrame = glfwGetTime();
+            deltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
+
+            // Check and call events
+            glfwPollEvents();
+
+            //Clear Buffers & Color
+            glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+#           pragma endregion
+
+            #pragma region Game Objects
+            //Game Objects
+            inputSystem->Update(keys);
+            movementSystem->Update(deltaTime, camera);
+            collisionSystem->CollisionCheck();
+
+            #pragma endregion
+            #pragma region Draw Models
+            //Z-Buffer
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LESS);
+
+            //Animated Model
+            shaderLoader->use();
+            //Camera Stuff to Shaders
+            camera.Update(shaderLoader, projection); //Do projection calculation also inside Camera class?!
+
+            glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "view"), 1, GL_FALSE, value_ptr(camera.GetViewMatrix())); //send the view matrix to the shader
+            glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "projection"), 1, GL_FALSE, value_ptr(projection)); //send the projection matrix to the shader
+
+            modelSystem->Update(shaderLoader);
+
+            //Draw all Chunks
+            for (Chunk chunk : cm.GetChunks()) {
+                mat4 objectModel;
+                glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
+                chunk.model.Draw(shaderLoader);
+            }
+
+            shaderLoader->unuse();
+            #pragma endregion
+
+            inv->render();
+
+            // Swap the buffers
+            glfwSwapBuffers(window);
+        }
     }
     // Terminate GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();

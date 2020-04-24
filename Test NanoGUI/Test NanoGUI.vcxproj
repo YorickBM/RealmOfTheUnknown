@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -77,6 +77,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)include\ext\nanovg\src;$(SolutionDir)include\ext\eigen;$(SolutionDir)include\ext\glfw\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)include\ext\nanovg\src;$(SolutionDir)include\ext\eigen;$(SolutionDir)lib\32bit;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -109,13 +111,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)include\ext\eigen;$(SolutionDir)include\;$(SolutionDir)include\ext\glad;$(SolutionDir)include\ext\glfw\include;$(SolutionDir)include\ext\nanovg\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include\;$(SolutionDir)include\ext\nanovg\src;$(SolutionDir)include\ext\glfw\include;$(SolutionDir)include\ext\eigen;$(SolutionDir)include\ext\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;soil2-debug.lib;assimp-vc140-mt.lib;nanogui.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib\32bit</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;nanogui.lib;glew32s.lib;glfw3.lib;soil2-debug.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\32bit;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -198,10 +200,12 @@
     <ClInclude Include="ModelMeshSystem.h" />
     <ClInclude Include="MovementSystem.h" />
     <ClInclude Include="MyGLCanvas.h" />
+    <ClInclude Include="NanoUtility.h" />
     <ClInclude Include="RayIntersect.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="Skeleton.h" />
+    <ClInclude Include="ScreenManager.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="Systems.h" />
@@ -209,6 +213,12 @@
     <ClInclude Include="ToolBox.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\lib\32bit\assimp-vc140-mt.exp" />
+    <None Include="..\lib\32bit\nanogui.exp" />
+    <None Include="..\lib\32bit\nanogui.ilk" />
+    <None Include="..\lib\32bit\nanogui.pdb" />
+    <None Include="..\lib\32bit\soil2-debug.idb" />
+    <None Include="..\lib\32bit\vc120.pdb" />
     <None Include="assimp-vc140-mt.dll" />
     <None Include="Chunk_0x0.dae" />
     <None Include="Chunk_0x1.dae" />
@@ -232,6 +242,18 @@
     <None Include="tree.fbx" />
     <None Include="vertexShader.glsl" />
     <None Include="zlib_d.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\lib\32bit\assimp-vc140-mt.lib" />
+    <Library Include="..\lib\32bit\glew32.lib" />
+    <Library Include="..\lib\32bit\glew32s.lib" />
+    <Library Include="..\lib\32bit\glfw3.lib" />
+    <Library Include="..\lib\32bit\glfw3dll.lib" />
+    <Library Include="..\lib\32bit\LowPolyMeshLibrary.lib" />
+    <Library Include="..\lib\32bit\LPML.lib" />
+    <Library Include="..\lib\32bit\nanogui.lib" />
+    <Library Include="..\lib\32bit\soil2-debug.lib" />
+    <Library Include="..\lib\32bit\soil2.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
