@@ -17,7 +17,8 @@ public:
 	AnimModel(string path) {
 		ModelLoader* loader = new ModelLoader();
 		this->modelLoader = loader;
-		this->localTransform = mat4(1.0);
+		SetPosition(vec3(0));
+		SetScale(1.f);
 
 		this->modelLoader->loadModel(path); //load the model from the file
 		this->modelLoader->getModelData(this->skeleton, this->meshes); //get the loaded data and store it in this class
@@ -30,9 +31,11 @@ public:
 	AnimModel(string path, glm::vec3 position, float scale) {
 		ModelLoader* loader = new ModelLoader();
 		this->modelLoader = loader;
-		this->localTransform = mat4(1.0);
-		applyLocalPosition(position);
-		applyLocalScale(scale);
+		SetPosition(position);
+		SetScale(scale);
+
+		///applyLocalPosition(position);
+		///applyLocalScale(scale);
 
 		this->modelLoader->loadModel(path); //load the model from the file
 		this->modelLoader->getModelData(this->skeleton, this->meshes); //get the loaded data and store it in this class
@@ -42,10 +45,22 @@ public:
 		this->_path = path;
 		this->_origin = position;
 	}
+	AnimModel(string path, glm::vec3 position, float scale, vec3 rotation) {
+		ModelLoader* loader = new ModelLoader();
+		this->modelLoader = loader;
+		SetPosition(position);
+		SetScale(scale);
+		SetRotation(rotation);
+
+		this->modelLoader->loadModel(path); //load the model from the file
+		this->modelLoader->getModelData(this->skeleton, this->meshes); //get the loaded data and store it in this class
+
+		this->_path = path;
+		this->_origin = position;
+	}
 	AnimModel(Mesh* mesh, glm::vec3 position, float scale) {
-		this->localTransform = mat4(1.0);
-		applyLocalPosition(position);
-		applyLocalScale(scale);
+		SetPosition(position);
+		SetScale(scale);
 
 		this->meshes.push_back(mesh);
 
@@ -56,6 +71,7 @@ public:
 
 	vec3 GetPosition() { return this->_position; }
 	float GetScale() { return this->_scale; }
+	vec3 GetRotation() { return vec3(this->rotX, this->rotY, this->rotZ); }
 	string GetPath() { return this->_path; }
 	vector<Mesh*> GetMeshes() { return this->meshes; }
 	vec3 GetMinAndMaxVertice(bool minValue) { 
@@ -157,68 +173,18 @@ public:
 		this->skeleton->stopAnimation(); //stop animation
 	}
 
-	void applyLocalRotation(float angle, vec3 axis)
-	{
-		vec3 sc;
-		quat rot;
-		vec3 tran;
-		vec3 skew;
-		vec4 perspective;
-
-		decompose(localTransform, sc, rot, tran, skew, perspective);
-
-		localTransform = mat4(1.0);
-		localTransform *= translate(localTransform, tran);
-		localTransform *= scale(localTransform, sc);
-		localTransform *= rotate(localTransform, radians(angle), axis) * mat4_cast(conjugate(rot));
+	void SetPosition(vec3 argument) {
+		this->_position = argument;
 	}
-	void applyLocalPosition(vec3 translation)
-	{
-		vec3 sc = vec3(this->GetScale(), this->GetScale(), this->GetScale());
-		quat rot;
-		vec3 tran;
-		vec3 skew;
-		vec4 perspective;
-
-		decompose(localTransform, sc, rot, tran, skew, perspective);
-
-		localTransform = mat4(1.0);
-		localTransform *= glm::translate(localTransform, translation) * glm::translate(localTransform, tran);
-		localTransform *= glm::scale(localTransform, sc);
-		localTransform *= mat4_cast(conjugate(rot));
+	void SetScale(float argument) {
+		this->_scale = argument;
 	}
-	void applyLocalScale(float scale)
-	{
-		vec3 sc;
-		quat rot;
-		vec3 tran;
-		vec3 skew;
-		vec4 perspective;
-
-		decompose(localTransform, sc, rot, tran, skew, perspective);
-
-		localTransform = mat4(1.0);
-		localTransform *= glm::translate(localTransform, tran);
-		localTransform *= glm::scale(localTransform, sc) * glm::scale(localTransform, vec3(scale, scale, scale));
-		localTransform *= mat4_cast(conjugate(rot));
+	void SetRotation(vec3 argument) {
+		this->rotX = argument.x;
+		this->rotY = argument.y;
+		this->rotZ = argument.z;
 	}
 
-	void SetPosition(vec3 position) {
-		vec3 sc = vec3(this->GetScale(), this->GetScale(), this->GetScale());
-		quat rot;
-		vec3 tran;
-		vec3 skew;
-		vec4 perspective;
-
-		decompose(localTransform, sc, rot, tran, skew, perspective);
-
-		localTransform = mat4(1.0);
-		localTransform *= glm::translate(localTransform, position);
-		localTransform *= glm::scale(localTransform, sc);
-		localTransform *= mat4_cast(conjugate(rot));
-
-		this->_position = position;
-	}
 	void Draw(ShaderLoader* shader)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "localTransform"), 1, GL_FALSE, value_ptr(this->localTransform));
@@ -253,6 +219,8 @@ private:
 	vec3 _origin;
 	float _scale;
 	string _path;
+
+	float rotX, rotY, rotZ;
 
 	vec3 _MinVertice, _MaxVertice;
 };

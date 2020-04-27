@@ -1,0 +1,12 @@
+//path_res/Models/tree.obj:scale_1.0:position_1.5_1.5_1.5:rotation_0_0_-0:collision_RayCastingCollision
+//path_res/Models/tree.obj:scale_1.0:position_1.5_1.5_1.5:collision_SolidCollision
+//path_res/Models/tree.obj:scale_1.0:position_1.5_1.5_1.5 <- Automatically will have SolidCollision
+//position_x_z_y
+path_resources/World/Arch1.fbx:scale_1.0f:position_-40.5321f_-105.66f_6.24492f:rotation_90.1f_1.42f_-6f
+path_resources/World/Arch2.fbx:scale_1.0f:position_-39.8518f_-113.106f_6.39964f:rotation_90.1f_1.42f_-251f
+path_resources/World/Arch3.fbx:scale_1.0f:position_-35.5868f_-108.635f_6.44235f:rotation_90.1f_1.42f_-135f
+path_resources/World/LanternLampWithHook.fbx:scale_1.0f:position_-39.5001f_-105.826f_5.89266f:rotation_90f_0f_0f
+path_resources/World/MushroomYellow.fbx:scale_0.550f:position_-38.9968f_-105.494f_7.09566f:rotation_136f_68.6f_-327f
+path_resources/World/MushroomYellow.fbx:scale_0.407f:position_-39.0893f_-105.482f_7.27248f:rotation_103f_19.7f_5.052f
+path_resources/World/MushroomYellow.fbx:scale_0.366f:position_-39.0846f_-105.361f_7.15497f:rotation_41.6f_30.7f_-43.1f
+path_resources/World/Moss.fbx:scale_0.482f:position_-39.2063f_-105.482f_7.10351f:rotation_39.7888f_1.0056f_-29.3805f
