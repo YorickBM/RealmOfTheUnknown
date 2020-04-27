@@ -36,9 +36,11 @@ imagesDataType mImagesDataStartScreen;
 
 class StartScreen {
 public:
-	StartScreen(Screen* screen, int width, int height, GLFWwindow* window) {
+	StartScreen(Screen* screen, int width, int height, GLFWwindow* window, Screen* backgroundImageScreen) {
 		_screen = screen;
-		_backgroundImage = new Window(_screen, "");
+		_screenImage = backgroundImageScreen;
+
+		_backgroundImage = new Window(_screenImage, "");
 
 		//SetupLayout
 		_backgroundImage->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum, 0, -1));
@@ -51,24 +53,29 @@ public:
 		_selectionMenu = new Window(_screen, "");
 		_selectionMenu->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum, 0, -1));
 
-		Vector2i btnSize = Vector2i( 150, 30 );
-		NanoUtility::button(_selectionMenu, "Start Game", {}, [this]() { this->closeStartScreen(); }, "comic-sans", 24, Color(255, 255, 255, 255))->setFixedSize(btnSize);
+		Vector2i btnSize = Vector2i( 320, 60 );
+		NanoUtility::button(_selectionMenu, "Start Game", {}, [this]() { this->closeStartScreen(); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 		NanoUtility::title(_selectionMenu, " ", "sans-bold", 5);
-		NanoUtility::button(_selectionMenu, "Settings Menu", {}, [this]() {}, "comic-sans", 24, Color(255, 255, 255, 255))->setFixedSize(btnSize);
+		NanoUtility::button(_selectionMenu, "Settings Menu", {}, [this]() {}, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 		NanoUtility::title(_selectionMenu, " ", "sans-bold", 5);
-		NanoUtility::button(_selectionMenu, "Exit", {}, [this, window]() { glfwSetWindowShouldClose(window, GL_TRUE); }, "comic-sans", 24, Color(255, 255, 255, 255))->setFixedSize(btnSize);
+		NanoUtility::button(_selectionMenu, "Quit Game", {}, [this, window]() { glfwSetWindowShouldClose(window, GL_TRUE); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 
 		_selectionMenu->center();
 		applyCustomTheme(_selectionMenu);
+		menuSizeWidget = _selectionMenu->size();
 
 		_screen->setVisible(true);
 		_screen->performLayout();
+		_screenImage->setVisible(true);
+		_screenImage->performLayout();
 	}
 
 	/*
 	 Render the StartScreem
 	 */
 	void render() {
+		_screenImage->drawContents();
+		_screenImage->drawWidgets();
 		_screen->drawContents();
 		_screen->drawWidgets();
 
@@ -82,7 +89,7 @@ public:
 		Vector2i imgSizeWidget = _backgroundImage->size();
 		_backgroundImage->setPosition({ width / 2 - imgSizeWidget.x() / 2, height / 2 - imgSizeWidget.y() / 2 });
 
-		Vector2i menuSizeWidget = _selectionMenu->size();
+		_selectionMenu->setSize({ width, height });
 		_selectionMenu->setPosition({ width / 2 - menuSizeWidget.x() / 2, height / 2 - menuSizeWidget.y() / 2 });
 	}
 	
@@ -100,9 +107,11 @@ private:
 	int frame = 10;
 	bool isActive = true;
 	Screen* _screen;
+	Screen* _screenImage;
 
 	Window* _backgroundImage;
 	Window* _selectionMenu;
+	Vector2i menuSizeWidget;
 
 	void applyCustomTheme(Window* window) {
 		//*
@@ -116,8 +125,8 @@ private:
 
 		window->theme()->mButtonCornerRadius = 5;
 
-		window->theme()->mButtonGradientTopUnfocused = Color(160, 51, 47, 255);
-		window->theme()->mButtonGradientBotUnfocused = Color(160, 51, 47, 255);
+		window->theme()->mButtonGradientTopUnfocused = Color(99,54,11,225);
+		window->theme()->mButtonGradientBotUnfocused = Color(99, 54, 11, 225);
 
 		window->theme()->mButtonGradientTopFocused = Color(82, 74, 102, 255);
 		window->theme()->mButtonGradientBotFocused = Color(82, 74, 102, 255);
@@ -183,6 +192,7 @@ public:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		#pragma endregion
 
+		_loadingText->setCaption(text);
 		render();
 		glfwSwapBuffers(window);
 	}
@@ -235,4 +245,23 @@ private:
 		window->theme()->mButtonGradientBotPushed = Color(255, 0);
 		//*/
 	}
+};
+
+class SettingsScreen {
+public:
+	SettingsScreen(Screen* screen, int width, int height, GLFWwindow* window, Screen* backgroundImageScreen) {
+		_screen = screen;
+		_screenImage = backgroundImageScreen;
+	}
+
+	Screen* getScreen() { return this->_screen; }
+
+private:
+	int frame = 10;
+	bool isActive = true;
+	Screen* _screen;
+	Screen* _screenImage; //This screen will not have any mouse feedback (User cant Interacti with it)
+
+	Window* _backMenu;
+	Window* _frontMenu;
 };

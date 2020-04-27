@@ -18,6 +18,7 @@
 
 //Other Libs
 #include "SOIL2/SOIL2.h"
+#include "FileLoader.h"
 
 //Sleep Stuff
 #include <thread>
@@ -64,7 +65,7 @@ const char* TITLE = "Fighting Against The Coruption - (0.0.1)";
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
 // Camera
-Camera camera(glm::vec3(-2, 2, 0));
+Camera camera(glm::vec3(-37, 7, -109));
 bool keys[1024] = { false };
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
@@ -83,7 +84,6 @@ enum test_enum {
     Item2,
     Item3
 };
-
 enum res_enum {
     resolution_1 = 0,
     resolution_2,
@@ -115,20 +115,16 @@ res_enum enumval = resolution_2;
 Color colval(0.5f, 0.5f, 0.7f, 1.f);
 Screen* screen = nullptr;
 Screen* startScreenScreen = nullptr;
+Screen* startScreenImgScreen = nullptr;
 Screen* loadingScreenScreen = nullptr;
+Screen* settingsScreenScreen = nullptr;
+Screen* settingsScreenImgScreen = nullptr;
 
 Inventory* inv;
 StartScreen* startScreen;
 LoadingScreen* loadingScreen;
 
 #pragma endregion
-
-void LoadingScreenFunc(GLFWwindow* window, bool run) {
-    
-}
-
-void test() {
-}
 
 int main(int /* argc */, char** /* argv */) {
     #pragma region ComponentSystem
@@ -249,6 +245,8 @@ int main(int /* argc */, char** /* argv */) {
     screen->initialize(window, true);
     startScreenScreen = new Screen();
     startScreenScreen->initialize(window, true);
+    startScreenImgScreen = new Screen();
+    startScreenImgScreen->initialize(window, true);
     loadingScreenScreen = new Screen();
     loadingScreenScreen->initialize(window, true);
 
@@ -283,7 +281,7 @@ int main(int /* argc */, char** /* argv */) {
     inv = new Inventory(screen, SCREEN_WIDTH, SCREEN_HEIGHT);
     inv->ShowInfo();
 
-    startScreen = new StartScreen(startScreenScreen, SCREEN_WIDTH, SCREEN_HEIGHT, window);
+    startScreen = new StartScreen(startScreenScreen, SCREEN_WIDTH, SCREEN_HEIGHT, window, startScreenImgScreen);
     loadingScreen = new LoadingScreen(loadingScreenScreen, SCREEN_WIDTH, SCREEN_HEIGHT);
     #pragma endregion
     #pragma region glfw Callbacks to NanoGUI & ECS
@@ -405,31 +403,35 @@ int main(int /* argc */, char** /* argv */) {
         shaderLoader->loadShaders("vertexShader.glsl", "fragmentShader.glsl");
         #pragma endregion
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        ///std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         loadingScreen->specialRender(window, "Loading Model Data", width, height);
 
         #pragma region Entity Creation & Chunk Loading
         cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
         ///csm.InitEntities("res/System/Entities.txt");
 
-        auto currEntity0 = csm.CreateEntity();
-        csm.AddComponent(currEntity0, TransformC{ vec3(0), 0.2f });
-        AnimModel camModel("resources/tree.dae", glm::vec3(0, 0.3f, 0), 0.2f);
-        csm.AddComponent(currEntity0, ModelMeshC{ camModel, camModel.GetBoundingBoxModel() });
+        auto Te = csm.CreateEntity();
+        csm.AddComponent(Te, MotionC{});
+        csm.AddComponent(Te, InputC{ Keyboard });
+        csm.AddComponent(Te, TransformC{ vec3(0), 1.f });
+        AnimModel model1("resources/tree.fbx", vec3(0), 1.f);
+        csm.AddComponent(Te, ModelMeshC{ model1, model1.GetBoundingBoxModel() });
 
-        auto currEntity = csm.CreateEntity();
-        csm.AddComponent(currEntity, MotionC{});
-        csm.AddComponent(currEntity, TransformC{ vec3(0), 0.2f });
-        csm.AddComponent(currEntity, InputC{ Keyboard });
-        csm.AddComponent(currEntity, ModelMeshC{ camModel, camModel.GetBoundingBoxModel() });
-        csm.AddComponent(currEntity, CollisionC{ SolidCollision, false });
+        //Load Modeldata File & Create Entity's
+        std::vector<ModelDataClass*> modelData = FileLoader::ReadModelData("ModelData.data");
+        for (ModelDataClass* data : modelData) {
+            AnimModel model(data->path, vec3(data->x, data->y, data->z), data->scale, vec3(data->rx, data->ry, data->rz));
+            std::cout << model.GetRotation().x << ";" << model.GetRotation().y << ";" << model.GetRotation().z << std::endl;
 
-        AnimModel model0("resources/tree.fbx", glm::vec3(0, 0, 0), 0.2f);
-        auto newEntity = csm.CreateEntity();
-        csm.AddComponent(newEntity, TransformC{ vec3(0), 0.2f });
+            auto Entity = csm.CreateEntity();
+            csm.AddComponent(Entity, TransformC{ vec3(data->x, data->y, data->z), data->scale });
+            csm.AddComponent(Entity, ModelMeshC{ model, model.GetBoundingBoxModel() });
+            csm.AddComponent(Entity, CollisionC{ SolidCollision, true });
 
-        csm.AddComponent(newEntity, ModelMeshC{ model0, model0.GetBoundingBoxModel() });
-        csm.AddComponent(newEntity, CollisionC{ SolidCollision, true });
+            //Movable with Keyboard
+            csm.AddComponent(Entity, MotionC{});
+            csm.AddComponent(Entity, InputC{ Keyboard });
+        }
         #pragma endregion
         //model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
 
@@ -437,13 +439,12 @@ int main(int /* argc */, char** /* argv */) {
         inv->SetItem(0, Item{ "Item in Inv", "desc", "test2" });
         inv->SetItem(50, Item{ "Item in Toolbar", "desc", "test2" });
 
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        loadingScreen->specialRender(window, "Initializing Scene", width, height);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1490));
+        ///std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        loadingScreen->specialRender(window, "Loading complete", width, height);
+        ///std::this_thread::sleep_for(std::chrono::milliseconds(1490));
 
         #pragma region Pre Game Loop
-        glm::mat4 projection = glm::perspective(camera.GetZoom(), static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT), 0.1f, 5.0f); //Render Distance
+        glm::mat4 projection = glm::perspective(camera.GetZoom(), static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT), 0.1f, 100.0f); //Render Distance
         collisionSystem->Update();
         inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT);
         inv->Hide();
@@ -486,6 +487,8 @@ int main(int /* argc */, char** /* argv */) {
             glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "projection"), 1, GL_FALSE, value_ptr(projection)); //send the projection matrix to the shader
 
             modelSystem->Update(shaderLoader);
+
+            ///CAMPOS std::cout << camera.GetPosition().x << ";" << camera.GetPosition().y << ";" << camera.GetPosition().z << std::endl;
 
             //Draw all Chunks
             for (Chunk chunk : cm.GetChunks()) {

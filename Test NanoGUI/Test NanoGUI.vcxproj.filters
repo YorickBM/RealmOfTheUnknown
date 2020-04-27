@@ -251,6 +251,9 @@
     <ClInclude Include="ScreenManager.h">
       <Filter>Source Files\NanoGui Engine</Filter>
     </ClInclude>
+    <ClInclude Include="FileLoader.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragmentShader.glsl">
@@ -339,6 +342,9 @@
     </None>
     <None Include="..\lib\32bit\vc120.pdb">
       <Filter>Resource Files\LIB</Filter>
+    </None>
+    <None Include="ModelData.data">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

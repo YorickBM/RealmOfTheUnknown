@@ -211,6 +211,7 @@
     <ClInclude Include="Systems.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="ToolBox.h" />
+    <ClInclude Include="FileLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\lib\32bit\assimp-vc140-mt.exp" />
@@ -233,6 +234,7 @@
     <None Include="jpeg_d.dll" />
     <None Include="libexpat_d.dll" />
     <None Include="libpng_d.dll" />
+    <None Include="ModelData.data" />
     <None Include="nanogui.dll" />
     <None Include="pcre_d.dll" />
     <None Include="SILLY_d.dll" />

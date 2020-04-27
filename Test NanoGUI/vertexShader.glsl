@@ -37,7 +37,7 @@ void main()
         bonesTransform = mat4(1.0);    
     }
 
-    gl_Position = projection * view * model * localTransform * bonesTransform * vec4(position, 1.0);
+    gl_Position = projection * view * model * bonesTransform * vec4(position, 1.f);
 
     textureCoords = vec2(texture.x, -texture.y); //reverse textures
 }
