@@ -33,6 +33,7 @@ path_resources/World/Grass.fbx:scale_0.092651f:position_-40.8227f_-106.105f_4.11
 path_resources/World/Grass.fbx:scale_0.092651f:position_-40.5487f_-105.934f_4.15059f:rotation_-5.49194f_-10.0287f_214.48f
 #Stone
 path_resources/World/StonePatch.fbx:scale_0.592005f:position_-40.0308f_-106.017f_4.20408f:rotation_91.2907f_4.85868f_3.12541f
+path_resources/World/StonePatch.fbx:scale_1.0f:position_-45.1433f_-99.3754f_5.39553f:rotation_-55.0887f_-174.83394f_-180.317
 #Trees
 path_resources/World/Trunk.fbx:scale_2.1823f:position_-44.0026f_-97.5455f_5.54137f:rotation_112.253f_16.0674f_-41.63f
 path_resources/World/Trunk.fbx:scale_2.1823f:position_-36.8815f_-119.674f_5.158531f:rotation_116.866f_-4.62467f_-197.973f
