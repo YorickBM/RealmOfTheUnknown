@@ -65,7 +65,7 @@ const char* TITLE = "Fighting Against The Coruption - (0.0.1)";
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
 // Camera
-Camera camera(glm::vec3(-37, 7, -109));
+Camera camera(glm::vec3(-37, 7, 109));
 bool keys[1024] = { false };
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
@@ -421,7 +421,7 @@ int main(int /* argc */, char** /* argv */) {
         std::vector<ModelDataClass*> modelData = FileLoader::ReadModelData("ModelData.data");
         for (ModelDataClass* data : modelData) {
             AnimModel model(data->path, vec3(data->x, data->y, data->z), data->scale, vec3(data->rx, data->ry, data->rz));
-            std::cout << model.GetRotation().x << ";" << model.GetRotation().y << ";" << model.GetRotation().z << std::endl;
+
 
             auto Entity = csm.CreateEntity();
             csm.AddComponent(Entity, TransformC{ vec3(data->x, data->y, data->z), data->scale });
@@ -485,6 +485,11 @@ int main(int /* argc */, char** /* argv */) {
 
             glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "view"), 1, GL_FALSE, value_ptr(camera.GetViewMatrix())); //send the view matrix to the shader
             glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "projection"), 1, GL_FALSE, value_ptr(projection)); //send the projection matrix to the shader
+
+            //Lighting
+            glUniform3f(glGetUniformLocation(shaderLoader->ID, "lightColor"), 1.f, 1.f, 1.f);
+            glUniform3f(glGetUniformLocation(shaderLoader->ID, "lightPos"), -20.f, 70.f, 100.f);
+            glUniform3f(glGetUniformLocation(shaderLoader->ID, "viewPos"), camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
 
             modelSystem->Update(shaderLoader);
 

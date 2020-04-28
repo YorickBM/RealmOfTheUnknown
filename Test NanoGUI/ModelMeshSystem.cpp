@@ -14,6 +14,8 @@ void ModelMeshSystem::Update(ShaderLoader* shaderLoader)
 
 		modelMeshC.model.SetPosition(transformC.position);
 		modelMeshC.BoundingBox.SetPosition(transformC.position);
+		///modelMeshC.model.SetRotation((modelMeshC.model.GetRotation() + vec3(0, .05f, 0)));
+		///std::cout << modelMeshC.model.GetRotation().x << ";" << modelMeshC.model.GetRotation().y << ";" << modelMeshC.model.GetRotation().z << std::endl;
 
 		mat4 objectModel; //model matrix
 		objectModel = mat4(1.0);

@@ -36,8 +36,10 @@ public:
 
                         std::vector<std::string> splited2 = Split(str, "_");
                         std::string func = splited2.at(0);
+                        float offset = -90.f;
 
-                        if (func == "path") {
+                        if (func == "offset") { offset = std::stof(splited2.at(1)); }
+                        else if (func == "path") {
                             std::cout << "Loading Path" << std::endl;
                             modelData->path = splited2.at(1);
                         }
@@ -49,13 +51,13 @@ public:
                             std::cout << "Loading Position" << std::endl;
                             modelData->x = std::stof(splited2.at(1));
                             modelData->y = std::stof(splited2.at(3));
-                            modelData->z = std::stof(splited2.at(2));
+                            modelData->z = -std::stof(splited2.at(2));
                         }
                         else if (func == "rotation") {
                             std::cout << "Loading Rotation" << std::endl;
-                            modelData->rx = std::stof(splited2.at(1));
+                            modelData->rx = std::stof(splited2.at(1)) + offset;
                             modelData->ry = std::stof(splited2.at(3));
-                            modelData->rz = std::stof(splited2.at(2));
+                            modelData->rz = -std::stof(splited2.at(2));
                         }
                         else if (func == "collision") {
                             std::cout << "Loading Collision" << std::endl;
