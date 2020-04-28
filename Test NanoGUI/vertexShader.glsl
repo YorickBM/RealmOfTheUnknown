@@ -18,6 +18,8 @@ uniform mat4 bones[MAX_BONES_AMOUNT];
 uniform int meshWithBones;
 
 out vec2 textureCoords;
+out vec3 FragPos;
+out vec3 Normal;
 
 void main()
 {
@@ -38,6 +40,8 @@ void main()
     }
 
     gl_Position = projection * view * model * bonesTransform * vec4(position, 1.f);
+    FragPos = vec3(model * vec4(position, 1.f));
+    Normal = mat3(transpose(inverse(model))) * normal;
 
     textureCoords = vec2(texture.x, -texture.y); //reverse textures
 }
