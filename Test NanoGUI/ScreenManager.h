@@ -34,7 +34,15 @@ using namespace nanogui;
 using imagesDataType = vector<pair<GLTexture, GLTexture::handleType>>;
 imagesDataType mImagesDataStartScreen;
 
-class StartScreen {
+class BaseScreen {
+public:
+	virtual void ShowContent(bool show = true) = 0;
+	virtual void render() = 0;
+	virtual void realignWindows(int width, int height) = 0;
+	virtual Screen* getScreen() = 0;
+};
+
+class StartScreen : public BaseScreen {
 public:
 	StartScreen(Screen* screen, int width, int height, GLFWwindow* window, Screen* backgroundImageScreen) {
 		_screen = screen;
@@ -56,7 +64,9 @@ public:
 		Vector2i btnSize = Vector2i( 320, 60 );
 		NanoUtility::button(_selectionMenu, "Start Game", {}, [this]() { this->closeStartScreen(); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 		NanoUtility::title(_selectionMenu, " ", "sans-bold", 5);
-		NanoUtility::button(_selectionMenu, "Settings Menu", {}, [this]() {}, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
+		NanoUtility::button(_selectionMenu, "Select Class", {}, [this]() { this->ShowContent(false); this->_classSelector->ShowContent(true); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
+		NanoUtility::title(_selectionMenu, " ", "sans-bold", 5);
+		NanoUtility::button(_selectionMenu, "Settings Menu", {}, [this]() { }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 		NanoUtility::title(_selectionMenu, " ", "sans-bold", 5);
 		NanoUtility::button(_selectionMenu, "Quit Game", {}, [this, window]() { glfwSetWindowShouldClose(window, GL_TRUE); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 
@@ -83,6 +93,13 @@ public:
 	}
 
 	/*
+	Update Parent Classes
+	*/
+	void UpdateParentClasses(BaseScreen* classSelector) {
+		_classSelector = classSelector;
+	}
+
+	/*
 	 Realign the inventory too the center of the window.
 	 */
 	void realignWindows(int width, int height) {
@@ -95,7 +112,7 @@ public:
 	
 	/*
 	*/
-	void ShowStartScreenContent(bool show = true) {
+	void ShowContent(bool show = true) {
 		_selectionMenu->setVisible(show);
 	}
 
@@ -112,6 +129,8 @@ private:
 	Window* _backgroundImage;
 	Window* _selectionMenu;
 	Vector2i menuSizeWidget;
+
+	BaseScreen* _classSelector = nullptr;
 
 	void applyCustomTheme(Window* window) {
 		//*
@@ -247,21 +266,182 @@ private:
 	}
 };
 
-class SettingsScreen {
+class ClassSelector : public BaseScreen {
 public:
-	SettingsScreen(Screen* screen, int width, int height, GLFWwindow* window, Screen* backgroundImageScreen) {
+	ClassSelector(Screen* screen, int width, int height, GLFWwindow* window, Screen* backgroundImageScreen) {
 		_screen = screen;
 		_screenImage = backgroundImageScreen;
+		_screenExtra = new Screen();
+		_screenExtra->initialize(window, false);
+
+		_backgroundImage = new Window(_screenImage, "");
+
+		//SetupLayout
+		_backgroundImage->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum, 0, -1));
+
+		//Render Background Image
+		ImageView* backgroundImg = new ImageView(_backgroundImage, mImagesDataStartScreen[NanoUtility::LoadImage("MineRender5", mImagesDataStartScreen)].first.texture());
+		_backgroundImage->center();
+
+		//SetupLayout
+		_backButton = new Window(_screen, "");
+		_backButton->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Minimum, 0, -1));
+
+		Vector2i btnSize = Vector2i(90, 40);
+		NanoUtility::button(_backButton, "Back", {}, [this]() { this->ShowContent(false); this->_startScreen->ShowContent(true); }, "comic-sans", 32, Color(255, 255, 255, 255))->setFixedSize(btnSize);
+		NanoUtility::button(_backButton, "Quit", {}, [this, window]() {  glfwSetWindowShouldClose(window, GL_TRUE); }, "comic-sans", 32, Color(255, 255, 255, 255))->setFixedSize(btnSize);
+
+		_backButton->setPosition({ 1, height - 42 });
+		applyCustomTheme(_backButton);
+
+		_selectionMenu = new Window(_screenExtra, "");
+		_selectionMenu->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Minimum, 0, -1));
+		applyCustomTheme2(_selectionMenu);
+
+		_buttons = vector<Button*>();
+		Button* Warrior = NanoUtility::button(_selectionMenu, "Warrior", { 90, 40 }, [&]() { /*for(Button* btn : _buttons) btn->setTextColor({ 89, 91, 91, 255 }); _buttons[0]->setTextColor({ 214, 171, 63, 255 }); */}, "comic-sans", 32, Color(255, 255, 255, 255));
+		Warrior->setTextColor({ 214, 171, 63, 255 }); //Selected Color
+		_buttons.push_back(Warrior);
+		Button* Hunter = NanoUtility::button(_selectionMenu, "Hunter", { 90, 40 }, [&]() {/*for (Button* btn : _buttons) btn->setTextColor({ 89, 91, 91, 255 }); _buttons[1]->setTextColor({ 214, 171, 63, 255 }); */}, "comic-sans", 32, Color(255, 255, 255, 255));
+		Hunter->setTextColor({ 126, 25, 27, 255 }); //Disabled Color
+		_buttons.push_back(Hunter);
+		Button* Wizard = NanoUtility::button(_selectionMenu, "Wizard", { 90, 40 }, [&]() {/*for (Button* btn : _buttons) btn->setTextColor({ 89, 91, 91, 255 }); _buttons[2]->setTextColor({ 214, 171, 63, 255 }); */}, "comic-sans", 32, Color(255, 255, 255, 255));
+		Wizard->setTextColor({ 126, 25, 27, 255 }); //Disabled Color
+		_buttons.push_back(Wizard);
+		Button* Archer = NanoUtility::button(_selectionMenu, "Archer", { 90, 40 }, [&]() {/*for (Button* btn : _buttons) btn->setTextColor({ 89, 91, 91, 255 }); _buttons[3]->setTextColor({ 214, 171, 63, 255 }); */}, "comic-sans", 32, Color(255, 255, 255, 255));
+		Archer->setTextColor({ 126, 25, 27, 255 }); //Disabled Color
+		_buttons.push_back(Archer);
+
+		
+		_windowContext = new Window(_screenImage, "");
+		_windowContext->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum, 0, -1));
+		applyCustomTheme(_windowContext);
+
+		GLCanvas* topCanvas = new GLCanvas(_windowContext);
+		topCanvas->setBackgroundColor({ 40, 40, 43, 255 });
+		topCanvas->setFixedSize({ 376, 50 });
+
+		GLCanvas* bottomCanvas = new GLCanvas(_windowContext);
+		bottomCanvas->setBackgroundColor({ 46, 48, 52, 255 });
+		bottomCanvas->setFixedSize({ 376, 228 });
+		_windowContext->setSize(bottomCanvas->size());
+
+		menuSizeWidget = Vector2i(376 + 10, 228 + 25);
+
+		//Update Visibility
+		_screen->setVisible(true);
+		_screen->performLayout();
+		_screenImage->setVisible(true);
+		_screenImage->performLayout();
+		_screenExtra->setVisible(true);
+		_screenExtra->performLayout();
+		ShowContent(false);
+		realignWindows(width, height);
+	}
+
+	/*
+	 Render the StartScreem
+	 */
+	void render() {
+		_screenImage->drawContents();
+		_screenImage->drawWidgets();
+		_screen->drawContents();
+		_screen->drawWidgets();
+		_screenExtra->drawContents();
+		_screenExtra->drawWidgets();
+
+		frame--;
+	}
+
+	/*
+	 Realign the inventory too the center of the window.
+	 */
+	void realignWindows(int width, int height) {
+		Vector2i imgSizeWidget = _backgroundImage->size();
+		_backgroundImage->setPosition({ width / 2 - imgSizeWidget.x() / 2, height / 2 - imgSizeWidget.y() / 2 });
+
+		_selectionMenu->setSize({ width, height });
+		_selectionMenu->setPosition({ width / 2 - menuSizeWidget.x() / 2, height / 2 - menuSizeWidget.y() / 2 });
+
+		_windowContext->setSize({ width, height });
+		_windowContext->setPosition({ width / 2 - menuSizeWidget.x() / 2, height / 2 - menuSizeWidget.y() / 2 });
+		
+		_backButton->setPosition({2, height - 40});
+	}
+
+	/*
+	Update Parent Classes
+	*/
+	void UpdateParentClasses(BaseScreen* startScreen) {
+		_startScreen = startScreen;
+	}
+
+	/*
+	*/
+	void ShowContent(bool show = true) {
+		_selectionMenu->setVisible(show);
+		_backButton->setVisible(show);
+		_backgroundImage->setVisible(show);
+		_windowContext->setVisible(show);
 	}
 
 	Screen* getScreen() { return this->_screen; }
+	Screen* getScreenOtherTheme() { return this->_screenExtra; }
 
 private:
 	int frame = 10;
 	bool isActive = true;
 	Screen* _screen;
-	Screen* _screenImage; //This screen will not have any mouse feedback (User cant Interacti with it)
+	Screen* _screenImage;
+	Screen* _screenExtra;
 
-	Window* _backMenu;
-	Window* _frontMenu;
+	Window* _backgroundImage;
+	Window* _selectionMenu;
+	Window* _backButton;
+	Window* _windowContext;
+	Vector2i menuSizeWidget;
+
+	BaseScreen* _startScreen;
+	vector<Button*> _buttons;
+
+	void applyCustomTheme(Window* window) {
+		//*
+		window->theme()->mTransparent = Color(29, 0);
+		window->theme()->mWindowFillUnfocused = Color(255, 0);
+		window->theme()->mWindowFillFocused = Color(255, 0);
+		window->theme()->mBorderMedium = Color(255, 0);
+		window->theme()->mBorderDark = Color(255, 0);
+		window->theme()->mBorderLight = Color(255, 0);
+		window->theme()->mDropShadow = Color(255, 0);
+
+		window->theme()->mButtonCornerRadius = 5;
+
+		window->theme()->mButtonGradientTopUnfocused = Color(99, 54, 11, 225);
+		window->theme()->mButtonGradientBotUnfocused = Color(99, 54, 11, 225);
+
+		window->theme()->mButtonGradientTopFocused = Color(82, 74, 102, 255);
+		window->theme()->mButtonGradientBotFocused = Color(82, 74, 102, 255);
+
+		window->theme()->mButtonGradientTopPushed = Color(255, 255, 255, 255);
+		window->theme()->mButtonGradientBotPushed = Color(255, 255, 255, 255);
+		//*/
+	}
+	void applyCustomTheme2(Window* window) {
+		//*
+		window->theme()->mTransparent = Color(29, 0);
+		window->theme()->mWindowFillUnfocused = Color(255, 0);
+		window->theme()->mWindowFillFocused = Color(255, 0);
+		window->theme()->mBorderMedium = Color(255, 0);
+		window->theme()->mBorderDark = Color(255, 0);
+		window->theme()->mBorderLight = Color(255, 0);
+		window->theme()->mDropShadow = Color(255, 0);
+		window->theme()->mButtonFontSize = 16;
+		window->theme()->mButtonGradientTopUnfocused = Color(255, 0);
+		window->theme()->mButtonGradientBotUnfocused = Color(255, 0);
+		window->theme()->mButtonGradientTopFocused = Color(255, 0);
+		window->theme()->mButtonGradientBotFocused = Color(255, 0);
+		window->theme()->mButtonGradientTopPushed = Color(255, 0);
+		window->theme()->mButtonGradientBotPushed = Color(255, 0);
+		//*/
+	}
 };

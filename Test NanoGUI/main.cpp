@@ -23,6 +23,7 @@
 //Sleep Stuff
 #include <thread>
 #include <chrono>
+#include <sstream>
 
 //Nano Gui
 #pragma region NanoGUI Settings (GLAD & Appel & Prototypes)
@@ -119,10 +120,13 @@ Screen* startScreenImgScreen = nullptr;
 Screen* loadingScreenScreen = nullptr;
 Screen* settingsScreenScreen = nullptr;
 Screen* settingsScreenImgScreen = nullptr;
+Screen* classSelectorInteractiveScreen = nullptr;
+Screen* classSelectorNonInteractiveScreen = nullptr;
 
 Inventory* inv;
 StartScreen* startScreen;
 LoadingScreen* loadingScreen;
+ClassSelector* classSelector;
 
 #pragma endregion
 
@@ -249,6 +253,10 @@ int main(int /* argc */, char** /* argv */) {
     startScreenImgScreen->initialize(window, true);
     loadingScreenScreen = new Screen();
     loadingScreenScreen->initialize(window, true);
+    classSelectorInteractiveScreen = new Screen();
+    classSelectorInteractiveScreen->initialize(window, true);
+    classSelectorNonInteractiveScreen = new Screen();
+    classSelectorNonInteractiveScreen->initialize(window, true);
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
@@ -281,8 +289,12 @@ int main(int /* argc */, char** /* argv */) {
     inv = new Inventory(screen, SCREEN_WIDTH, SCREEN_HEIGHT);
     inv->ShowInfo();
 
+    classSelector = new ClassSelector(classSelectorInteractiveScreen, SCREEN_WIDTH, SCREEN_HEIGHT, window, classSelectorNonInteractiveScreen);
     startScreen = new StartScreen(startScreenScreen, SCREEN_WIDTH, SCREEN_HEIGHT, window, startScreenImgScreen);
     loadingScreen = new LoadingScreen(loadingScreenScreen, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    classSelector->UpdateParentClasses(startScreen);
+    startScreen->UpdateParentClasses(classSelector);
     #pragma endregion
     #pragma region glfw Callbacks to NanoGUI & ECS
     glfwSetCursorPosCallback(window,
@@ -290,6 +302,8 @@ int main(int /* argc */, char** /* argv */) {
             inv->getScreen()->cursorPosCallbackEvent(x, y);
             inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT); //Prevent the movement this way
             startScreen->getScreen()->cursorPosCallbackEvent(x, y);
+            classSelector->getScreen()->cursorPosCallbackEvent(x, y);
+            classSelector->getScreenOtherTheme()->cursorPosCallbackEvent(x, y);
 
             if (firstMouse)
             {
@@ -312,6 +326,8 @@ int main(int /* argc */, char** /* argv */) {
         [](GLFWwindow*, int button, int action, int modifiers) {
             screen->mouseButtonCallbackEvent(button, action, modifiers);
             startScreen->getScreen()->mouseButtonCallbackEvent(button, action, modifiers);
+            classSelector->getScreen()->mouseButtonCallbackEvent(button, action, modifiers);
+            classSelector->getScreenOtherTheme()->mouseButtonCallbackEvent(button, action, modifiers);
         }
     );
 
@@ -319,6 +335,8 @@ int main(int /* argc */, char** /* argv */) {
             screen->keyCallbackEvent(key, scancode, action, mods);
             inv->keyCallbackEvent(key, scancode, action, mods);
             startScreen->getScreen()->keyCallbackEvent(key, scancode, action, mods);
+            classSelector->getScreen()->keyCallbackEvent(key, scancode, action, mods);
+            classSelector->getScreenOtherTheme()->keyCallbackEvent(key, scancode, action, mods);
 
             ///if(key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, GL_TRUE);
 
@@ -359,6 +377,7 @@ int main(int /* argc */, char** /* argv */) {
            screen->resizeCallbackEvent(width, height);
            inv->realignWindows(width, height);
            startScreen->realignWindows(width, height);
+           classSelector->realignWindows(width, height);
 
            loadingScreen->realignWindows(width, height);
            loadingScreen->render();
@@ -389,24 +408,23 @@ int main(int /* argc */, char** /* argv */) {
     #pragma endregion
 
         startScreen->render();
+        classSelector->render();
 
         // Swap the buffers
         glfwSwapBuffers(window);
     }
 
     if (!glfwWindowShouldClose(window)) {
-        loadingScreen->specialRender(window, "Loading Shaders", width, height);
-
+        
         #pragma region Shaders
+        loadingScreen->specialRender(window, "Loading Shaders", width, height);
         // Setup and compile our shaders
         ShaderLoader* shaderLoader = new ShaderLoader();
         shaderLoader->loadShaders("vertexShader.glsl", "fragmentShader.glsl");
         #pragma endregion
 
-        ///std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        loadingScreen->specialRender(window, "Loading Model Data", width, height);
-
         #pragma region Entity Creation & Chunk Loading
+        loadingScreen->specialRender(window, "Initializing Chunks/Loading Chunks", width, height);
         cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
         ///csm.InitEntities("res/System/Entities.txt");
 
@@ -417,9 +435,18 @@ int main(int /* argc */, char** /* argv */) {
         AnimModel model1("resources/tree.fbx", vec3(0), 1.f);
         csm.AddComponent(Te, ModelMeshC{ model1, model1.GetBoundingBoxModel() });
 
-        //Load Modeldata File & Create Entity's
+        loadingScreen->specialRender(window, "Initializing Model Data", width, height);
         std::vector<ModelDataClass*> modelData = FileLoader::ReadModelData("ModelData.data");
+
+        int modelnum = 0;
+        int amountmodels = modelData.size();
+
+        std::cout << modelData.size() << std::endl;
         for (ModelDataClass* data : modelData) {
+            std::stringstream ss;
+            ss << "Loading Models (" << modelnum++ << "/" << amountmodels << ")";
+            std::string str = ss.str();
+            loadingScreen->specialRender(window, str, width, height);
             AnimModel model(data->path, vec3(data->x, data->y, data->z), data->scale, vec3(data->rx, data->ry, data->rz));
 
 
@@ -433,17 +460,17 @@ int main(int /* argc */, char** /* argv */) {
             csm.AddComponent(Entity, InputC{ Keyboard });
         }
         #pragma endregion
+        
         //model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
 
+        #pragma region Inventory
         //Add temp items
         inv->SetItem(0, Item{ "Item in Inv", "desc", "test2" });
         inv->SetItem(50, Item{ "Item in Toolbar", "desc", "test2" });
-
-        ///std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        loadingScreen->specialRender(window, "Loading complete", width, height);
-        ///std::this_thread::sleep_for(std::chrono::milliseconds(1490));
+        #pragma endregion
 
         #pragma region Pre Game Loop
+        loadingScreen->specialRender(window, "Loading complete", width, height);
         glm::mat4 projection = glm::perspective(camera.GetZoom(), static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT), 0.1f, 100.0f); //Render Distance
         collisionSystem->Update();
         inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -487,9 +514,11 @@ int main(int /* argc */, char** /* argv */) {
             glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "projection"), 1, GL_FALSE, value_ptr(projection)); //send the projection matrix to the shader
 
             //Lighting
-            glUniform3f(glGetUniformLocation(shaderLoader->ID, "lightColor"), 1.f, 1.f, 1.f);
+            glUniform3f(glGetUniformLocation(shaderLoader->ID, "lightColor"), 1.f, 1.f, 1.f); 
             glUniform3f(glGetUniformLocation(shaderLoader->ID, "lightPos"), -20.f, 70.f, 100.f);
             glUniform3f(glGetUniformLocation(shaderLoader->ID, "viewPos"), camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
+            glUniform1f(glGetUniformLocation(shaderLoader->ID, "ambientStrength"), 0.2f);
+            glUniform1f(glGetUniformLocation(shaderLoader->ID, "specularStrength"), 0.1f);
 
             modelSystem->Update(shaderLoader);
 
