@@ -108,4 +108,27 @@ public:
 
 		return mImagesData.size() - 1;
 	}
+
+	static void applyCustomTheme(Window* window) {
+		//*
+		window->theme()->mTransparent = Color(29, 0);
+		window->theme()->mWindowFillUnfocused = Color(255, 0);
+		window->theme()->mWindowFillFocused = Color(255, 0);
+		window->theme()->mBorderMedium = Color(255, 0);
+		window->theme()->mBorderDark = Color(255, 0);
+		window->theme()->mBorderLight = Color(255, 0);
+		window->theme()->mDropShadow = Color(255, 0);
+
+		window->theme()->mButtonCornerRadius = 5;
+
+		window->theme()->mButtonGradientTopUnfocused = Color(99, 54, 11, 225);
+		window->theme()->mButtonGradientBotUnfocused = Color(99, 54, 11, 225);
+
+		window->theme()->mButtonGradientTopFocused = Color(82, 74, 102, 255);
+		window->theme()->mButtonGradientBotFocused = Color(82, 74, 102, 255);
+
+		window->theme()->mButtonGradientTopPushed = Color(255, 255, 255, 255);
+		window->theme()->mButtonGradientBotPushed = Color(255, 255, 255, 255);
+		//*/
+	}
 };

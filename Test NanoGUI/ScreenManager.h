@@ -66,7 +66,7 @@ public:
 		NanoUtility::title(_selectionMenu, " ", "sans-bold", 5);
 		NanoUtility::button(_selectionMenu, "Select Class", {}, [this]() { this->ShowContent(false); this->_classSelector->ShowContent(true); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 		NanoUtility::title(_selectionMenu, " ", "sans-bold", 5);
-		NanoUtility::button(_selectionMenu, "Settings Menu", {}, [this]() { }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
+		NanoUtility::button(_selectionMenu, "Settings Menu", {}, [this]() { this->ShowContent(false); this->_settingsScreen->ShowContent(true); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 		NanoUtility::title(_selectionMenu, " ", "sans-bold", 5);
 		NanoUtility::button(_selectionMenu, "Quit Game", {}, [this, window]() { glfwSetWindowShouldClose(window, GL_TRUE); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 
@@ -95,8 +95,9 @@ public:
 	/*
 	Update Parent Classes
 	*/
-	void UpdateParentClasses(BaseScreen* classSelector) {
+	void UpdateParentClasses(BaseScreen* classSelector, BaseScreen* settingsScreen) {
 		_classSelector = classSelector;
+		_settingsScreen = settingsScreen;
 	}
 
 	/*
@@ -108,6 +109,8 @@ public:
 
 		_selectionMenu->setSize({ width, height });
 		_selectionMenu->setPosition({ width / 2 - menuSizeWidget.x() / 2, height / 2 - menuSizeWidget.y() / 2 });
+
+
 	}
 	
 	/*
@@ -131,6 +134,7 @@ private:
 	Vector2i menuSizeWidget;
 
 	BaseScreen* _classSelector = nullptr;
+	BaseScreen* _settingsScreen = nullptr;
 
 	void applyCustomTheme(Window* window) {
 		//*
