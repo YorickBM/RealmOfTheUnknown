@@ -4,17 +4,17 @@
 
 
 # Configuration directories and files
-SourceDirectory: D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen
-BuildDirectory: D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen/out/build/x64-Debug
+SourceDirectory: C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen
+BuildDirectory: C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug
 
 # Where to place the cost data store
 CostDataFile: 
 
 # Site is something like machine.domain, i.e. pragmatic.crd
-Site: desktop-htg3qia
+Site: desktop-meptgtp
 
 # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
-BuildName: unknownwin-19.24.28316.0-sse2-64bit
+BuildName: unknownwin-19.25.28614.0-sse2-64bit
 
 # Subprojects
 LabelsForSubprojects: 
@@ -26,8 +26,8 @@ SubmitURL: http://manao.inria.fr/CDash/submit.php?project=Eigen+3.3
 NightlyStartTime: 00:00:00 UTC
 
 # Commands for the build/test/submit cycle
-ConfigureCommand: "D:/Yorick/Programs (86x)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe" "D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen"
-MakeCommand: D:/Yorick/Programs (86x)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe --build . --target buildtests --config "${CTEST_CONFIGURATION_TYPE}" --  
+ConfigureCommand: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe" "C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen"
+MakeCommand: C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe --build . --target buildtests --config "${CTEST_CONFIGURATION_TYPE}" --  
 DefaultCTestConfigurationType: Release
 
 # version control
@@ -44,7 +44,7 @@ SVNOptions:
 SVNUpdateOptions: 
 
 # Git options
-GITCommand: C:/Program Files/Git/cmd/git.exe
+GITCommand: GITCOMMAND-NOTFOUND
 GITInitSubmodules: 
 GITUpdateOptions: 
 GITUpdateCustom: 
@@ -57,13 +57,13 @@ P4UpdateOptions:
 P4UpdateCustom: 
 
 # Generic update command
-UpdateCommand: C:/Program Files/Git/cmd/git.exe
+UpdateCommand: 
 UpdateOptions: 
-UpdateType: git
+UpdateType: 
 
 # Compiler info
-Compiler: D:/Yorick/Programs (86x)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.24.28314/bin/HostX64/x64/cl.exe
-CompilerVersion: 19.24.28316.0
+Compiler: C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/bin/HostX64/x64/cl.exe
+CompilerVersion: 19.25.28614.0
 
 # Dynamic analysis (MemCheck)
 PurifyCommand: 

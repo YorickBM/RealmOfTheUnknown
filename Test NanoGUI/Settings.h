@@ -28,3 +28,49 @@
 
 #include "CustomGrid.h"
 #include "GLTexture.h"
+#include "NanoUtility.h"
+
+using namespace nanogui;
+using imagesDataType = vector<pair<GLTexture, GLTexture::handleType>>;
+imagesDataType mImagesDataStartScreen;
+
+class SettingsScreen {
+public:
+	SettingsScreen(Screen* screen, int width, int height, GLFWwindow* window, Screen* backgroundImageScreen) {
+		_screen = screen;
+		_screenImage = backgroundImageScreen;
+
+		_backgroundImage = new Window(_screenImage, "");
+
+		//SetupLayout
+		_backgroundImage->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum, 0, -1));
+
+		//Render Background Image
+		ImageView* backgroundImg = new ImageView(_backgroundImage, mImagesDataStartScreen[NanoUtility::LoadImage("MineRender5", mImagesDataStartScreen)].first.texture());
+		_backgroundImage->center();
+
+		//Setting Background Screen
+		_backMenu = new Window(_screenImage, "");
+		
+		GLCanvas* topCanvas = new GLCanvas(_backMenu);
+		topCanvas->setBackgroundColor({ 46, 48, 52, 255 });
+		topCanvas->setFixedSize({ 236, 230 });
+		/* topCanvas->setPosition({ , }) */
+
+		//Settings FrontMenu Screen
+		_frontMenu = new Window(_screen);
+		_frontMenu->setLayout(new BoxLayout(Orientation::Horizontal))
+	}
+
+	Screen* getScreen() { return this->_screen; }
+
+private:
+	int frame = 10;
+	bool isActive = true;
+	Screen* _screen;
+	Screen* _screenImage; //This screen will not have any mouse feedback (User cant Interacti with it)
+
+	Window* _backgroundImage;
+	Window* _backMenu;
+	Window* _frontMenu;
+};

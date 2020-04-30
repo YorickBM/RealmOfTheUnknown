@@ -30,6 +30,7 @@
 #include "GLTexture.h"
 #include "NanoUtility.h"
 
+
 using namespace nanogui;
 using imagesDataType = vector<pair<GLTexture, GLTexture::handleType>>;
 imagesDataType mImagesDataStartScreen;
@@ -247,21 +248,3 @@ private:
 	}
 };
 
-class SettingsScreen {
-public:
-	SettingsScreen(Screen* screen, int width, int height, GLFWwindow* window, Screen* backgroundImageScreen) {
-		_screen = screen;
-		_screenImage = backgroundImageScreen;
-	}
-
-	Screen* getScreen() { return this->_screen; }
-
-private:
-	int frame = 10;
-	bool isActive = true;
-	Screen* _screen;
-	Screen* _screenImage; //This screen will not have any mouse feedback (User cant Interacti with it)
-
-	Window* _backMenu;
-	Window* _frontMenu;
-};

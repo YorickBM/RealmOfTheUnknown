@@ -1,9 +1,9 @@
 
-set(CTEST_SOURCE_DIRECTORY  "D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen")
-set(CTEST_BINARY_DIRECTORY  "D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen/out/build/x64-Debug")
+set(CTEST_SOURCE_DIRECTORY  "C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen")
+set(CTEST_BINARY_DIRECTORY  "C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug")
 set(CTEST_CMAKE_GENERATOR   "Ninja")
-set(CTEST_BUILD_NAME        "unknownwin-19.24.28316.0-sse2-64bit")
-set(CTEST_SITE              "desktop-htg3qia")
+set(CTEST_BUILD_NAME        "unknownwin-19.25.28614.0-sse2-64bit")
+set(CTEST_SITE              "desktop-meptgtp")
 
 set(MODEL Experimental)
 if(${CTEST_SCRIPT_ARG} MATCHES Nightly)
