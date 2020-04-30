@@ -14,8 +14,6 @@ void ModelMeshSystem::Update(ShaderLoader* shaderLoader)
 
 		modelMeshC.model.SetPosition(transformC.position);
 		modelMeshC.BoundingBox.SetPosition(transformC.position);
-		///modelMeshC.model.SetRotation((modelMeshC.model.GetRotation() + vec3(0, .05f, 0)));
-		///std::cout << modelMeshC.model.GetRotation().x << ";" << modelMeshC.model.GetRotation().y << ";" << modelMeshC.model.GetRotation().z << std::endl;
 
 		mat4 objectModel; //model matrix
 		objectModel = mat4(1.0);
@@ -24,10 +22,10 @@ void ModelMeshSystem::Update(ShaderLoader* shaderLoader)
 		objectModel = glm::rotate(objectModel, glm::radians(modelMeshC.model.GetRotation().x), glm::vec3(1.f, 0.f, 0.f));
 		objectModel = glm::rotate(objectModel, glm::radians(modelMeshC.model.GetRotation().y), glm::vec3(0.f, 1.f, 0.f));
 		objectModel = glm::rotate(objectModel, glm::radians(modelMeshC.model.GetRotation().z), glm::vec3(0.f, 0.f, 1.f));
-		glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
+		glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the model matrix to the shader
 		modelMeshC.model.Draw(shaderLoader);
 
-		//glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
+		//glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the model matrix to the shader
 		//modelMeshC.BoundingBox.Draw(shaderLoader, false);
 	}
 }
