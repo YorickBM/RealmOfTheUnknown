@@ -80,11 +80,6 @@ ComponentSystemManager csm;
 ChunkManager cm;
 
 //Nano GUi
-enum test_enum {
-    Item1 = 0,
-    Item2,
-    Item3
-};
 enum res_enum {
     resolution_1 = 0,
     resolution_2,
@@ -131,56 +126,6 @@ ClassSelector* classSelector;
 #pragma endregion
 
 int main(int /* argc */, char** /* argv */) {
-    #pragma region ComponentSystem
-    csm.Init();
-
-    /* Register The Components & Systems*/
-    csm.RegisterComponent<TransformC>();
-    csm.RegisterComponent<MotionC>();
-    csm.RegisterComponent<ModelMeshC>();
-    csm.RegisterComponent<CollisionC>();
-    csm.RegisterComponent<HealthC>();
-    csm.RegisterComponent<AiC>();
-    csm.RegisterComponent<InputC>();
-
-    auto inputSystem = csm.RegisterSystem<InputSystem>();
-    {
-        Signature signature;
-        signature.set(csm.GetComponentType<MotionC>());
-        signature.set(csm.GetComponentType<InputC>());
-        csm.SetSystemSignature<InputSystem>(signature);
-    }
-    inputSystem->Init();
-
-    auto movementSystem = csm.RegisterSystem<MovementSystem>();
-    {
-        Signature signature;
-        signature.set(csm.GetComponentType<MotionC>());
-        signature.set(csm.GetComponentType<TransformC>());
-        csm.SetSystemSignature<MovementSystem>(signature);
-    }
-    movementSystem->Init();
-
-    auto modelSystem = csm.RegisterSystem<ModelMeshSystem>();
-    {
-        Signature signature;
-        signature.set(csm.GetComponentType<ModelMeshC>());
-        signature.set(csm.GetComponentType<TransformC>());
-        csm.SetSystemSignature<ModelMeshSystem>(signature);
-    }
-    modelSystem->Init();
-
-    auto collisionSystem = csm.RegisterSystem<CollisionSystem>(); //Model Postion Transformation in here ???
-    {
-        Signature signature;
-        signature.set(csm.GetComponentType<CollisionC>());
-        signature.set(csm.GetComponentType<ModelMeshC>());
-        signature.set(csm.GetComponentType<TransformC>());
-        csm.SetSystemSignature<CollisionSystem>(signature);
-    }
-    collisionSystem->Init();
-
-    #pragma endregion
     #pragma region Resolutions
     std::vector<std::string> resolutions;
     resolutions.push_back("640x360");
@@ -203,7 +148,7 @@ int main(int /* argc */, char** /* argv */) {
     resolutions.push_back("3440x1440");
     resolutions.push_back("3840x2160");
     #pragma endregion
-    
+
     #pragma region Initialize glfw
     glfwInit();
     glfwSetTime(0);
@@ -246,17 +191,17 @@ int main(int /* argc */, char** /* argv */) {
 
     // Create a nanogui screen and pass the glfw pointer to initialize
     screen = new Screen();
-    screen->initialize(window, true);
+    screen->initialize(window, false);
     startScreenScreen = new Screen();
-    startScreenScreen->initialize(window, true);
+    startScreenScreen->initialize(window, false);
     startScreenImgScreen = new Screen();
-    startScreenImgScreen->initialize(window, true);
+    startScreenImgScreen->initialize(window, false);
     loadingScreenScreen = new Screen();
-    loadingScreenScreen->initialize(window, true);
+    loadingScreenScreen->initialize(window, false);
     classSelectorInteractiveScreen = new Screen();
-    classSelectorInteractiveScreen->initialize(window, true);
+    classSelectorInteractiveScreen->initialize(window, false);
     classSelectorNonInteractiveScreen = new Screen();
-    classSelectorNonInteractiveScreen->initialize(window, true);
+    classSelectorNonInteractiveScreen->initialize(window, false);
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
@@ -399,13 +344,6 @@ int main(int /* argc */, char** /* argv */) {
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         #pragma endregion
-        #pragma region Game Objects
-        //Game Objects
-        inputSystem->Update(keys);
-        movementSystem->Update(deltaTime, camera);
-        collisionSystem->CollisionCheck();
-
-    #pragma endregion
 
         startScreen->render();
         classSelector->render();
@@ -415,6 +353,57 @@ int main(int /* argc */, char** /* argv */) {
     }
 
     if (!glfwWindowShouldClose(window)) {
+
+        #pragma region ComponentSystem
+        csm.Init();
+
+        /* Register The Components & Systems*/
+        csm.RegisterComponent<TransformC>();
+        csm.RegisterComponent<MotionC>();
+        csm.RegisterComponent<ModelMeshC>();
+        csm.RegisterComponent<CollisionC>();
+        csm.RegisterComponent<HealthC>();
+        csm.RegisterComponent<AiC>();
+        csm.RegisterComponent<InputC>();
+
+        auto inputSystem = csm.RegisterSystem<InputSystem>();
+        {
+            Signature signature;
+            signature.set(csm.GetComponentType<MotionC>());
+            signature.set(csm.GetComponentType<InputC>());
+            csm.SetSystemSignature<InputSystem>(signature);
+        }
+        inputSystem->Init();
+
+        auto movementSystem = csm.RegisterSystem<MovementSystem>();
+        {
+            Signature signature;
+            signature.set(csm.GetComponentType<MotionC>());
+            signature.set(csm.GetComponentType<TransformC>());
+            csm.SetSystemSignature<MovementSystem>(signature);
+        }
+        movementSystem->Init();
+
+        auto modelSystem = csm.RegisterSystem<ModelMeshSystem>();
+        {
+            Signature signature;
+            signature.set(csm.GetComponentType<ModelMeshC>());
+            signature.set(csm.GetComponentType<TransformC>());
+            csm.SetSystemSignature<ModelMeshSystem>(signature);
+        }
+        modelSystem->Init();
+
+        auto collisionSystem = csm.RegisterSystem<CollisionSystem>(); //Model Postion Transformation in here ???
+        {
+            Signature signature;
+            signature.set(csm.GetComponentType<CollisionC>());
+            signature.set(csm.GetComponentType<ModelMeshC>());
+            signature.set(csm.GetComponentType<TransformC>());
+            csm.SetSystemSignature<CollisionSystem>(signature);
+        }
+        collisionSystem->Init();
+
+        #pragma endregion
         
         #pragma region Shaders
         loadingScreen->specialRender(window, "Loading Shaders", width, height);
@@ -448,12 +437,13 @@ int main(int /* argc */, char** /* argv */) {
             std::string str = ss.str();
             loadingScreen->specialRender(window, str, width, height);
             AnimModel model(data->path, vec3(data->x, data->y, data->z), data->scale, vec3(data->rx, data->ry, data->rz));
-
+            AnimModel boundingBox;
 
             auto Entity = csm.CreateEntity();
             csm.AddComponent(Entity, TransformC{ vec3(data->x, data->y, data->z), data->scale });
-            csm.AddComponent(Entity, ModelMeshC{ model, model.GetBoundingBoxModel() });
-            csm.AddComponent(Entity, CollisionC{ SolidCollision, true });
+            if (data->colType != 2) { boundingBox = model.GetBoundingBoxModel(); }
+            csm.AddComponent(Entity, ModelMeshC{ model, boundingBox });
+            if (data->colType != 2) { csm.AddComponent(Entity, CollisionC{ data->colType, true }); }
 
             //Movable with Keyboard
             csm.AddComponent(Entity, MotionC{});

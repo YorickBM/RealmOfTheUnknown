@@ -9,6 +9,7 @@ bool ModelLoader::loadModel(string path)
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) //if something gone wrong
 	{
+		cout << path << std::endl;
 		cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl; //error
 		return false;
 	}
@@ -247,9 +248,6 @@ vector < Texture > ModelLoader::loadMaterialTextures(aiMaterial* mat, aiTextureT
 			texture.id = textureFromFile(helpStr.C_Str()); //calling another function to load texture from file
 
 			texture.type = typeName; //set the texture`s type
-
-			cout << "Texture type: " << typeName << endl;
-
 			texture.path = helpStr.C_Str(); //set the texture`s path
 
 			textures.push_back(texture); //take the texture

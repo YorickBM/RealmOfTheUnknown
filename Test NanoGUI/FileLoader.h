@@ -13,7 +13,7 @@ public:
     float scale;
     float x, y, z;
     float rx, ry, rz;
-    CollisionType colType = CollisionType::SolidCollision;
+    CollisionType colType = CollisionType::NoCollision;
 };
 
 class FileLoader {
@@ -40,32 +40,30 @@ public:
 
                         if (func == "offset") { offset = std::stof(splited2.at(1)); }
                         else if (func == "path") {
-                            std::cout << "Loading Path" << std::endl;
                             modelData->path = splited2.at(1);
                         }
                         else if (func == "scale") {
-                            std::cout << "Loading Scale" << std::endl;
                             modelData->scale = std::stof(splited2.at(1));
                         }
                         else if (func == "position") {
-                            std::cout << "Loading Position" << std::endl;
                             modelData->x = std::stof(splited2.at(1));
                             modelData->y = std::stof(splited2.at(3));
                             modelData->z = -std::stof(splited2.at(2));
                         }
                         else if (func == "rotation") {
-                            std::cout << "Loading Rotation" << std::endl;
                             modelData->rx = std::stof(splited2.at(1)) + offset;
                             modelData->ry = std::stof(splited2.at(3));
                             modelData->rz = -std::stof(splited2.at(2));
                         }
                         else if (func == "collision") {
-                            std::cout << "Loading Collision" << std::endl;
                             if (splited2.at(splited2.size() - 1) == "RayCastingCollision") {
                                 modelData->colType = CollisionType::RayCastingCollision;
+                            } 
+                            else if (splited2.at(splited2.size() - 1) == "SolidCollision") {
+                                modelData->colType = CollisionType::SolidCollision;
                             }
                             else {
-                                modelData->colType = CollisionType::SolidCollision;
+                                modelData->colType = CollisionType::NoCollision;
                             }
                         }
                         else {
