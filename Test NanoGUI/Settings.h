@@ -54,16 +54,31 @@ public:
 		
 		GLCanvas* topCanvas = new GLCanvas(_backMenu);
 		topCanvas->setBackgroundColor({ 46, 48, 52, 255 });
-		topCanvas->setFixedSize({ 236, 230 });
-		/* topCanvas->setPosition({ , }) */
+		topCanvas->setFixedSize({ width - 100, height - 100 });
+		topCanvas->setPosition({ 50, 50 });
 
 		//Settings FrontMenu Screen
 		_frontMenu = new Window(_screen, "");
-		_frontMenu->setLayout(new BoxLayout(Orientation::Horizontal));
+		_frontMenu->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum));
+		_frontMenu->setFixedSize(Vector2i(60, height));
+		_frontMenu->setPosition({ 60, 75 });
+
+		//Settings FrontMenuMiddle screen
+		_frontMenuMiddle = new Window(_screen, "");
+		_frontMenuMiddle->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Fill));
+		_frontMenuMiddle->setFixedSize(Vector2i(width, height));
+		_frontMenuMiddle->setPosition(Vector2i(width / 2 - 100, 50));
 
 		
-		_backButton = new Window(_screen, "");
+		//Labels Settings
+		new Label(_frontMenuMiddle, "------ Settings ------", "sans-bold", 30);
 
+		new Label(_frontMenu, "Test1", "sans-bold", 20);
+		new Label(_frontMenu, "Test2", "sans-bold", 20);
+
+
+		_backButton = new Window(_screen, "");
+		_backButton->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Minimum, 0, -1));
 
 		Vector2i btnSize = Vector2i(90, 40);
 		Button* back = NanoUtility::button(_backButton, "Back", {}, [this]() { this->ShowContent(false); this->_startScreen->ShowContent(true); }, "comic-sans", 32, Color(255, 255, 255, 255));
@@ -89,8 +104,6 @@ public:
 		_screenImage->drawWidgets();
 		_screen->drawContents();
 		_screen->drawWidgets();
-
-		frame--;
 	}
 
 	void ShowContent(bool show = true) {
@@ -98,6 +111,7 @@ public:
 		_backMenu->setVisible(show);
 		_frontMenu->setVisible(show);
 		_backButton->setVisible(show);
+		_frontMenuMiddle->setVisible(show);
 	}
 
 	/*
@@ -114,11 +128,10 @@ public:
 		Vector2i imgSizeWidget = _backgroundImage->size();
 		_backgroundImage->setPosition({ width / 2 - imgSizeWidget.x() / 2, height / 2 - imgSizeWidget.y() / 2 });
 
-		Vector2i menuSizeWidget = _frontMenu->size();
-		_frontMenu->setPosition({ width / 2 - menuSizeWidget.x() / 2, height / 2 - menuSizeWidget.y() / 2 });
-
-		_backMenu->setPosition({ width / 2 - menuSizeWidget.x() / 2, height / 2 - menuSizeWidget.y() / 2 });
-
+		Vector2i menuSizeWidget = Vector2i(_frontMenu->size().x() + 10, _backMenu->size().y() + 25);
+		///_frontMenu->center();
+		///_frontMenu->setSize({ width, height });
+		///_backMenu->center();
 		_backButton->setPosition({ 10, height - 40 });
 
 	}
@@ -126,7 +139,6 @@ public:
 	Screen* getScreen() { return this->_screen; }
 
 private:
-	int frame = 10;
 	bool isActive = true;
 
 	imagesDataType mImagesDataSettingsScreen;
@@ -138,6 +150,7 @@ private:
 	Window* _backMenu;
 	Window* _frontMenu;
 	Window* _backButton;
+	Window* _frontMenuMiddle;
 
 	BaseScreen* _startScreen = nullptr;
 };

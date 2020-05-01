@@ -202,7 +202,7 @@ public:
 		_screen->drawContents();
 		_screen->drawWidgets();
 
-		frame--;
+		/// frame--;
 	}
 
 	void specialRender(GLFWwindow* window, string text, int width, int height) {
