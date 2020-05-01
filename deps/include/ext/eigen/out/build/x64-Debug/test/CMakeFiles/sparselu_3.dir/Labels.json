@@ -1,0 +1,16 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/deps/include/ext/eigen/test/sparselu.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"BuildOfficial"
+		],
+		"name" : "sparselu_3"
+	}
+}

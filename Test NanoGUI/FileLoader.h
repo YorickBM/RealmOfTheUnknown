@@ -62,6 +62,9 @@ public:
                             else if (splited2.at(splited2.size() - 1) == "SolidCollision") {
                                 modelData->colType = CollisionType::SolidCollision;
                             }
+                            else if (splited2.at(splited2.size() - 1) == "WorldCollision") {
+                                modelData->colType = CollisionType::WorldCollision;
+                            }
                             else {
                                 modelData->colType = CollisionType::NoCollision;
                             }

@@ -1,0 +1,16 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/deps/include/ext/eigen/test/product_trmv.cpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"BuildOfficial"
+		],
+		"name" : "product_trmv_6"
+	}
+}

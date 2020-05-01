@@ -46,6 +46,8 @@ void CollisionSystem::CollisionCheck()
 				//std::cout << collisionCCol.boundingBox.min.x << ";" << collisionCCol.boundingBox.min.y << ";" << collisionCCol.boundingBox.min.z << std::endl;
 				//transformC.position = modelMeshC.model.GetPosition();
 
+				std::cout << "Collision" << std::endl;
+
 				if (collisionC.type == RayCastingCollision) {
 					//col.detectCollision(facesof entityCol, vertices of entity);
 				}

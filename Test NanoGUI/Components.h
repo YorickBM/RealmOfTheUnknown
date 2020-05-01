@@ -7,7 +7,7 @@
 //Data
 enum AiType { Passive, Hostile };
 enum InputType { Keyboard };
-enum CollisionType { SolidCollision = 0, RayCastingCollision = 1, NoCollision = 2 };
+enum CollisionType { SolidCollision = 0, RayCastingCollision = 1, NoCollision = 2, WorldCollision = 3 };
 
 
 //Components

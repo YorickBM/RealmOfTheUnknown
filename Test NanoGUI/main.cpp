@@ -57,6 +57,8 @@
 #include "InventoryTheme.h"
 #include "Inventory.h"
 #include "ScreenManager.h"
+
+#include "CollisionUtility.h"
 #pragma endregion
 using namespace nanogui;
 #pragma region Vars
@@ -329,6 +331,19 @@ int main(int /* argc */, char** /* argv */) {
         }
     );
     #pragma endregion
+
+    std::vector<vec2> positions;
+    positions.push_back(vec2(2, 2));
+    positions.push_back(vec2(1, 1));
+    positions.push_back(vec2(2, 8));
+    positions.push_back(vec2(2, 5));
+    positions.push_back(vec2(6, 2));
+    positions.push_back(vec2(3, 2));
+    positions.push_back(vec2(6, 4));
+    positions.push_back(vec2(1, 2));
+
+    std::vector<vec2> inRangePos = CollisionUtility::getClosesPointsInRange(4, positions, vec2(2, 2), 5.f);
+    for (vec2 pos : inRangePos) std::cout << pos.x << ";" << pos.y << std::endl;
 
     while (startScreen->IsActive() && !glfwWindowShouldClose(window)) {
         #pragma region Frame & Poll Events & Clear Buffers/Color
