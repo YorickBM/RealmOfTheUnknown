@@ -1,3 +1,4 @@
+#pragma once
 #include "ModelMeshSystem.h"
 
 extern ComponentSystemManager csm;

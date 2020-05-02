@@ -1,3 +1,4 @@
+#pragma once
 #include "Collision.h"
 #include <time.h>
 

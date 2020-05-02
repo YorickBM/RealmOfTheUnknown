@@ -1,8 +1,8 @@
 #pragma once
-#pragma once
 #include "AnimModel.h"
 #include "Camera.h"
 #include "CollisionExtra.h"
+#include "Item.h"
 
 //Data
 enum AiType { Passive, Hostile };
@@ -23,9 +23,6 @@ struct MotionC {
 
 struct ModelMeshC {
 	AnimModel model;
-	///AnimModel BoundingBox;
-	///vec3 min;
-	///vec3 max;
 };
 
 struct RenderModeC {
@@ -54,4 +51,8 @@ struct CollisionC {
 struct ChunkC {
 	std::map<pair<float, float>, float> worldMapData;
 	std::vector<vec2> positions;
+};
+
+struct EntityC {
+	Item item;
 };

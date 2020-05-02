@@ -6,6 +6,10 @@
 #define GLAD_GLAPI_EXPORT
 #endif
 
+#ifndef NULL
+#define NULL 0
+#endif
+
 #include <glad/glad.h>
 #else
 #if defined(__APPLE__)
@@ -25,33 +29,18 @@
 #include <nanogui/theme.h>
 #include <nanogui/formhelper.h>
 #include <nanogui/slider.h>
+#include <map>
 
 #include "CustomGrid.h"
 #include "GLTexture.h"
 #include "NanoUtility.h"
+#include "ComponentSystemManager.h"
+#include "Components.h"
+#include "Item.h"
 
 using namespace nanogui;
 using imagesDataType = vector<pair<GLTexture, GLTexture::handleType>>;
-enum InventoryCataType { All = 0, Armor, Tools, Miscellaneous };
-
-struct Item {
-	string name = "N/A";
-	string desc = "N/A";
-
-	string image = "empty";
-	int imgLocation = 1;
-
-	string stat1 = "Min. Level: --1";
-	int icon1 = ENTYPO_ICON_LAB_FLASK;
-	string stat2 = "Req. Class: ---";
-	int icon2 = ENTYPO_ICON_NEWSLETTER;
-	string stat3 = "Req. Quest: ---";
-	int icon3 = ENTYPO_ICON_CLIPBOARD;
-
-	InventoryCataType type = InventoryCataType::Miscellaneous;
-
-	int catagorie = -1;
-};
+extern ComponentSystemManager csm;
 
 class Inventory {
 public:
@@ -60,13 +49,11 @@ public:
 	 Create basic inventory with all empty slots & info Widget.
 	 Also creates a toolbar
 	 */
-	Inventory(GLFWwindow* window, int width, int height, Vector2i position = Vector2i(15,15)) {
+	Inventory(GLFWwindow* window, int width, int height, Camera& camera, Vector2i position = Vector2i(15,15)) 
+		: _camera(camera), tempWidth(width), tempHeight(height) {
 
 		Screen* backgroundScreen = NanoUtility::CreateScreen(window, nonInteractiveScreens);
 		Screen* frontScreen = NanoUtility::CreateScreen(window, interactiveScreens);
-
-		tempWidth = width;
-		tempHeight = height;
 
 		//Create info Screen
 		_infoBackgroundWindow = new Window(backgroundScreen, "");
@@ -78,6 +65,9 @@ public:
 		GLTexture texture("backgroundSlot");
 		auto data = texture.load("resources/backgroundSlot.png");
 		mImagesData.emplace_back(std::move(texture), std::move(data));
+
+		SelectedImageIndex = NanoUtility::LoadImage("Inventory/Selected", mImagesData);
+		EmptyImageIndex = NanoUtility::LoadImage("Empty", mImagesData);
 		#pragma endregion
 
 		#pragma region Info Background
@@ -202,6 +192,12 @@ public:
 		createSlotRow(new Window(frontScreen, ""), _invRows);
 		#pragma endregion
 
+		for (auto selectedImg : _selectedItems)
+			selectedImg.second->bindImage(mImagesData[EmptyImageIndex].first.texture());
+
+		///DEBUG
+		std::cout << _selectedItems.size() << std::endl;
+
 		//Create Toolbar
 		_toolBarBackgroundWindow = new Window(backgroundScreen, "");
 		_toolBarContextWindow = new Window(frontScreen, "");
@@ -308,19 +304,31 @@ public:
 
 	/*
 	*/
-	void AddItem(Item item) {
+	void AddItem(Item item, int count = 1) {
+		allUserItems.insert(make_pair(item, count));
 		SortInventory(_activeType);
 	}
 
 	/*
 	*/
-	void DropItem(Item item) {
-		/*std::vector<Item>::iterator itr = std::find(allUserItems.begin(), allUserItems.end(), item);
-		if (itr != allUserItems.cend()) {
-			int index = std::distance(allUserItems.begin(), itr);
-			allUserItems.erase(allUserItems.begin() + index);
+	void DropItem(Item item, vec3 position) {
+		if (allUserItems.at(item) > 1) {
+			allUserItems.at(item) -= 1;
 		}
-		SortInventory(_activeType);*///
+		else {
+			allUserItems.erase(item);
+		}
+
+		///Create CSM entity
+		auto Entity = csm.CreateEntity();
+		string modelPath = "resources/Inventory/Models/" + item.name + ".fbx";
+		NanoUtility::replace(modelPath, " ", "");
+
+		csm.AddComponent(Entity, ModelMeshC{AnimModel(modelPath, position, 0.3f)});
+		csm.AddComponent(Entity, TransformC{ position, 0.3f });
+		csm.AddComponent(Entity, EntityC{ item });
+		
+		SortInventory(_activeType);
 	}
 
 	/*
@@ -355,6 +363,10 @@ public:
 
 				frame = 10;
 			}
+		}
+		else if (GLFW_KEY_Q == key && GLFW_PRESS == action)
+		{
+			DropItem(_items[SelectedSlot], _camera.GetPosition());
 		}
 	}
 
@@ -402,25 +414,35 @@ public:
 
 		switch (sortType) {
 		case InventoryCataType::All:
-			for(Item item : allUserItems)
-				SetItem(slot++, item);
+			for(auto item : allUserItems)
+				SetItem(slot++, item.first);
 			break;
 		case InventoryCataType::Armor:
-			for (Item item : allUserItems)
-				if(item.type == InventoryCataType::Armor)SetItem(slot++, item);
+			for (auto item : allUserItems)
+				if(item.first.type == InventoryCataType::Armor)SetItem(slot++, item.first);
 			break;
 		case InventoryCataType::Miscellaneous:
-			for (Item item : allUserItems)
-				if (item.type == InventoryCataType::Miscellaneous)SetItem(slot++, item);
+			for (auto item : allUserItems)
+				if (item.first.type == InventoryCataType::Miscellaneous)SetItem(slot++, item.first);
 			break;
 		case InventoryCataType::Tools:
-			for (Item item : allUserItems)
-				if (item.type == InventoryCataType::Tools)SetItem(slot++, item);
+			for (auto item : allUserItems)
+				if (item.first.type == InventoryCataType::Tools)SetItem(slot++, item.first);
 			break;
 		}
 
-		for (int i = slot; slot < rowsVar; slot++) {
+		for (int i = slot; slot < 40; slot++) {
 			RemoveItem(slot);
+		}
+	}
+
+	/*
+	*/
+	void SetActiveSlot(int slot = -1) {
+		//Make all slots NOT active
+
+		if (slot != -1) {
+			//Make specificslot active
 		}
 	}
 
@@ -443,10 +465,11 @@ private:
 	vector<Label*> desc;
 	vector<Button*> _filterButtons;
 
-	vector<Item> allUserItems;
+	map<Item, int> allUserItems;
 
 	imagesDataType mImagesData;
-	InventoryCataType _activeType;
+	InventoryCataType _activeType = InventoryCataType::All;
+	Camera& _camera;
 
 	void createSlotRow(Window* row, vector<pair<int, Window*>> &list, int rows = 10, vector<string> items = { "empty" , "empty" , "empty" , "empty" , "empty" , "empty" , "empty" ,"empty" ,"empty" ,"empty" }) {
 		row->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 20, 8));
@@ -455,7 +478,7 @@ private:
 
 		for (int i = 0; i < rows; i++) {
 			int pos = NanoUtility::LoadImage(items[i], mImagesData);
-			_items[uniqueSlotId] = Item({ "none", "N/A", items[i], pos });
+			_items[uniqueSlotId] = Item({ "none", "N/A", items[i], InventoryCataType::Miscellaneous, pos });
 			createSlot(row, 70, 70, uniqueSlotId++);
 		}
 
@@ -477,25 +500,39 @@ private:
 		frontImage->setFixedSize({ x, y });
 		_slotImages[slotNum] = frontImage;
 
-		Button* selectItem = new Button(slot, "T");
-		selectItem->setFixedSize({ x, y });
-		selectItem->setCallback([slotNum, this, frontImage]() {
-			frontImage->bindImage(mImagesData[_items[slotNum].imgLocation].first.texture());
+		ImageView* selectedImage = new ImageView(slot, mImagesData[0].first.texture());
+		selectedImage->setFixedSize({ x, y });
+		_selectedItems.push_back(make_pair(slotNum, selectedImage));
 
-			if (_items[slotNum].name != "none" && _backpackBackgroundWindow->visible()) {
-				UpdateInfo(_items[slotNum].name, _items[slotNum].imgLocation,
-					_items[slotNum].stat1, _items[slotNum].icon1,
-					_items[slotNum].stat2, _items[slotNum].icon2,
-					_items[slotNum].stat3, _items[slotNum].icon3);
+		Button* selectItem = new Button(slot, " ");
+		selectItem->setFixedSize({ x, y });
+		selectItem->setCallback([slotNum, this, frontImage, selectedImage, x, y]() {
+			Item itm = _items[slotNum];
+			frontImage->bindImage(mImagesData[itm.imgLocation].first.texture());
+
+			if (itm.name != "none" && _backpackBackgroundWindow->visible()) {
+				//Update Info widget with correct info
+				UpdateInfo(itm.name, itm.imgLocation, itm.stat1, itm.icon1, itm.stat2, itm.icon2, itm.stat3, itm.icon3);
+
+				//Render Count 
+				int amount = allUserItems.at(itm);
+				
+				//Show Info Menu
 				ShowInfo(true);
+
+				//Realign Windows
 				realignWindows(tempWidth, tempHeight);
+
+				//Set selected Slot int to slotNum
+				SelectedSlot = slotNum;
 			}
 			else {
 				ShowInfo(false);
 				realignWindows(tempWidth, tempHeight);
 			}
 			
-			std::cout << "Slot ->" << slotNum << std::endl; });
+			std::cout << "Slot ->" << slotNum << std::endl; 
+		});
 
 		return slot;
 	}
@@ -537,10 +574,14 @@ private:
 	map<string, ImageView*> _infoImages;
 	map<string, Button*> _infoButtons;
 	map<string, GLCanvas*> _infoLines;
+	vector<pair<int, ImageView*>> _selectedItems;
 
 	map<int, ImageView*> _slotImages;
 	int frame = 0;
 
 	int tempWidth = 0;
 	int tempHeight = 0;
+	int SelectedImageIndex = 0;
+	int EmptyImageIndex = 0;
+	int SelectedSlot = -1;
 };

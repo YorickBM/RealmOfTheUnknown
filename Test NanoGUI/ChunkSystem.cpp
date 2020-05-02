@@ -1,3 +1,4 @@
+#pragma once
 #include "ChunkSystem.h"
 #include "CollisionUtility.h"
 

@@ -1,3 +1,4 @@
+#pragma once
 #include "ShaderLoader.h"
 
 #pragma region Shader Loader

@@ -1,3 +1,4 @@
+#pragma once
 #include "Mesh.h"
 
 #pragma region Mesh

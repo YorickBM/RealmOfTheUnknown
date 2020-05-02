@@ -1,3 +1,4 @@
+#pragma once
 #include "MovementSystem.h"
 #include "CollisionUtility.h"
 

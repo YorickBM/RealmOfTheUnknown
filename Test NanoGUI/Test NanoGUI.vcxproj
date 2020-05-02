@@ -163,6 +163,7 @@
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="InputSystem.cpp" />
+    <ClCompile Include="ItemEntitySystem.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="ModelMeshSystem.cpp" />
@@ -198,6 +199,8 @@
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="InventoryTheme.h" />
+    <ClInclude Include="Item.h" />
+    <ClInclude Include="ItemEntitySystem.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="ModelMeshSystem.h" />
@@ -235,6 +238,7 @@
     <None Include="glew_d.dll" />
     <None Include="glfw3.dll" />
     <None Include="glfw_d.dll" />
+    <None Include="Inventory.data" />
     <None Include="jpeg_d.dll" />
     <None Include="libexpat_d.dll" />
     <None Include="libpng_d.dll" />

@@ -1,3 +1,4 @@
+#pragma once
 #include "ModelLoader.h";
 
 #pragma region Model Loader

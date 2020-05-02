@@ -1,4 +1,5 @@
 #pragma region Includes
+#pragma once
 // STD Includes
 #include <string>
 #include <map>
@@ -120,6 +121,7 @@ ClassSelector* classSelector;
 
 std::unordered_map<string, string> settings;
 std::unordered_map<string, string> inventory;
+std::unordered_map<string, Item> invItems;
 
 #pragma endregion
 
@@ -146,6 +148,14 @@ int main(int /* argc */, char** /* argv */) {
     resolutions.push_back("3440x1440");
     resolutions.push_back("3840x2160");
     #pragma endregion
+    #pragma region Items
+    //Item{ "", "", "", InventoryCataType::Tools, 1, "",ENTYPO_ICON_LAB_FLASK, "", ENTYPO_ICON_NEWSLETTER, "", ENTYPO_ICON_CLIPBOARD }
+    invItems.insert(make_pair("Dummy Hammer", Item{ "Dummy Hammer", "----", "Inventory/DummyHammer", InventoryCataType::Tools, 1, "Min. Level --1",ENTYPO_ICON_LAB_FLASK, "Class: --Hunter", ENTYPO_ICON_NEWSLETTER, "Att. Spd: Slow", ENTYPO_ICON_FLASH }));
+    invItems.insert(make_pair("Bone", Item{ "Bone", "----", "Inventory/Bone", InventoryCataType::Miscellaneous, 1, "Misc Item",ENTYPO_ICON_LAB_FLASK, "", ENTYPO_ICON_NEWSLETTER, "", ENTYPO_ICON_FLASH }));
+    invItems.insert(make_pair("Bone", Item{ "Bone", "----", "Inventory/Bone", InventoryCataType::Miscellaneous, 1, "Misc Item",ENTYPO_ICON_LAB_FLASK, "", ENTYPO_ICON_NEWSLETTER, "", ENTYPO_ICON_FLASH }));
+
+#pragma endregion
+
 
     #pragma region Loading Settings
     //Thread Loading Settings
@@ -240,7 +250,7 @@ int main(int /* argc */, char** /* argv */) {
     #pragma endregion
     #pragma region NanoGui GUI
     //Create Inventory
-    inv = new Inventory(window, SCREEN_WIDTH, SCREEN_HEIGHT);
+    inv = new Inventory(window, SCREEN_WIDTH, SCREEN_HEIGHT, camera);
     inv->ShowInfo();
 
     classSelector = new ClassSelector(classSelectorInteractiveScreen, SCREEN_WIDTH, SCREEN_HEIGHT, window, classSelectorNonInteractiveScreen);
@@ -384,6 +394,7 @@ int main(int /* argc */, char** /* argv */) {
         csm.RegisterComponent<AiC>();
         csm.RegisterComponent<InputC>();
         csm.RegisterComponent<ChunkC>();
+        csm.RegisterComponent<EntityC>();
 
         auto inputSystem = csm.RegisterSystem<InputSystem>();
         {
@@ -500,9 +511,13 @@ int main(int /* argc */, char** /* argv */) {
         ///model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
 
         #pragma region Inventory
+        loadingScreen->specialRender(window, "Loading Items", width, height);
+        FileLoader::loadDataFile("Inventory.data");
+
+        loadingScreen->specialRender(window, "Adding items to player inventory", width, height);
         //Add temp items
-        inv->SetItem(0, Item{ "Item in Inv", "desc", "test2" });
-        inv->SetItem(50, Item{ "Item in Toolbar", "desc", "test2" });
+        inv->AddItem(invItems.at("Dummy Hammer"));
+        inv->AddItem(invItems.at("Bone"));
         #pragma endregion
 
         #pragma region Pre Game Loop
