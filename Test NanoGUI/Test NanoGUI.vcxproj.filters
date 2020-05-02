@@ -129,6 +129,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ChunkSystem.cpp">
+      <Filter>Source Files\EntityComponentSystem\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -260,6 +263,9 @@
     <ClInclude Include="CollisionUtility.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="ChunkSystem.h">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragmentShader.glsl">
@@ -350,6 +356,9 @@
       <Filter>Resource Files\LIB</Filter>
     </None>
     <None Include="ModelData.data">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Settings.data">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

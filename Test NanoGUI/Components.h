@@ -23,7 +23,9 @@ struct MotionC {
 
 struct ModelMeshC {
 	AnimModel model;
-	AnimModel BoundingBox;
+	///AnimModel BoundingBox;
+	///vec3 min;
+	///vec3 max;
 };
 
 struct RenderModeC {
@@ -46,6 +48,10 @@ struct InputC {
 
 struct CollisionC {
 	CollisionType type;
-	bool staticCollision;
 	BoundingBox boundingBox;
+};
+
+struct ChunkC {
+	std::map<pair<float, float>, float> worldMapData;
+	std::vector<vec2> positions;
 };

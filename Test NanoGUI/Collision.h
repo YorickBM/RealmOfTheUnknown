@@ -35,6 +35,7 @@ namespace que {
 		bool detectCollision(std::vector<Face> objectFaces, std::vector<glm::vec3> userVertices);
 		bool detectCollision(std::vector<Face> objectFaces, std::vector<glm::vec3> userVertices, glm::vec3 PositionToCastTo);
 		bool detectCollision(BoundingBox a, BoundingBox b);
+		bool detectCollision(BoundingBox box, glm::vec3 point);
 
 		glm::vec3 LineA, LineB, LineC, LineD;
 

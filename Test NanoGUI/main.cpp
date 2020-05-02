@@ -63,12 +63,12 @@
 using namespace nanogui;
 #pragma region Vars
 // Properties
-const GLuint WIDTH = 1280, HEIGHT = 800; //1280x1024 <- lower then this = customScale
+const GLuint WIDTH = 800, HEIGHT = 800; //1280x1024 <- lower then this = customScale
 const char* TITLE = "Fighting Against The Coruption - (0.0.1)";
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
 // Camera
-Camera camera(glm::vec3(-37, 7, 109));
+Camera camera(glm::vec3(0.7f, 6.f, 106.f));
 bool keys[1024] = { false };
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
@@ -104,13 +104,6 @@ enum res_enum {
     resolution_19
 };
 
-bool bvar = true;
-int ivar = 12345678;
-double dvar = 3.1415926;
-float fvar = (float)dvar;
-std::string strval = "A string";
-res_enum enumval = resolution_2;
-Color colval(0.5f, 0.5f, 0.7f, 1.f);
 Screen* screen = nullptr;
 Screen* startScreenScreen = nullptr;
 Screen* startScreenImgScreen = nullptr;
@@ -124,6 +117,8 @@ Inventory* inv;
 StartScreen* startScreen;
 LoadingScreen* loadingScreen;
 ClassSelector* classSelector;
+
+std::unordered_map<string, string> settings;
 
 #pragma endregion
 
@@ -151,6 +146,14 @@ int main(int /* argc */, char** /* argv */) {
     resolutions.push_back("3840x2160");
     #pragma endregion
 
+    #pragma region Loading Settings
+    //Thread Loading Settings
+    auto f = []() {
+        settings = FileLoader::loadDataFile("Settings.data");
+    };
+    std::thread thread_object(f);
+    #pragma endregion
+
     #pragma region Initialize glfw
     glfwInit();
     glfwSetTime(0);
@@ -172,7 +175,10 @@ int main(int /* argc */, char** /* argv */) {
     #pragma endregion
     #pragma region GlfwWindow Creation
     // Create a GLFWwindow object
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, nullptr, nullptr);
+    std::string displaySize = settings.at("DisplaySize");
+    std::vector<std::string> heightAndWidth = FileLoader::Split(displaySize += "x0", "x");
+
+    GLFWwindow* window = glfwCreateWindow(std::stoi(heightAndWidth[0]), std::stoi(heightAndWidth[1]), TITLE, nullptr, nullptr);
     if (window == nullptr) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -328,22 +334,14 @@ int main(int /* argc */, char** /* argv */) {
 
            loadingScreen->realignWindows(width, height);
            loadingScreen->render();
+
+        #pragma region Update in Settings Map
+           std::string size = std::to_string(width) + "x" + std::to_string(height);
+           settings.at("DisplaySize") = size;
+        #pragma endregion
         }
     );
     #pragma endregion
-
-    std::vector<vec2> positions;
-    positions.push_back(vec2(2, 2));
-    positions.push_back(vec2(1, 1));
-    positions.push_back(vec2(2, 8));
-    positions.push_back(vec2(2, 5));
-    positions.push_back(vec2(6, 2));
-    positions.push_back(vec2(3, 2));
-    positions.push_back(vec2(6, 4));
-    positions.push_back(vec2(1, 2));
-
-    std::vector<vec2> inRangePos = CollisionUtility::getClosesPointsInRange(4, positions, vec2(2, 2), 5.f);
-    for (vec2 pos : inRangePos) std::cout << pos.x << ";" << pos.y << std::endl;
 
     while (startScreen->IsActive() && !glfwWindowShouldClose(window)) {
         #pragma region Frame & Poll Events & Clear Buffers/Color
@@ -380,6 +378,7 @@ int main(int /* argc */, char** /* argv */) {
         csm.RegisterComponent<HealthC>();
         csm.RegisterComponent<AiC>();
         csm.RegisterComponent<InputC>();
+        csm.RegisterComponent<ChunkC>();
 
         auto inputSystem = csm.RegisterSystem<InputSystem>();
         {
@@ -396,6 +395,14 @@ int main(int /* argc */, char** /* argv */) {
             signature.set(csm.GetComponentType<MotionC>());
             signature.set(csm.GetComponentType<TransformC>());
             csm.SetSystemSignature<MovementSystem>(signature);
+        }
+        movementSystem->Init();
+
+        auto chunkSystem = csm.RegisterSystem<ChunkSystem>();
+        {
+            Signature signature;
+            signature.set(csm.GetComponentType<ChunkC>());
+            csm.SetSystemSignature<ChunkSystem>(signature);
         }
         movementSystem->Init();
 
@@ -432,41 +439,60 @@ int main(int /* argc */, char** /* argv */) {
         cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
         ///csm.InitEntities("res/System/Entities.txt");
 
-        auto Te = csm.CreateEntity();
-        csm.AddComponent(Te, MotionC{});
-        csm.AddComponent(Te, InputC{ Keyboard });
-        csm.AddComponent(Te, TransformC{ vec3(0), 1.f });
-        AnimModel model1("resources/tree.fbx", vec3(0), 1.f);
-        csm.AddComponent(Te, ModelMeshC{ model1, model1.GetBoundingBoxModel() });
-
         loadingScreen->specialRender(window, "Initializing Model Data", width, height);
         std::vector<ModelDataClass*> modelData = FileLoader::ReadModelData("ModelData.data");
 
         int modelnum = 0;
         int amountmodels = modelData.size();
-
         std::cout << modelData.size() << std::endl;
+
+        #pragma region Maksure MovementSystem Update runs
+        auto Te = csm.CreateEntity();
+        csm.AddComponent(Te, MotionC{});
+        csm.AddComponent(Te, InputC{ Keyboard });
+        csm.AddComponent(Te, TransformC{ vec3(0), 1.f });
+        #pragma endregion
+
         for (ModelDataClass* data : modelData) {
             std::stringstream ss;
             ss << "Loading Models (" << modelnum++ << "/" << amountmodels << ")";
             std::string str = ss.str();
             loadingScreen->specialRender(window, str, width, height);
+
             AnimModel model(data->path, vec3(data->x, data->y, data->z), data->scale, vec3(data->rx, data->ry, data->rz));
-            AnimModel boundingBox;
-
+            vec3 min, max;
+            std::map<pair<float, float>, float> worldMapDataMap;
+            std::vector<vec2> positionsMap;
             auto Entity = csm.CreateEntity();
-            csm.AddComponent(Entity, TransformC{ vec3(data->x, data->y, data->z), data->scale });
-            if (data->colType != 2) { boundingBox = model.GetBoundingBoxModel(); }
-            csm.AddComponent(Entity, ModelMeshC{ model, boundingBox });
-            if (data->colType != 2) { csm.AddComponent(Entity, CollisionC{ data->colType, true }); }
 
-            //Movable with Keyboard
-            csm.AddComponent(Entity, MotionC{});
-            csm.AddComponent(Entity, InputC{ Keyboard });
+            if (data->colType == 3) {
+                vector<Mesh*> meshes = model.GetMeshes();
+                for (Mesh* mesh : meshes) {
+                    vector<vec3> vertices = mesh->translateVertices(data->scale, vec3(data->x, data->y, data->z), vec3(data->rx, data->ry, data->rz));
+
+                    for (vec3 vertice : vertices) {
+                        if (worldMapDataMap.count(make_pair(vertice.x, vertice.z)) == 0) {
+                            worldMapDataMap.insert(make_pair(make_pair(vertice.x, vertice.z), vertice.y));
+                            positionsMap.push_back(vec2(vertice.x, vertice.z));
+                            ///DEBUG
+                            ///std::cout << vertice.x << ";" << vertice.z << " - " << vertice.y << std::endl;
+                        }
+                    }
+                }
+
+                csm.AddComponent(Entity, ChunkC{ worldMapDataMap, positionsMap });
+            }
+
+            if (data->colType != 2) { model.GetMinAndMaxVertice(min, max); }
+            if (data->colType != 2 && data->colType != 3)
+                csm.AddComponent(Entity, CollisionC{ data->colType, BoundingBox{min, max} });
+            csm.AddComponent(Entity, TransformC{ vec3(data->x, data->y, data->z), data->scale });
+            csm.AddComponent(Entity, ModelMeshC{ model });
         }
         #pragma endregion
-        
-        //model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
+
+        ///ANIMATION
+        ///model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
 
         #pragma region Inventory
         //Add temp items
@@ -477,7 +503,7 @@ int main(int /* argc */, char** /* argv */) {
         #pragma region Pre Game Loop
         loadingScreen->specialRender(window, "Loading complete", width, height);
         glm::mat4 projection = glm::perspective(camera.GetZoom(), static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT), 0.1f, 100.0f); //Render Distance
-        collisionSystem->Update();
+
         inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT);
         inv->Hide();
         #pragma endregion
@@ -500,9 +526,10 @@ int main(int /* argc */, char** /* argv */) {
 
             #pragma region Game Objects
             //Game Objects
-            inputSystem->Update(keys);
+            inputSystem->Update(keys, settings);
             movementSystem->Update(deltaTime, camera);
-            collisionSystem->CollisionCheck();
+            chunkSystem->Update(camera);
+            collisionSystem->Update(camera);
 
             #pragma endregion
             #pragma region Draw Models
@@ -526,15 +553,9 @@ int main(int /* argc */, char** /* argv */) {
             glUniform1f(glGetUniformLocation(shaderLoader->ID, "specularStrength"), 0.1f);
 
             modelSystem->Update(shaderLoader);
-
-            ///CAMPOS std::cout << camera.GetPosition().x << ";" << camera.GetPosition().y << ";" << camera.GetPosition().z << std::endl;
-
-            //Draw all Chunks
-            for (Chunk chunk : cm.GetChunks()) {
-                mat4 objectModel;
-                glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
-                chunk.model.Draw(shaderLoader);
-            }
+            
+            ///DEBUG
+            ///std::cout << camera.GetPosition().x << ";" << camera.GetPosition().y << ";" << camera.GetPosition().z << std::endl;
 
             shaderLoader->unuse();
             #pragma endregion
@@ -547,5 +568,11 @@ int main(int /* argc */, char** /* argv */) {
     }
     // Terminate GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();
+    thread_object.detach();
+
+    #pragma region Save Data
+    FileLoader::SaveFile("Settings.data", settings);
+    #pragma endregion
+
     return 0;
 }

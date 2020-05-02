@@ -53,7 +53,7 @@ public:
 
 		Chunk activeChunk = GetChunk(PlayerPosition); //Get Chunk where the player i currently in
 		vector<Mesh*> activeMeshes = activeChunk.model.GetMeshes();
-		vector<vec3> vertices = activeMeshes[activeMeshes.size() - 1]->GetTranslatedVertices(); //Get all vec3's of the chunk the player is in
+		vector<vec3> vertices = activeMeshes[activeMeshes.size() - 1]->GetTranslatedVertices(vec3(0), vec3(1)); //Get all vec3's of the chunk the player is in
 
 		map<float, vec3> distancesWithPoint;
 		vector<float> distances;

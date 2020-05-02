@@ -71,8 +71,18 @@ public:
 
 	//Vertice's effected by model scale
 	//Vertice's effect by model position
-	vector<vec3> translateVertices(float scale, vec3 position);
-	vector<vec3> GetTranslatedVertices() { return translated; }
+	vector<vec3> translateVertices(float scale, vec3 position, vec3 rot = vec3(0));
+	vector<vec3> GetTranslatedVertices(vec3 pos, vec3 scale) {
+		vector<vec3> verticePositions;
+
+		for (Vertex vertice : vertices) {
+			vec3 vec = vertice.position;
+			///vec3 vec = vec3(vertice.position.x * scale.x, vertice.position.y * scale.y, vertice.position.z * scale.z);
+			verticePositions.push_back(vec);
+			//std::cout << vec.z << ";" << vec.y << ";" << vec.z << std::endl;
+		}
+		return verticePositions;
+	}
 	vector<vec3> GetNonTranslatedVertices() { 
 		vector<vec3> verticePositions;
 
@@ -82,6 +92,7 @@ public:
 
 		return verticePositions; 
 	}
+	glm::mat4 createTransform(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale);
 
 	~Mesh();
 };

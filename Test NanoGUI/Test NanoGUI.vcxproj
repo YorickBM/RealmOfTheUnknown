@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Bone.cpp" />
+    <ClCompile Include="ChunkSystem.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="InputSystem.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ChunkManager.h" />
+    <ClInclude Include="ChunkSystem.h" />
     <ClInclude Include="CImg.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="CollisionExtra.h" />
@@ -239,6 +241,7 @@
     <None Include="ModelData.data" />
     <None Include="nanogui.dll" />
     <None Include="pcre_d.dll" />
+    <None Include="Settings.data" />
     <None Include="SILLY_d.dll" />
     <None Include="test.dae" />
     <None Include="test.fbx" />

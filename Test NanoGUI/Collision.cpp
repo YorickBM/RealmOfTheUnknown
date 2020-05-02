@@ -32,7 +32,6 @@ namespace que {
 		//std::cout << "Time taken: " << (double)(clock() - tStart) / CLOCKS_PER_SEC << std::endl;
 		return false;
 	}
-
 	bool Collision::detectCollision(std::vector<Face> objectFaces, std::vector<glm::vec3> userVertices, glm::vec3 PositionToCastTo) {
 		RayIntersect ray = RayIntersect();
 		float zero = 0.f;
@@ -67,5 +66,11 @@ namespace que {
 	{
 		glm::vec3 tmp = a.position - b.position; //Distance between centers
 		return (glm::dot(tmp, tmp) <= glm::pow((a.radius + b.radius), 2));
+	}
+	bool Collision::detectCollision(BoundingBox box, vec3 point)
+	{
+		return (point.x >= box.min.x && point.x <= box.max.x) &&
+			(point.y >= box.min.y && point.y <= box.max.y) &&
+			(point.z >= box.min.z && point.z <= box.max.z);
 	}
 }

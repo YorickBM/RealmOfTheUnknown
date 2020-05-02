@@ -13,7 +13,6 @@ void ModelMeshSystem::Update(ShaderLoader* shaderLoader)
 		auto& transformC = csm.GetComponent<TransformC>(entity);
 
 		modelMeshC.model.SetPosition(transformC.position);
-		modelMeshC.BoundingBox.SetPosition(transformC.position);
 
 		mat4 objectModel; //model matrix
 		objectModel = mat4(1.0);

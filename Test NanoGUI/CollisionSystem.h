@@ -8,8 +8,7 @@ class CollisionSystem : public System
 {
 public:
 	void Init();
-	void Update();
-	void CollisionCheck();
+	void Update(Camera& camera);
 
 private:
 	que::Collision col;
