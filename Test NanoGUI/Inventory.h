@@ -290,9 +290,7 @@ public:
 	Set an item in the users inventory on a specific slot.
 	*/
 	void SetItem(int slot, Item item) {
-		int imgLocation = NanoUtility::LoadImage(item.image, mImagesData);
-
-		item.imgLocation = imgLocation;
+		item.imgLocation = NanoUtility::LoadImage(item.image, mImagesData);
 		_items[slot] = item;
 
 		refreshItem(slot);
@@ -317,10 +315,12 @@ public:
 	/*
 	*/
 	void DropItem(Item item) {
-		
-		std::vector<Item>::iterator itr = std::find(allUserItems.begin(), allUserItems.end(), item);
-
-		SortInventory(_activeType);
+		/*std::vector<Item>::iterator itr = std::find(allUserItems.begin(), allUserItems.end(), item);
+		if (itr != allUserItems.cend()) {
+			int index = std::distance(allUserItems.begin(), itr);
+			allUserItems.erase(allUserItems.begin() + index);
+		}
+		SortInventory(_activeType);*///
 	}
 
 	/*
