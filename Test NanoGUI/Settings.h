@@ -26,6 +26,24 @@
 #include <nanogui/formhelper.h>
 #include <nanogui/slider.h>
 
+
+#include <nanogui/opengl.h>
+#include <nanogui/checkbox.h>
+#include <nanogui/toolbutton.h>
+#include <nanogui/popupbutton.h>
+#include <nanogui/combobox.h>
+#include <nanogui/progressbar.h>
+#include <nanogui/entypo.h>
+#include <nanogui/messagedialog.h>
+#include <nanogui/textbox.h>
+#include <nanogui/imagepanel.h>
+#include <nanogui/imageview.h>
+#include <nanogui/vscrollpanel.h>
+#include <nanogui/colorwheel.h>
+#include <nanogui/colorpicker.h>
+#include <nanogui/graph.h>
+#include <nanogui/tabwidget.h>
+
 #include "CustomGrid.h"
 #include "GLTexture.h"
 #include "NanoUtility.h"
@@ -49,9 +67,10 @@ public:
 		ImageView* backgroundImg = new ImageView(_backgroundImage, mImagesDataSettingsScreen[NanoUtility::LoadImage("MineRender5", mImagesDataSettingsScreen)].first.texture());
 		_backgroundImage->center();
 
+		#pragma region Making Windows
 		//Setting Background Screen
 		_backMenu = new Window(_screenImage, "");
-		
+
 		GLCanvas* topCanvas = new GLCanvas(_backMenu);
 		topCanvas->setBackgroundColor({ 46, 48, 52, 255 });
 		topCanvas->setFixedSize({ width - 100, height - 100 });
@@ -69,12 +88,99 @@ public:
 		_frontMenuMiddle->setFixedSize(Vector2i(width, height));
 		_frontMenuMiddle->setPosition(Vector2i(width / 2 - 100, 50));
 
+		//Settings Menuswitchbuttons
+		_frontMenuSwitchButtons = new Window(_screen, "");
+		_frontMenuSwitchButtons->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Fill, 0, 20));
+		_frontMenuSwitchButtons->setFixedSize(Vector2i(width, 30));
+		_frontMenuSwitchButtons->setPosition(Vector2i(width / 2 - 130, 80));
+
+		//Settings different screens
+		_graphicsScreen = new Window(_screen, "");
+		_graphicsScreen->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Fill));
+		_graphicsScreen->setFixedSize(Vector2i(300, height));
+		_graphicsScreen->setPosition(Vector2i(60, 100));
+
+		_controlsScreen = new Window(_screen, "");
+		_controlsScreen->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Fill));
+		_controlsScreen->setFixedSize(Vector2i(width, height));
+		_controlsScreen->setPosition(Vector2i(60, 100));
+
+		_interfaceScreen = new Window(_screen, "");
+		_interfaceScreen->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Fill));
+		_interfaceScreen->setFixedSize(Vector2i(width, height));
+		_interfaceScreen->setPosition(Vector2i(60, 100));
+
+		_audioScreen = new Window(_screen, "");
+		_audioScreen->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Fill));
+		_audioScreen->setFixedSize(Vector2i(width, height));
+		_audioScreen->setPosition(Vector2i(60, 100));
 		
-		//Labels Settings
+		#pragma endregion
+		
+		//Labels/Buttons Settings
 		new Label(_frontMenuMiddle, "------ Settings ------", "sans-bold", 30);
 
-		new Label(_frontMenu, "Test1", "sans-bold", 20);
-		new Label(_frontMenu, "Test2", "sans-bold", 20);
+		new Label(_frontMenu, "Settings", "sans-bold", 20);
+
+		#pragma region Graphics Screen
+		new Label(_graphicsScreen, "Graphics", "sans-bold", 20);
+		new Label(_graphicsScreen, "Resolution", "sans", 20);
+		new Label(_graphicsScreen, "", "sans", 5);
+
+		ComboBox* CoBo = new ComboBox(_graphicsScreen, { "640x360", "800x600", "1024x768", "1280x720", "1280x800", "1280x1024"});
+		CoBo->setFixedSize(Vector2i(100, 30));
+
+		new Label(_graphicsScreen, "", "sans", 5);
+		new Label(_graphicsScreen, "Render distant", "sans", 20);
+
+		Widget* panel = new Widget(_graphicsScreen);
+		panel->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 20));
+		Slider* RenderSlider = new Slider(panel);
+		RenderSlider->setValue(0.5f);
+		RenderSlider->setFixedWidth(100);
+
+		TextBox* textBox = new TextBox(panel);
+		textBox->setFixedSize(Vector2i(60, 25));
+		textBox->setValue("5");
+		textBox->setUnits("Chunks");
+		RenderSlider->setCallback([textBox](float value) {
+			textBox->setValue(std::to_string((int)(value * 10)));
+			});
+
+		RenderSlider->setFinalCallback([&](float value) {
+			cout << "Render Distance: " << (int)(value * 10) << endl;
+			});
+
+		textBox->setFixedSize(Vector2i(65, 25));
+		textBox->setFontSize(15);
+		textBox->setAlignment(TextBox::Alignment::Left);
+
+		#pragma endregion
+		#pragma region Controls Screen
+		new Label(_controlsScreen, "Controls", "sans-bold", 20);
+		#pragma endregion
+		#pragma region Interface Screen
+		new Label(_interfaceScreen, "Interface", "sans-bold", 20);
+		#pragma endregion
+		#pragma region Audio Screen
+		new Label(_audioScreen, "Audio", "sans-bold", 20);
+		#pragma endregion
+
+		Button* Graphics = NanoUtility::button(_frontMenuSwitchButtons, "Graphics", {}, [this]() { this->_frontMenu->setVisible(false);this->_controlsScreen->setVisible(false); this->_interfaceScreen->setVisible(false); this->_audioScreen->setVisible(false); this->_graphicsScreen->setVisible(true); }, "comic-sans", 15, Color(255, 255, 255, 255));
+		Button* Controls = NanoUtility::button(_frontMenuSwitchButtons, "Controls", {}, [this]() { this->_frontMenu->setVisible(false);this->_controlsScreen->setVisible(true); this->_interfaceScreen->setVisible(false); this->_audioScreen->setVisible(false); this->_graphicsScreen->setVisible(false);}, "comic-sans", 15, Color(255, 255, 255, 255));
+		Button* Interface = NanoUtility::button(_frontMenuSwitchButtons, "Interface", {}, [this]() { this->_frontMenu->setVisible(false);this->_controlsScreen->setVisible(false); this->_interfaceScreen->setVisible(true); this->_audioScreen->setVisible(false); this->_graphicsScreen->setVisible(false);}, "comic-sans", 15, Color(255, 255, 255, 255));
+		Button* Audio = NanoUtility::button(_frontMenuSwitchButtons, "Audio", {}, [this]() { this->_frontMenu->setVisible(false);this->_controlsScreen->setVisible(false); this->_interfaceScreen->setVisible(false); this->_audioScreen->setVisible(true); this->_graphicsScreen->setVisible(false);}, "comic-sans", 15, Color(255, 255, 255, 255));
+		
+		Graphics->setFlags(Button::RadioButton);
+		Controls->setFlags(Button::RadioButton);
+		Interface->setFlags(Button::RadioButton);
+		Audio->setFlags(Button::RadioButton);
+
+		Vector2i RadioBttnsize = Vector2i(50, 20);
+		Graphics->setFixedSize(RadioBttnsize);
+		Controls->setFixedSize(RadioBttnsize);
+		Interface->setFixedSize(RadioBttnsize);
+		Audio->setFixedSize(RadioBttnsize);
 
 
 		_backButton = new Window(_screen, "");
@@ -94,7 +200,8 @@ public:
 		_screenImage->performLayout();
 		_backButton->setPosition({ 10, height - 40 });
 
-		NanoUtility::applyCustomTheme(_frontMenu);
+		NanoUtility::applyCustomTheme(_backButton);
+		NanoUtility::applyCustomTheme1(_frontMenuSwitchButtons);
 		}
 	/*
 	Render the Settingsscreen
@@ -112,6 +219,11 @@ public:
 		_frontMenu->setVisible(show);
 		_backButton->setVisible(show);
 		_frontMenuMiddle->setVisible(show);
+		_frontMenuSwitchButtons->setVisible(show);
+		_graphicsScreen->setVisible(false);
+		_controlsScreen->setVisible(false);
+		_interfaceScreen->setVisible(false);
+		_audioScreen->setVisible(false);
 	}
 
 	/*
@@ -151,6 +263,18 @@ private:
 	Window* _frontMenu;
 	Window* _backButton;
 	Window* _frontMenuMiddle;
+	Window* _frontMenuSwitchButtons;
+	Window* _graphicsScreen;
+	Window* _controlsScreen;
+	Window* _interfaceScreen;
+	Window* _audioScreen;
 
 	BaseScreen* _startScreen = nullptr;
+
+	/*
+	_graphicsScreen
+	_controlsScreen
+	_interfaceScreen
+	_audioScreen
+	*/
 };
