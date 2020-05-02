@@ -53,6 +53,20 @@ public:
 		return ret;
 	}
 
+	static Screen* CreateScreen(GLFWwindow* window, bool destruct = false) {
+		Screen* screen = new Screen();
+		screen->initialize(window, destruct);
+		return screen;
+	}
+
+	static Screen* CreateScreen(GLFWwindow* window, std::vector<Screen*>& screens, bool destruct = false) {
+		Screen* screen = new Screen();
+		screen->initialize(window, destruct);
+		screens.push_back(screen);
+
+		return screen;
+	}
+
 	static GLCanvas* line(Window* window, Color color = Color(46, 46, 50, 255), Vector2i size = Vector2i(206, 1)) {
 		GLCanvas* lineCanvas = new GLCanvas(window);
 		lineCanvas->setBackgroundColor(color);
@@ -133,6 +147,25 @@ public:
 
 		window->theme()->mButtonGradientTopPushed = Color(255, 255, 255, 255);
 		window->theme()->mButtonGradientBotPushed = Color(255, 255, 255, 255);
+		//*/
+	}
+
+	static void InventoryTheme(Window* window) {
+		//*
+		window->theme()->mTransparent = Color(29, 0);
+		window->theme()->mWindowFillUnfocused = Color(255, 0);
+		window->theme()->mWindowFillFocused = Color(255, 0);
+		window->theme()->mBorderMedium = Color(255, 0);
+		window->theme()->mBorderDark = Color(255, 0);
+		window->theme()->mBorderLight = Color(255, 0);
+		window->theme()->mDropShadow = Color(255, 0);
+		window->theme()->mButtonFontSize = 16;
+		window->theme()->mButtonGradientTopUnfocused = Color(255, 0);
+		window->theme()->mButtonGradientBotUnfocused = Color(255, 0);
+		window->theme()->mButtonGradientTopFocused = Color(255, 0);
+		window->theme()->mButtonGradientBotFocused = Color(255, 0);
+		window->theme()->mButtonGradientTopPushed = Color(255, 0);
+		window->theme()->mButtonGradientBotPushed = Color(255, 0);
 		//*/
 	}
 };

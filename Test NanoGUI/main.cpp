@@ -119,6 +119,7 @@ LoadingScreen* loadingScreen;
 ClassSelector* classSelector;
 
 std::unordered_map<string, string> settings;
+std::unordered_map<string, string> inventory;
 
 #pragma endregion
 
@@ -239,7 +240,7 @@ int main(int /* argc */, char** /* argv */) {
     #pragma endregion
     #pragma region NanoGui GUI
     //Create Inventory
-    inv = new Inventory(screen, SCREEN_WIDTH, SCREEN_HEIGHT);
+    inv = new Inventory(window, SCREEN_WIDTH, SCREEN_HEIGHT);
     inv->ShowInfo();
 
     classSelector = new ClassSelector(classSelectorInteractiveScreen, SCREEN_WIDTH, SCREEN_HEIGHT, window, classSelectorNonInteractiveScreen);
@@ -252,7 +253,8 @@ int main(int /* argc */, char** /* argv */) {
     #pragma region glfw Callbacks to NanoGUI & ECS
     glfwSetCursorPosCallback(window,
         [](GLFWwindow*, double x, double y) {
-            inv->getScreen()->cursorPosCallbackEvent(x, y);
+            for(Screen* screen : inv->getScreens())
+                screen->cursorPosCallbackEvent(x, y);
             inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT); //Prevent the movement this way
             startScreen->getScreen()->cursorPosCallbackEvent(x, y);
             classSelector->getScreen()->cursorPosCallbackEvent(x, y);
@@ -278,6 +280,8 @@ int main(int /* argc */, char** /* argv */) {
     glfwSetMouseButtonCallback(window,
         [](GLFWwindow*, int button, int action, int modifiers) {
             screen->mouseButtonCallbackEvent(button, action, modifiers);
+            for (Screen* screen : inv->getScreens())
+                screen->mouseButtonCallbackEvent(button, action, modifiers);
             startScreen->getScreen()->mouseButtonCallbackEvent(button, action, modifiers);
             classSelector->getScreen()->mouseButtonCallbackEvent(button, action, modifiers);
             classSelector->getScreenOtherTheme()->mouseButtonCallbackEvent(button, action, modifiers);
@@ -343,7 +347,8 @@ int main(int /* argc */, char** /* argv */) {
     );
     #pragma endregion
 
-    while (startScreen->IsActive() && !glfwWindowShouldClose(window)) {
+    ///REMOVE !
+    while (!startScreen->IsActive() && !glfwWindowShouldClose(window)) {
         #pragma region Frame & Poll Events & Clear Buffers/Color
         // Set frame time
         GLfloat currentFrame = glfwGetTime();

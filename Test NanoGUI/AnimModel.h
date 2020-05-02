@@ -77,10 +77,6 @@ public:
 	vector<Mesh*> GetMeshes() { return this->meshes; }
 	void GetMinAndMaxVertice(vec3& min, vec3& max) {
 		GenerateMinAndMaxVerticesTranslated(min, max, this->_position, vec3(this->rotX, this->rotY, this->rotZ), this->_scale);
-		std::cout << "->" << std::endl;
-		std::cout << min.x << ";" << min.y << ";" << min.z << std::endl;
-		std::cout << max.x << ";" << max.y << ";" << max.z << std::endl;
-		std::cout << "<-" << std::endl;
 	}
 	
 	AnimModel GetBoundingBoxModel() { 
