@@ -239,7 +239,7 @@ int main(int /* argc */, char** /* argv */) {
 #pragma endregion
 
     audioMaster->genMainEngine();
-    audioMaster->SetEngineVolume(audioMaster->GetMainSoundEngine(), std::stoi(settings.at("MusicVol")));
+    audioMaster->SetEngineVolume(audioMaster->GetMainSoundEngine(), std::stof(settings.at("MusicVol")));
     audioMaster->PlaySound(audioMaster->GetMainSoundEngine(), "resources/Sounds/MainMenu.mp3", true);
 
     #pragma region Initialize glfw
