@@ -227,7 +227,6 @@ public:
 		std::uniform_int_distribution<std::mt19937::result_type> dist6(1, 99999); // distribution in range [1, 6]
 
 		int rnd = dist6(rng);
-		std::cout << to_string(rnd) << std::endl;
 		return rnd;
 	}
 

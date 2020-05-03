@@ -91,6 +91,9 @@
     <Filter Include="Resource Files\LIB">
       <UniqueIdentifier>{8c02886d-73c0-4129-ba92-0ea1cbd45a20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Audio Engine">
+      <UniqueIdentifier>{64c953d7-ebe3-4550-b119-c8c9de6b616a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp">
@@ -280,6 +283,9 @@
     </ClInclude>
     <ClInclude Include="ItemEntitySystem.h">
       <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioMaster.h">
+      <Filter>Source Files\Audio Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -156,7 +156,7 @@ Inventory::Inventory(GLFWwindow* window, int width, int height, Camera& camera, 
 		selectedImg.second->bindImage(mImagesData[EmptyImageIndex].first.texture());
 
 	///DEBUG
-	std::cout << _selectedItems.size() << std::endl;
+	///std::cout << _selectedItems.size() << std::endl;
 
 	//Create Toolbar
 	_toolBarBackgroundWindow = new Window(backgroundScreen, "");
@@ -430,7 +430,6 @@ void Inventory::realignWindows(int width, int height) {
 	_questContextTopWindow->setPosition(_questBackgroundWindow->position() + Vector2i(0, 0) - infoOffset);
 	_questContextBottomWindow->setPosition(_questBackgroundWindow->position() + Vector2i(0, _questContextTopWindow->height()) - infoOffset);
 	for (pair<int, Window*> pair : _questRows) {
-		std::cout << pair.first << std::endl;
 		pair.second->setPosition(_questBackgroundWindow->position() + Vector2i(0, _questContextTopWindow->height()) + Vector2i(0, 4 + (pair.first * 90)) - infoOffset);
 	}
 	_questBackgroundWindow->setPosition(_questBackgroundWindow->position() + Vector2i(0, 0) - infoOffset);
@@ -648,7 +647,6 @@ void Inventory::createSlotRow(Window* row, vector<pair<int, Window*>>& list, boo
 }
 Widget* Inventory::createSlot(Widget* window, int x, int y, int slotNum, bool quests) {
 	if(quests) { //Quests
-		std::cout << "Quest Slot creating" << std::endl;
 		Widget* slot = new Widget(window);
 		slot->setFixedSize({ x, y });
 		slot->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Minimum, 0, -x));
@@ -682,11 +680,12 @@ Widget* Inventory::createSlot(Widget* window, int x, int y, int slotNum, bool qu
 				UpdateQuestsInfo("Select a Quest", 0, "", 0, "", 0, {"Please select a quest..."});
 				realignWindows(tempWidth, tempHeight);
 			}
+
+			std::cout << "slot -> " << slotNum << std::endl;
 			});
 
 		Label* lbl = new Label(slot, "00", "sans", 16);
 		_questCounters.insert(std::make_pair(slotNum, lbl));
-		std::cout << "-> " << _questCounters.size() << std::endl;
 		return slot;
 	}
 	else { //Inventory
@@ -814,8 +813,8 @@ void Inventory::SortInventory(InventoryCataType sortType, std::map<int, Item>& l
 		break;
 	}
 
-	for (int i = slot; slot < 50; slot++) {
-		RemoveItem(slot, _items, _slotImages, _slotCounters);
+	for (int i = slot; i < 50; i++) {
+		RemoveItem(i, _items, _slotImages, _slotCounters);
 	}
 
 	for (int i = 50; i < 60; i++) {
@@ -826,7 +825,7 @@ void Inventory::UpdateArmorInfo(string itemName) {
 
 }
 void Inventory::SortQuests(QuestCataType sortType, std::map<int, Quest>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3) {
-	int slot = 70;
+	int slot = 60;
 	_activeTypeQuests = sortType;
 
 	switch (sortType) {
@@ -852,12 +851,8 @@ void Inventory::SortQuests(QuestCataType sortType, std::map<int, Quest>& list, s
 		break;
 	}
 
-	for (int i = slot; slot < 110; slot++) {
-		RemoveQuest(slot, list, list2, list3);
-	}
-
-	for (int i = 70; i < 110; i++) {
-		refreshQuest(i, list, list2, list3);
+	for (int i = slot; i < 110; i++) {
+		RemoveQuest(i, list, list2, list3);
 	}
 }
 void Inventory::refreshQuest(int slotNum, std::map<int, Quest>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3) {
@@ -877,7 +872,7 @@ void Inventory::UpdateQuestsInfo(string title, int image, string Stats1, int sta
 	_infoQuestButtons["2"]->setIcon(stats2Icon);
 
 	_infoQuestLabels["TITLE"]->setCaption(title);
-	_infoQuestImages["PREVIEW"]->bindImage(mImagesData[image].first.texture());
+	//_infoQuestImages["PREVIEW"]->bindImage(mImagesData[image].first.texture());
 
 	for (int i = 0; i < desc.size(); i++) {
 		_questDesc.at(i)->setCaption(desc.at(i));
