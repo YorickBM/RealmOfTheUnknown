@@ -61,7 +61,7 @@ public:
 		_selectionMenu = new Window(_screen, "");
 		_selectionMenu->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum, 0, -1));
 
-		Vector2i btnSize = Vector2i( 320, 60 );
+		Vector2i btnSize = Vector2i(320, 60);
 		NanoUtility::button(_selectionMenu, "Start Game", {}, [this]() { this->closeStartScreen(); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 		NanoUtility::title(_selectionMenu, " ", "sans-bold", 5);
 		NanoUtility::button(_selectionMenu, "Select Class", {}, [this]() { this->ShowContent(false); this->_classSelector->ShowContent(true); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
@@ -112,7 +112,7 @@ public:
 
 
 	}
-	
+
 	/*
 	*/
 	void ShowContent(bool show = true) {
@@ -149,7 +149,7 @@ private:
 
 		window->theme()->mButtonCornerRadius = 5;
 
-		window->theme()->mButtonGradientTopUnfocused = Color(99,54,11,225);
+		window->theme()->mButtonGradientTopUnfocused = Color(99, 54, 11, 225);
 		window->theme()->mButtonGradientBotUnfocused = Color(99, 54, 11, 225);
 
 		window->theme()->mButtonGradientTopFocused = Color(82, 74, 102, 255);
@@ -202,6 +202,8 @@ public:
 	void render() {
 		_screen->drawContents();
 		_screen->drawWidgets();
+
+		frame--;
 	}
 
 	void specialRender(GLFWwindow* window, string text, int width, int height) {
