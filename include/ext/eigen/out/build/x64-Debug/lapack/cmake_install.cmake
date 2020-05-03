@@ -1,8 +1,8 @@
-# Install script for directory: C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/lapack
+# Install script for directory: C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen/lapack
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Users/12107/Source/Repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/install/x64-Debug")
+  set(CMAKE_INSTALL_PREFIX "C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen/out/install/x64-Debug")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,14 +33,14 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY OPTIONAL FILES "C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/lapack/eigen_lapack.lib")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY OPTIONAL FILES "C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/lapack/eigen_lapack.lib")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE SHARED_LIBRARY FILES "C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/lapack/eigen_lapack.dll")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE SHARED_LIBRARY FILES "C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/lapack/eigen_lapack.dll")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/lapack/eigen_lapack_static.lib")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/lapack/eigen_lapack_static.lib")
 endif()
 

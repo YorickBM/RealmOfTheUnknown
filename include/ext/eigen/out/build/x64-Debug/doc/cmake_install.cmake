@@ -1,8 +1,8 @@
-# Install script for directory: C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/doc
+# Install script for directory: C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen/doc
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Users/12107/Source/Repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/install/x64-Debug")
+  set(CMAKE_INSTALL_PREFIX "C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen/out/install/x64-Debug")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -34,9 +34,9 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/doc/examples/cmake_install.cmake")
-  include("C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/doc/special_examples/cmake_install.cmake")
-  include("C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/doc/snippets/cmake_install.cmake")
+  include("C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/doc/examples/cmake_install.cmake")
+  include("C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/doc/special_examples/cmake_install.cmake")
+  include("C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/doc/snippets/cmake_install.cmake")
 
 endif()
 

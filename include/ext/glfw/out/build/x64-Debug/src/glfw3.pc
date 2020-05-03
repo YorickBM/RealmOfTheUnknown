@@ -1,4 +1,4 @@
-prefix=C:/Users/12107/Source/Repos/YorickBM/RealmOfTheUnknown/include/ext/glfw/out/install/x64-Debug
+prefix=C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/glfw/out/install/x64-Debug
 exec_prefix=${prefix}
 includedir=${prefix}/include
 libdir=${exec_prefix}/lib

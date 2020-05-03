@@ -1,6 +1,6 @@
 
-set(CTEST_SOURCE_DIRECTORY  "C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen")
-set(CTEST_BINARY_DIRECTORY  "C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug")
+set(CTEST_SOURCE_DIRECTORY  "C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen")
+set(CTEST_BINARY_DIRECTORY  "C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug")
 set(CTEST_CMAKE_GENERATOR   "Ninja")
 set(CTEST_BUILD_NAME        "unknownwin-19.25.28614.0-sse2-64bit")
 set(CTEST_SITE              "desktop-meptgtp")

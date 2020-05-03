@@ -4,8 +4,8 @@
 
 
 # Configuration directories and files
-SourceDirectory: C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen
-BuildDirectory: C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug
+SourceDirectory: C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen
+BuildDirectory: C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug
 
 # Where to place the cost data store
 CostDataFile: 
@@ -26,7 +26,7 @@ SubmitURL: http://manao.inria.fr/CDash/submit.php?project=Eigen+3.3
 NightlyStartTime: 00:00:00 UTC
 
 # Commands for the build/test/submit cycle
-ConfigureCommand: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe" "C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen"
+ConfigureCommand: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe" "C:/Users/12107/source/repos/RealmOfTheUnknown/include/ext/eigen"
 MakeCommand: C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe --build . --target buildtests --config "${CTEST_CONFIGURATION_TYPE}" --  
 DefaultCTestConfigurationType: Release
 

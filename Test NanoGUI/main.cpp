@@ -440,7 +440,7 @@ int main(int /* argc */, char** /* argv */) {
 #pragma endregion
 
     ///REMOVE !
-    while (!startScreen->IsActive() && !glfwWindowShouldClose(window)) {
+    while (startScreen->IsActive() && !glfwWindowShouldClose(window)) {
         #pragma region Frame & Poll Events & Clear Buffers/Color
         // Set frame time
         GLfloat currentFrame = glfwGetTime();
