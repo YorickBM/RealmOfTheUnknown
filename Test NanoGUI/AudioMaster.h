@@ -30,7 +30,7 @@ public:
 	}
 
 	void SetEngineVolume(irrklang::ISoundEngine* SoundEngine, float vol) {
-		SoundEngine->setSoundVolume(vol);
+		SoundEngine->setSoundVolume((vol / 100.f));
 	}
 
 	irrklang::ISoundEngine* GetMainSoundEngine() { return this->SoundEngineMain; }
