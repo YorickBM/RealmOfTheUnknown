@@ -14,6 +14,8 @@ public:
     float x, y, z;
     float rx, ry, rz;
     CollisionType colType = CollisionType::NoCollision;
+
+    string detail = "high";
 };
 
 class FileLoader {
@@ -68,6 +70,9 @@ public:
                             else {
                                 modelData->colType = CollisionType::NoCollision;
                             }
+                        }
+                        else if (func == "detail") {
+                            modelData->detail = splited2.at(splited2.size() - 1);
                         }
                         else {
                             std::cout << func << std::endl;

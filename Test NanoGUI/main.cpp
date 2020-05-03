@@ -503,35 +503,53 @@ int main(int /* argc */, char** /* argv */) {
             ss << "Loading Models (" << modelnum++ << "/" << amountmodels << ")";
             std::string str = ss.str();
             loadingScreen->specialRender(window, str, width, height);
+            bool allowRender = false;
 
-            AnimModel model(data->path, vec3(data->x, data->y, data->z), data->scale, vec3(data->rx, data->ry, data->rz));
-            vec3 min, max;
-            std::map<pair<float, float>, float> worldMapDataMap;
-            std::vector<vec2> positionsMap;
-            auto Entity = csm.CreateEntity();
-
-            if (data->colType == 3) {
-                vector<Mesh*> meshes = model.GetMeshes();
-                for (Mesh* mesh : meshes) {
-                    vector<vec3> vertices = mesh->translateVertices(data->scale, vec3(data->x, data->y, data->z), vec3(data->rx, data->ry, data->rz));
-
-                    for (vec3 vertice : vertices) {
-                        if (worldMapDataMap.count(make_pair(vertice.x, vertice.z)) == 0) {
-                            worldMapDataMap.insert(make_pair(make_pair(vertice.x, vertice.z), vertice.y));
-                            positionsMap.push_back(vec2(vertice.x, vertice.z));
-                            ///DEBUG
-                            ///std::cout << vertice.x << ";" << vertice.z << " - " << vertice.y << std::endl;
-                        }
-                    }
-                }
-
-                csm.AddComponent(Entity, ChunkC{ worldMapDataMap, positionsMap });
+            if (settings.at("GraphicsDetail") == "high") {
+                if (data->detail == "low") allowRender = true;
+                else if (data->detail == "medium") allowRender = true;
+                else if (data->detail == "high") allowRender = true;
+            } else if (settings.at("GraphicsDetail") == "medium") {
+                if (data->detail == "low") allowRender = true;
+                else if (data->detail == "medium") allowRender = true;
+                else if (data->detail == "high") allowRender = false;
+            }
+            else if (settings.at("GraphicsDetail") == "low") {
+                if (data->detail == "low") allowRender = true;
+                else if (data->detail == "medium") allowRender = false;
+                else if (data->detail == "high") allowRender = false;
             }
 
-            if (data->colType != 2) { model.GetMinAndMaxVertice(min, max); }
-            if (data->colType != 2) csm.AddComponent(Entity, CollisionC{ data->colType, BoundingBox{min, max} });
-            csm.AddComponent(Entity, TransformC{ vec3(data->x, data->y, data->z), data->scale });
-            csm.AddComponent(Entity, ModelMeshC{ model });
+            if (allowRender) {
+                AnimModel model(data->path, vec3(data->x, data->y, data->z), data->scale, vec3(data->rx, data->ry, data->rz));
+                vec3 min, max;
+                std::map<pair<float, float>, float> worldMapDataMap;
+                std::vector<vec2> positionsMap;
+                auto Entity = csm.CreateEntity();
+
+                if (data->colType == 3) {
+                    vector<Mesh*> meshes = model.GetMeshes();
+                    for (Mesh* mesh : meshes) {
+                        vector<vec3> vertices = mesh->translateVertices(data->scale, vec3(data->x, data->y, data->z), vec3(data->rx, data->ry, data->rz));
+
+                        for (vec3 vertice : vertices) {
+                            if (worldMapDataMap.count(make_pair(vertice.x, vertice.z)) == 0) {
+                                worldMapDataMap.insert(make_pair(make_pair(vertice.x, vertice.z), vertice.y));
+                                positionsMap.push_back(vec2(vertice.x, vertice.z));
+                                ///DEBUG
+                                ///std::cout << vertice.x << ";" << vertice.z << " - " << vertice.y << std::endl;
+                            }
+                        }
+                    }
+
+                    csm.AddComponent(Entity, ChunkC{ worldMapDataMap, positionsMap });
+                }
+
+                if (data->colType != 2) { model.GetMinAndMaxVertice(min, max); }
+                if (data->colType != 2) csm.AddComponent(Entity, CollisionC{ data->colType, BoundingBox{min, max} });
+                csm.AddComponent(Entity, TransformC{ vec3(data->x, data->y, data->z), data->scale });
+                csm.AddComponent(Entity, ModelMeshC{ model });
+            }
         }
         #pragma endregion
 
