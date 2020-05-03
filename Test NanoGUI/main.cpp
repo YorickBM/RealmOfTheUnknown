@@ -58,6 +58,7 @@
 #include "ScreenManager.h"
 #include "Settings.h"
 #include "CollisionUtility.h"
+#include "AudioMaster.h"
 #pragma endregion
 using namespace nanogui;
 #pragma region Vars
@@ -124,6 +125,8 @@ std::unordered_map<string, Item> invItems;
 
 std::shared_ptr< ItemEntitySystem> entitySystem;
 
+AudioMaster* audioMaster;
+
 #pragma endregion
 
 int main(int /* argc */, char** /* argv */) {
@@ -151,10 +154,14 @@ int main(int /* argc */, char** /* argv */) {
     #pragma endregion
     #pragma region Items
     //Item{ "", "", "", InventoryCataType::Tools, 1, "",ENTYPO_ICON_LAB_FLASK, "", ENTYPO_ICON_NEWSLETTER, "", ENTYPO_ICON_CLIPBOARD }
-    invItems.insert(make_pair("Dummy Hammer", Item{ "Dummy Hammer", "----", "Inventory/DummyHammer", InventoryCataType::Tools, 1, "Min. Level --1",ENTYPO_ICON_LAB_FLASK, "Class: --Hunter", ENTYPO_ICON_NEWSLETTER, "Att. Spd: Slow", ENTYPO_ICON_FLASH }));
-    invItems.insert(make_pair("Bone", Item{ "Bone", "----", "Inventory/Bone", InventoryCataType::Miscellaneous, 1, "Misc Item",ENTYPO_ICON_LAB_FLASK, "", ENTYPO_ICON_NEWSLETTER, "", ENTYPO_ICON_FLASH }));
+    invItems.insert(make_pair("Dummy Hammer", Item{ "Dummy Hammer", {"A hammer for all the hunter dummy's." ,"Deals: 3-5 damage per hit."}, "Inventory/DummyHammer", InventoryCataType::Tools, 1, "Min. Level --1",ENTYPO_ICON_LAB_FLASK, "Class: --Hunter", ENTYPO_ICON_NEWSLETTER, "Att. Spd: Slow", ENTYPO_ICON_FLASH, ItemType::game_dummy_hammer, -1, true }));
+    invItems.insert(make_pair("Bone", Item{ "Bone", {"Look for a wandering trader, they ","might be intressted in this", " miscellaneous item."}, "Inventory/Bone", InventoryCataType::Miscellaneous, 1, "Misc Item",ENTYPO_ICON_LAB_FLASK, "", 0, "", 0, ItemType::game_bone, -1, true}));
+    invItems.insert(make_pair("Worn Boots", Item{ "Worn Boots", {"Some old boots found in the pond", " nearby. Just sturdy enough for ", "some basic protection."}, "Inventory/Worn Boots", InventoryCataType::Armor, 1, "Min. Level --3",ENTYPO_ICON_LAB_FLASK, "Health Boost: +6", ENTYPO_ICON_CIRCLE_WITH_PLUS, "", 0, ItemType::game_worn_boots, 1, false, ArmorType::Boots }));
+    audioMaster = new AudioMaster();
     #pragma endregion
 
+    audioMaster->genMainEngine();
+    audioMaster->PlaySound(audioMaster->GetMainSoundEngine(), "resources/Sounds/MainMenu.mp3", true);
 
     #pragma region Loading Settings
     //Thread Loading Settings
@@ -482,7 +489,6 @@ int main(int /* argc */, char** /* argv */) {
 
         int modelnum = 0;
         int amountmodels = modelData.size();
-        std::cout << modelData.size() << std::endl;
 
         #pragma region Maksure MovementSystem Update runs
         auto Te = csm.CreateEntity();
@@ -541,6 +547,11 @@ int main(int /* argc */, char** /* argv */) {
         inv->AddItem(invItems.at("Bone"));
         inv->AddItem(invItems.at("Bone"));
         inv->AddItem(invItems.at("Bone"));
+        inv->AddItem(invItems.at("Worn Boots"));
+
+        inv->AddQuest(Quest("Protect your camp", {"Collect 15 bones", "", "Reward: 6 Currencry"}, QuestCataType::Open, QuestType::quest_protect_camp, 1));
+        inv->AddQuest(Quest("Spider Forest", { "Collect 6 Mushrooms", "", "Reward: 8 Currencry" }, QuestCataType::Open, QuestType::quest_forest, 1));
+        inv->AddQuest(Quest("Boat Repair", { "Repair your boat by the Miner", "Costst: 20 currency", "", "Reward: 24 Currencry & Acces to ???" }, QuestCataType::Open, QuestType::quest_repair_boat, 3));
         #pragma endregion
 
 #pragma region Pre Game Loop
@@ -549,7 +560,9 @@ int main(int /* argc */, char** /* argv */) {
 
         inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT);
         inv->Hide();
-#pragma endregion
+
+        audioMaster->PlayNewSound(audioMaster->GetMainSoundEngine(), "resources/Sounds/Game.mp3", true);
+        #pragma endregion
 
         // Game loop
         while (!glfwWindowShouldClose(window)) {

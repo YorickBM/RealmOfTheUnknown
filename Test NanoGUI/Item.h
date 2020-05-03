@@ -3,11 +3,39 @@
 #include <iostream>
 #include <nanogui/entypo.h>
 
-enum InventoryCataType { All = 0, Armor, Tools, Miscellaneous };
+enum InventoryCataType { AllItems = 0, Armor, Tools, Miscellaneous };
+enum ArmorType { NoArmor, Head, Chest, Legs, Boots };
+enum ItemType { game_unknown, game_worn_boots, game_dummy_hammer, game_bone };
+
+enum QuestCataType { AllQuests = 0, Completed, Active, Open, Closed };
+enum QuestType { quest_unknown = 0, quest_forest, quest_repair_boat, quest_protect_camp };
+
+class Quest {
+public:
+	Quest() {}
+	Quest(std::string name, std::vector<std::string> desc, QuestCataType sortType, QuestType type, int reqLvl) : name(name), desc(desc), sortType(sortType), type(type), reqLevel(reqLvl) {}
+	~Quest() {}
+
+	std::string name = "Unknown Quest";
+	std::vector<std::string> desc = {};
+	std::string image = "empty";
+
+	int reqLevel = 1;
+
+	QuestCataType sortType = QuestCataType::Closed;
+	QuestType type = QuestType::quest_unknown;
+
+	std::string stat1 = "Min. Level: --1";
+	int icon1 = ENTYPO_ICON_LAB_FLASK;
+	std::string stat2 = "Req. Quest: ---";
+	int icon2 = ENTYPO_ICON_NEWSLETTER;
+
+	int imgLocation = 1;
+};
 
 struct Item {
 	std::string name = "N/A";
-	std::string desc = "N/A";
+	std::vector<std::string> desc = {};
 
 	std::string image = "empty";
 	InventoryCataType type = InventoryCataType::Miscellaneous;
@@ -20,18 +48,10 @@ struct Item {
 	std::string stat3 = "Req. Quest: ---";
 	int icon3 = ENTYPO_ICON_CLIPBOARD;
 
-	int id = -1;
-	int amount = 1;
-	bool isStackable = true;
-	int catagorie = -1;
+	ItemType id = ItemType::game_unknown;
+	int amount = -1;
 
-	bool operator==(const Item& o) const {
-		return name == o.name && desc == o.desc && image == o.image && type == o.type && imgLocation == o.imgLocation
-			&& stat1 == o.stat1 && icon1 == o.icon1 && stat2 == o.stat2 && icon2 == o.icon2 && stat3 == o.stat3 && icon3 == o.icon3 && catagorie == o.catagorie;
-	}
-
-	bool operator<(const Item& o)  const {
-		return name == o.name && desc == o.desc && image == o.image && type == o.type && imgLocation == o.imgLocation
-			&& stat1 == o.stat1 && icon1 == o.icon1 && stat2 == o.stat2 && icon2 == o.icon2 && stat3 == o.stat3 && icon3 == o.icon3 && catagorie == o.catagorie;
-	}
+	//Armor Extra / Tools Extra
+	bool isStackable = false; //Tools/Armor = false
+	ArmorType ArmorType = ArmorType::NoArmor;
 };
