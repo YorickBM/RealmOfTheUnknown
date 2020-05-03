@@ -1,3 +1,4 @@
+#pragma once
 #include "ModelLoader.h";
 
 #pragma region Model Loader
@@ -28,13 +29,6 @@ bool ModelLoader::loadModel(string path)
 void ModelLoader::getModelData(Skeleton*& skeleton, vector < Mesh* >& meshes)
 {
 	skeleton = this->skeleton;
-	meshes = this->meshes;
-}
-void ModelLoader::getModelData(Skeleton*& skeleton, vector < Mesh* >& meshes, vec3 position, float scale)
-{
-	skeleton = this->skeleton;
-	for (Mesh* mesh : this->meshes) //translate all the vertices quickly before giving the data back
-		mesh->translateVertices(scale, position);
 	meshes = this->meshes;
 }
 

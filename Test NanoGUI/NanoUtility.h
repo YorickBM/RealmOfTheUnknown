@@ -1,5 +1,4 @@
 #pragma once
-#include "SOIL2/SOIL2.h"
 #pragma region NanoGUI Settings (GLAD & Appel & Prototypes)
 #if defined(NANOGUI_GLAD)
 #if defined(NANOGUI_SHARED) && !defined(GLAD_GLAPI_EXPORT)
@@ -28,6 +27,13 @@
 #include "CustomGrid.h"
 #include "GLTexture.h"
 
+#include <map>
+#include <iostream>
+#include <cstdint>
+#include <stdlib.h>
+#include <time.h>
+#include <stdio.h>
+
 using imagesDataType = vector<pair<GLTexture, GLTexture::handleType>>;
 
 class NanoUtility {
@@ -47,6 +53,20 @@ public:
 			ret.push_back(str.substr(splitLength * NumSubstrings));
 		}
 		return ret;
+	}
+
+	static Screen* CreateScreen(GLFWwindow* window, bool destruct = false) {
+		Screen* screen = new Screen();
+		screen->initialize(window, destruct);
+		return screen;
+	}
+
+	static Screen* CreateScreen(GLFWwindow* window, std::vector<Screen*>& screens, bool destruct = false) {
+		Screen* screen = new Screen();
+		screen->initialize(window, destruct);
+		screens.push_back(screen);
+
+		return screen;
 	}
 
 	static GLCanvas* line(Window* window, Color color = Color(46, 46, 50, 255), Vector2i size = Vector2i(206, 1)) {
@@ -86,7 +106,7 @@ public:
 		lineCanvas->setFixedSize({ 1, height });
 		return lineCanvas;
 	}
-	static Label* textAtPos(Window* window, string title, Vector2i pos, string font = "sans-bold", int size = 16, Color color = Color(255, 255, 255, 255)) {
+	static Label* textAtPos(Widget* window, string title, Vector2i pos, string font = "sans-bold", int size = 16, Color color = Color(255, 255, 255, 255)) {
 		Label* titleLabel = new Label(window, title, font, size);
 		titleLabel->setColor(color);
 		return titleLabel;
@@ -100,6 +120,39 @@ public:
 		button->setCallback(callback);
 		return button;
 	}
+	static Button* ToggleButton(Window* window, string title, Vector2i btnSize, const std::function<void(bool)>& callback, string font = "sans-bold", int size = 16, Color color = Color(92, 92, 92, 255)) {
+		Button* button = new Button(window);
+		button->setTextColor(color);
+		button->setSize(btnSize);
+		button->setCaption(title);
+		button->setFontSize(size);
+		button->setChangeCallback(callback);
+		button->setFlags(Button::ToggleButton);
+		return button;
+	}
+	static Button* IconButton(Window* window, string title, int ICON, const std::function<void()>& callback, string font = "sans-bold", int size = 16, Color color = Color(92, 92, 92, 255), Vector2i btnSize = { 20, 10 }) {
+		Button* iconText = new Button(window);
+		iconText->setIcon(ICON);
+		iconText->setTextColor(color);
+		iconText->setCaption(title);
+		iconText->setBackgroundColor(Color(0, 0, 0, 0));
+		iconText->setFontSize(size);
+		iconText->setCallback(callback);
+
+		return iconText;
+	}
+	static Button* ToggleiconText(Window* window, string title, int ICON, const std::function<void(bool)>& callback, string font = "sans-bold", int size = 16, Color color = Color(92, 92, 92, 255), Vector2i btnSize = { 20, 10 }) {
+		Button* iconText = new Button(window);
+		iconText->setIcon(ICON);
+		iconText->setTextColor(color);
+		iconText->setCaption(title);
+		iconText->setBackgroundColor(Color(0, 0, 0, 0));
+		iconText->setFontSize(size);
+		iconText->setChangeCallback(callback);
+		iconText->setFlags(Button::ToggleButton);
+
+		return iconText;
+	}
 
 	static int LoadImage(string texturePath, imagesDataType& mImagesData) {
 		GLTexture texture(texturePath);
@@ -107,6 +160,70 @@ public:
 		mImagesData.emplace_back(std::move(texture), std::move(data));
 
 		return mImagesData.size() - 1;
+	}
+
+	static void applyCustomTheme(Window* window) {
+		//*
+		window->theme()->mTransparent = Color(29, 0);
+		window->theme()->mWindowFillUnfocused = Color(255, 0);
+		window->theme()->mWindowFillFocused = Color(255, 0);
+		window->theme()->mBorderMedium = Color(255, 0);
+		window->theme()->mBorderDark = Color(255, 0);
+		window->theme()->mBorderLight = Color(255, 0);
+		window->theme()->mDropShadow = Color(255, 0);
+
+		window->theme()->mButtonCornerRadius = 5;
+
+		window->theme()->mButtonGradientTopUnfocused = Color(99, 54, 11, 225);
+		window->theme()->mButtonGradientBotUnfocused = Color(99, 54, 11, 225);
+
+		window->theme()->mButtonGradientTopFocused = Color(82, 74, 102, 255);
+		window->theme()->mButtonGradientBotFocused = Color(82, 74, 102, 255);
+
+		window->theme()->mButtonGradientTopPushed = Color(255, 255, 255, 255);
+		window->theme()->mButtonGradientBotPushed = Color(255, 255, 255, 255);
+		//*/
+	}
+
+	static void InventoryTheme(Window* window) {
+		//*
+		window->theme()->mTransparent = Color(29, 0);
+		window->theme()->mWindowFillUnfocused = Color(255, 0);
+		window->theme()->mWindowFillFocused = Color(255, 0);
+		window->theme()->mBorderMedium = Color(255, 0);
+		window->theme()->mBorderDark = Color(255, 0);
+		window->theme()->mBorderLight = Color(255, 0);
+		window->theme()->mDropShadow = Color(255, 0);
+		window->theme()->mButtonFontSize = 16;
+		window->theme()->mButtonGradientTopUnfocused = Color(255, 0);
+		window->theme()->mButtonGradientBotUnfocused = Color(255, 0);
+		window->theme()->mButtonGradientTopFocused = Color(255, 0);
+		window->theme()->mButtonGradientBotFocused = Color(255, 0);
+		window->theme()->mButtonGradientTopPushed = Color(255, 0);
+		window->theme()->mButtonGradientBotPushed = Color(255, 0);
+		//*/
+	}
+
+	static bool replace(std::string& str, const std::string& from, const std::string& to) {
+		size_t start_pos = str.find(from);
+		if (start_pos == std::string::npos)
+			return false;
+		str.replace(start_pos, from.length(), to);
+		return true;
+	}
+
+	static GLCanvas* canvas(Window* window, Color color, Vector2i size) {
+		GLCanvas* canvas = new GLCanvas(window);
+		canvas->setBackgroundColor(color);
+		canvas->setFixedSize(size);
+
+		return canvas;
+	}
+
+	static int randomInt() {
+		srand((unsigned)time(NULL));
+		printf("%d,\t%d\n", rand(), rand() % 6 + 1);
+		return rand() % 6 + 1;
 	}
 
 	static void applyCustomTheme(Window* window) {

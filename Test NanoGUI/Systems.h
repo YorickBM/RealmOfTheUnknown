@@ -3,6 +3,8 @@
 #include "MovementSystem.h"
 #include "ModelMeshSystem.h"
 #include "CollisionSystem.h"
+#include "ChunkSystem.h"
+#include "ItemEntitySystem.h"
 
 /*
 >>> XSystem.h <<<

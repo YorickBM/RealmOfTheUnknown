@@ -1,4 +1,5 @@
 #pragma region Includes
+#pragma once
 // STD Includes
 #include <string>
 #include <map>
@@ -44,6 +45,7 @@
 #include <nanogui/nanogui.h>
 
 //Personal Includes
+#include "Inventory.h"
 #include "Components.h"
 #include "Systems.h"
 #include "Camera.h"
@@ -53,21 +55,19 @@
 #include "ComponentSystemManager.h"
 #include "ChunkManager.h"
 #include "ModelLoader.h";
-
-#include "InventoryTheme.h"
-#include "Inventory.h"
 #include "ScreenManager.h"
 #include "Settings.h"
+#include "CollisionUtility.h"
 #pragma endregion
 using namespace nanogui;
 #pragma region Vars
 // Properties
-const GLuint WIDTH = 1280, HEIGHT = 800; //1280x1024 <- lower then this = customScale
+const GLuint WIDTH = 800, HEIGHT = 800;
 const char* TITLE = "Fighting Against The Coruption - (0.0.1)";
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
 // Camera
-Camera camera(glm::vec3(-37, 7, 109));
+Camera camera(glm::vec3(0.7f, 6.f, 106.f));
 bool keys[1024] = { false };
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
@@ -103,13 +103,6 @@ enum res_enum {
     resolution_19
 };
 
-bool bvar = true;
-int ivar = 12345678;
-double dvar = 3.1415926;
-float fvar = (float)dvar;
-std::string strval = "A string";
-res_enum enumval = resolution_2;
-Color colval(0.5f, 0.5f, 0.7f, 1.f);
 Screen* screen = nullptr;
 Screen* startScreenScreen = nullptr;
 Screen* startScreenImgScreen = nullptr;
@@ -124,6 +117,12 @@ StartScreen* startScreen;
 LoadingScreen* loadingScreen;
 ClassSelector* classSelector;
 SettingsScreen* settingsScreen;
+
+std::unordered_map<string, string> settings;
+std::unordered_map<string, string> inventory;
+std::unordered_map<string, Item> invItems;
+
+std::shared_ptr< ItemEntitySystem> entitySystem;
 
 #pragma endregion
 
@@ -149,9 +148,92 @@ int main(int /* argc */, char** /* argv */) {
     resolutions.push_back("2560x1440");
     resolutions.push_back("3440x1440");
     resolutions.push_back("3840x2160");
+    #pragma endregion
+    #pragma region Items
+    //Item{ "", "", "", InventoryCataType::Tools, 1, "",ENTYPO_ICON_LAB_FLASK, "", ENTYPO_ICON_NEWSLETTER, "", ENTYPO_ICON_CLIPBOARD }
+    invItems.insert(make_pair("Dummy Hammer", Item{ "Dummy Hammer", "----", "Inventory/DummyHammer", InventoryCataType::Tools, 1, "Min. Level --1",ENTYPO_ICON_LAB_FLASK, "Class: --Hunter", ENTYPO_ICON_NEWSLETTER, "Att. Spd: Slow", ENTYPO_ICON_FLASH }));
+    invItems.insert(make_pair("Bone", Item{ "Bone", "----", "Inventory/Bone", InventoryCataType::Miscellaneous, 1, "Misc Item",ENTYPO_ICON_LAB_FLASK, "", ENTYPO_ICON_NEWSLETTER, "", ENTYPO_ICON_FLASH }));
+    #pragma endregion
+
+
+    #pragma region Loading Settings
+    //Thread Loading Settings
+    auto f = []() {
+        settings = FileLoader::loadDataFile("Settings.data");
+    };
+    std::thread thread_object(f);
+    #pragma endregion
+    #pragma region ComponentSystem
+    csm.Init();
+
+    /* Register The Components & Systems*/
+    csm.RegisterComponent<TransformC>();
+    csm.RegisterComponent<MotionC>();
+    csm.RegisterComponent<ModelMeshC>();
+    csm.RegisterComponent<CollisionC>();
+    csm.RegisterComponent<HealthC>();
+    csm.RegisterComponent<AiC>();
+    csm.RegisterComponent<InputC>();
+    csm.RegisterComponent<ChunkC>();
+    csm.RegisterComponent<EntityC>();
+
+    auto inputSystem = csm.RegisterSystem<InputSystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<MotionC>());
+        signature.set(csm.GetComponentType<InputC>());
+        csm.SetSystemSignature<InputSystem>(signature);
+    }
+    inputSystem->Init();
+
+    entitySystem = csm.RegisterSystem<ItemEntitySystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<EntityC>());
+        signature.set(csm.GetComponentType<TransformC>());
+        csm.SetSystemSignature<ItemEntitySystem>(signature);
+    }
+    entitySystem->Init();
+
+    auto movementSystem = csm.RegisterSystem<MovementSystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<MotionC>());
+        signature.set(csm.GetComponentType<TransformC>());
+        csm.SetSystemSignature<MovementSystem>(signature);
+    }
+    movementSystem->Init();
+
+    auto chunkSystem = csm.RegisterSystem<ChunkSystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<ChunkC>());
+        csm.SetSystemSignature<ChunkSystem>(signature);
+    }
+    chunkSystem->Init();
+
+    auto modelSystem = csm.RegisterSystem<ModelMeshSystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<ModelMeshC>());
+        signature.set(csm.GetComponentType<TransformC>());
+        csm.SetSystemSignature<ModelMeshSystem>(signature);
+    }
+    modelSystem->Init();
+
+    auto collisionSystem = csm.RegisterSystem<CollisionSystem>(); //Model Postion Transformation in here ???
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<CollisionC>());
+        signature.set(csm.GetComponentType<ModelMeshC>());
+        signature.set(csm.GetComponentType<TransformC>());
+        csm.SetSystemSignature<CollisionSystem>(signature);
+    }
+    collisionSystem->Init();
+
 #pragma endregion
 
-#pragma region Initialize glfw
+    #pragma region Initialize glfw
     glfwInit();
     glfwSetTime(0);
 #pragma endregion
@@ -172,7 +254,10 @@ int main(int /* argc */, char** /* argv */) {
 #pragma endregion
 #pragma region GlfwWindow Creation
     // Create a GLFWwindow object
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, nullptr, nullptr);
+    std::string displaySize = settings.at("DisplaySize");
+    std::vector<std::string> heightAndWidth = FileLoader::Split(displaySize += "x0", "x");
+
+    GLFWwindow* window = glfwCreateWindow(std::stoi(heightAndWidth[0]), std::stoi(heightAndWidth[1]), TITLE, nullptr, nullptr);
     if (window == nullptr) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -237,7 +322,7 @@ int main(int /* argc */, char** /* argv */) {
 #pragma endregion
 #pragma region NanoGui GUI
     //Create Inventory
-    inv = new Inventory(screen, SCREEN_WIDTH, SCREEN_HEIGHT);
+    inv = new Inventory(window, SCREEN_WIDTH, SCREEN_HEIGHT, camera);
     inv->ShowInfo();
 
     classSelector = new ClassSelector(classSelectorInteractiveScreen, SCREEN_WIDTH, SCREEN_HEIGHT, window, classSelectorNonInteractiveScreen);
@@ -253,7 +338,8 @@ int main(int /* argc */, char** /* argv */) {
 #pragma region glfw Callbacks to NanoGUI & ECS
     glfwSetCursorPosCallback(window,
         [](GLFWwindow*, double x, double y) {
-            inv->getScreen()->cursorPosCallbackEvent(x, y);
+            for(Screen* screen : inv->getScreens())
+                screen->cursorPosCallbackEvent(x, y);
             inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT); //Prevent the movement this way
             startScreen->getScreen()->cursorPosCallbackEvent(x, y);
             classSelector->getScreen()->cursorPosCallbackEvent(x, y);
@@ -280,6 +366,8 @@ int main(int /* argc */, char** /* argv */) {
     glfwSetMouseButtonCallback(window,
         [](GLFWwindow*, int button, int action, int modifiers) {
             screen->mouseButtonCallbackEvent(button, action, modifiers);
+            for (Screen* screen : inv->getScreens())
+                screen->mouseButtonCallbackEvent(button, action, modifiers);
             startScreen->getScreen()->mouseButtonCallbackEvent(button, action, modifiers);
             classSelector->getScreen()->mouseButtonCallbackEvent(button, action, modifiers);
             classSelector->getScreenOtherTheme()->mouseButtonCallbackEvent(button, action, modifiers);
@@ -296,7 +384,9 @@ int main(int /* argc */, char** /* argv */) {
         classSelector->getScreenOtherTheme()->keyCallbackEvent(key, scancode, action, mods);
         settingsScreen->getScreen()->keyCallbackEvent(key, scancode, action, mods);
 
-        ///if(key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, GL_TRUE);
+            entitySystem->Update(camera, inv, key, scancode, action, mods);
+
+            ///if(key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, GL_TRUE);
 
         if (key >= 0 && key < 1024)
         {
@@ -338,14 +428,20 @@ int main(int /* argc */, char** /* argv */) {
             startScreen->realignWindows(width, height);
             classSelector->realignWindows(width, height);
 
-            loadingScreen->realignWindows(width, height);
-            loadingScreen->render();
+           loadingScreen->realignWindows(width, height);
+           loadingScreen->render();
+
+        #pragma region Update in Settings Map
+           std::string size = std::to_string(width) + "x" + std::to_string(height);
+           settings.at("DisplaySize") = size;
+        #pragma endregion
         }
     );
 #pragma endregion
 
-    while (startScreen->IsActive() && !glfwWindowShouldClose(window)) {
-#pragma region Frame & Poll Events & Clear Buffers/Color
+    ///REMOVE !
+    while (!startScreen->IsActive() && !glfwWindowShouldClose(window)) {
+        #pragma region Frame & Poll Events & Clear Buffers/Color
         // Set frame time
         GLfloat currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -369,58 +465,7 @@ int main(int /* argc */, char** /* argv */) {
 
     if (!glfwWindowShouldClose(window)) {
 
-#pragma region ComponentSystem
-        csm.Init();
-
-        /* Register The Components & Systems*/
-        csm.RegisterComponent<TransformC>();
-        csm.RegisterComponent<MotionC>();
-        csm.RegisterComponent<ModelMeshC>();
-        csm.RegisterComponent<CollisionC>();
-        csm.RegisterComponent<HealthC>();
-        csm.RegisterComponent<AiC>();
-        csm.RegisterComponent<InputC>();
-
-        auto inputSystem = csm.RegisterSystem<InputSystem>();
-        {
-            Signature signature;
-            signature.set(csm.GetComponentType<MotionC>());
-            signature.set(csm.GetComponentType<InputC>());
-            csm.SetSystemSignature<InputSystem>(signature);
-        }
-        inputSystem->Init();
-
-        auto movementSystem = csm.RegisterSystem<MovementSystem>();
-        {
-            Signature signature;
-            signature.set(csm.GetComponentType<MotionC>());
-            signature.set(csm.GetComponentType<TransformC>());
-            csm.SetSystemSignature<MovementSystem>(signature);
-        }
-        movementSystem->Init();
-
-        auto modelSystem = csm.RegisterSystem<ModelMeshSystem>();
-        {
-            Signature signature;
-            signature.set(csm.GetComponentType<ModelMeshC>());
-            signature.set(csm.GetComponentType<TransformC>());
-            csm.SetSystemSignature<ModelMeshSystem>(signature);
-        }
-        modelSystem->Init();
-
-        auto collisionSystem = csm.RegisterSystem<CollisionSystem>(); //Model Postion Transformation in here ???
-        {
-            Signature signature;
-            signature.set(csm.GetComponentType<CollisionC>());
-            signature.set(csm.GetComponentType<ModelMeshC>());
-            signature.set(csm.GetComponentType<TransformC>());
-            csm.SetSystemSignature<CollisionSystem>(signature);
-        }
-        collisionSystem->Init();
-
-#pragma endregion
-
-#pragma region Shaders
+        #pragma region Shaders
         loadingScreen->specialRender(window, "Loading Shaders", width, height);
         // Setup and compile our shaders
         ShaderLoader* shaderLoader = new ShaderLoader();
@@ -432,52 +477,76 @@ int main(int /* argc */, char** /* argv */) {
         cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
         ///csm.InitEntities("res/System/Entities.txt");
 
-        auto Te = csm.CreateEntity();
-        csm.AddComponent(Te, MotionC{});
-        csm.AddComponent(Te, InputC{ Keyboard });
-        csm.AddComponent(Te, TransformC{ vec3(0), 1.f });
-        AnimModel model1("resources/tree.fbx", vec3(0), 1.f);
-        csm.AddComponent(Te, ModelMeshC{ model1, model1.GetBoundingBoxModel() });
-
         loadingScreen->specialRender(window, "Initializing Model Data", width, height);
         std::vector<ModelDataClass*> modelData = FileLoader::ReadModelData("ModelData.data");
 
         int modelnum = 0;
         int amountmodels = modelData.size();
-
         std::cout << modelData.size() << std::endl;
+
+        #pragma region Maksure MovementSystem Update runs
+        auto Te = csm.CreateEntity();
+        csm.AddComponent(Te, MotionC{});
+        csm.AddComponent(Te, InputC{ Keyboard });
+        csm.AddComponent(Te, TransformC{ vec3(0), 1.f });
+        #pragma endregion
+
         for (ModelDataClass* data : modelData) {
             std::stringstream ss;
             ss << "Loading Models (" << modelnum++ << "/" << amountmodels << ")";
             std::string str = ss.str();
             loadingScreen->specialRender(window, str, width, height);
+
             AnimModel model(data->path, vec3(data->x, data->y, data->z), data->scale, vec3(data->rx, data->ry, data->rz));
-            AnimModel boundingBox;
-
+            vec3 min, max;
+            std::map<pair<float, float>, float> worldMapDataMap;
+            std::vector<vec2> positionsMap;
             auto Entity = csm.CreateEntity();
+
+            if (data->colType == 3) {
+                vector<Mesh*> meshes = model.GetMeshes();
+                for (Mesh* mesh : meshes) {
+                    vector<vec3> vertices = mesh->translateVertices(data->scale, vec3(data->x, data->y, data->z), vec3(data->rx, data->ry, data->rz));
+
+                    for (vec3 vertice : vertices) {
+                        if (worldMapDataMap.count(make_pair(vertice.x, vertice.z)) == 0) {
+                            worldMapDataMap.insert(make_pair(make_pair(vertice.x, vertice.z), vertice.y));
+                            positionsMap.push_back(vec2(vertice.x, vertice.z));
+                            ///DEBUG
+                            ///std::cout << vertice.x << ";" << vertice.z << " - " << vertice.y << std::endl;
+                        }
+                    }
+                }
+
+                csm.AddComponent(Entity, ChunkC{ worldMapDataMap, positionsMap });
+            }
+
+            if (data->colType != 2) { model.GetMinAndMaxVertice(min, max); }
+            if (data->colType != 2) csm.AddComponent(Entity, CollisionC{ data->colType, BoundingBox{min, max} });
             csm.AddComponent(Entity, TransformC{ vec3(data->x, data->y, data->z), data->scale });
-            if (data->colType != 2) { boundingBox = model.GetBoundingBoxModel(); }
-            csm.AddComponent(Entity, ModelMeshC{ model, boundingBox });
-            if (data->colType != 2) { csm.AddComponent(Entity, CollisionC{ data->colType, true }); }
-
-            //Movable with Keyboard
-            csm.AddComponent(Entity, MotionC{});
-            csm.AddComponent(Entity, InputC{ Keyboard });
+            csm.AddComponent(Entity, ModelMeshC{ model });
         }
-#pragma endregion
+        #pragma endregion
 
-        //model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
+        ///ANIMATION
+        ///model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
 
-#pragma region Inventory
-//Add temp items
-        inv->SetItem(0, Item{ "Item in Inv", "desc", "test2" });
-        inv->SetItem(50, Item{ "Item in Toolbar", "desc", "test2" });
-#pragma endregion
+        #pragma region Inventory
+        loadingScreen->specialRender(window, "Loading Items", width, height);
+        FileLoader::loadDataFile("Inventory.data");
+
+        loadingScreen->specialRender(window, "Adding items to player inventory", width, height);
+        //Add temp items
+        inv->AddItem(invItems.at("Dummy Hammer"));
+        inv->AddItem(invItems.at("Bone"));
+        inv->AddItem(invItems.at("Bone"));
+        inv->AddItem(invItems.at("Bone"));
+        #pragma endregion
 
 #pragma region Pre Game Loop
         loadingScreen->specialRender(window, "Loading complete", width, height);
         glm::mat4 projection = glm::perspective(camera.GetZoom(), static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT), 0.1f, 100.0f); //Render Distance
-        collisionSystem->Update();
+
         inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT);
         inv->Hide();
 #pragma endregion
@@ -500,9 +569,10 @@ int main(int /* argc */, char** /* argv */) {
 
 #pragma region Game Objects
             //Game Objects
-            inputSystem->Update(keys);
+            inputSystem->Update(keys, settings);
             movementSystem->Update(deltaTime, camera);
-            collisionSystem->CollisionCheck();
+            chunkSystem->Update(camera);
+            collisionSystem->Update(camera);
 
 #pragma endregion
 #pragma region Draw Models
@@ -526,15 +596,9 @@ int main(int /* argc */, char** /* argv */) {
             glUniform1f(glGetUniformLocation(shaderLoader->ID, "specularStrength"), 0.1f);
 
             modelSystem->Update(shaderLoader);
-
-            ///CAMPOS std::cout << camera.GetPosition().x << ";" << camera.GetPosition().y << ";" << camera.GetPosition().z << std::endl;
-
-            //Draw all Chunks
-            for (Chunk chunk : cm.GetChunks()) {
-                mat4 objectModel;
-                glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the empty model matrix to the shader
-                chunk.model.Draw(shaderLoader);
-            }
+            
+            ///DEBUG
+            ///std::cout << camera.GetPosition().x << ";" << camera.GetPosition().y << ";" << camera.GetPosition().z << std::endl;
 
             shaderLoader->unuse();
 #pragma endregion
@@ -547,5 +611,11 @@ int main(int /* argc */, char** /* argv */) {
     }
     // Terminate GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();
+    thread_object.detach();
+
+    #pragma region Save Data
+    FileLoader::SaveFile("Settings.data", settings);
+    #pragma endregion
+
     return 0;
 }

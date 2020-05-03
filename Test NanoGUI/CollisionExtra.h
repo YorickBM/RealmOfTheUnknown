@@ -8,9 +8,6 @@ typedef struct BoundingBox
 {
 	glm::vec3 min; //Contains lowest corner of the box
 	glm::vec3 max; //Contains highest corner of the box
-
-	glm::vec3 minWithPos = glm::vec3(0, 0, 0);
-	glm::vec3 maxWithPos = glm::vec3(0,0,0);
 } AABB;
 struct Sphere
 {

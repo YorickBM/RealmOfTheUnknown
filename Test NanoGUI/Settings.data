@@ -1,0 +1,7 @@
+Inventory=GLFW_KEY_I
+Forward=87
+Backwards=83
+Right=68
+Left=65
+AudioVol=0
+DisplaySize=1703x930

@@ -159,9 +159,13 @@
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Bone.cpp" />
+    <ClCompile Include="ChunkSystem.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
+    <ClCompile Include="GLTexture.cpp" />
     <ClCompile Include="InputSystem.cpp" />
+    <ClCompile Include="Inventory.cpp" />
+    <ClCompile Include="ItemEntitySystem.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="ModelMeshSystem.cpp" />
@@ -178,10 +182,12 @@
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ChunkManager.h" />
+    <ClInclude Include="ChunkSystem.h" />
     <ClInclude Include="CImg.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="CollisionExtra.h" />
     <ClInclude Include="CollisionSystem.h" />
+    <ClInclude Include="CollisionUtility.h" />
     <ClInclude Include="ComponentArray.h" />
     <ClInclude Include="ComponentManager.h" />
     <ClInclude Include="Components.h" />
@@ -195,6 +201,8 @@
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="InventoryTheme.h" />
+    <ClInclude Include="Item.h" />
+    <ClInclude Include="ItemEntitySystem.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="ModelMeshSystem.h" />
@@ -232,12 +240,14 @@
     <None Include="glew_d.dll" />
     <None Include="glfw3.dll" />
     <None Include="glfw_d.dll" />
+    <None Include="Inventory.data" />
     <None Include="jpeg_d.dll" />
     <None Include="libexpat_d.dll" />
     <None Include="libpng_d.dll" />
     <None Include="ModelData.data" />
     <None Include="nanogui.dll" />
     <None Include="pcre_d.dll" />
+    <None Include="Settings.data" />
     <None Include="SILLY_d.dll" />
     <None Include="test.dae" />
     <None Include="test.fbx" />

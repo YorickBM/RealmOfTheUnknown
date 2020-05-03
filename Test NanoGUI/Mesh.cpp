@@ -1,3 +1,4 @@
+#pragma once
 #include "Mesh.h"
 
 #pragma region Mesh
@@ -82,14 +83,27 @@ void Mesh::draw(ShaderLoader* shader)
 	glBindTexture(GL_TEXTURE_2D, 0); //unbind textures
 }
 
-vector<vec3> Mesh::translateVertices(float scale, vec3 position) {
+vector<vec3> Mesh::translateVertices(float scale, vec3 position, vec3 rot) {
 	vector<vec3> returnvalue;
 	for (Vertex vertice : vertices) {
 		vec3 vertexPos(vertice.position);
-		vertexPos *= glm::vec3(scale, scale, scale);
-		vertexPos += position;
+		vertexPos *= vec3(scale);
+		glm::vec4 vec4Ofvec3 = glm::vec4(vertexPos.x, vertexPos.y, vertexPos.z, 1);
+		glm::mat4 transformMatrix = createTransform(position, rot, vec3(scale));
+		vertexPos = (vec4Ofvec3 * transformMatrix);
+		vertexPos += vec3(position.x, position.y, position.z);
+
 		returnvalue.push_back(vertexPos);
 	}
 	return returnvalue;
 }
+
+glm::mat4 Mesh::createTransform(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale) {
+	glm::mat4 trans = glm::mat4(1.0);
+	trans = glm::rotate(trans, glm::radians(rot.x), glm::vec3(1, 0, 0));
+	trans = glm::rotate(trans, glm::radians(rot.y), glm::vec3(0, 1, 0));
+	trans = glm::rotate(trans, glm::radians(rot.z), glm::vec3(0, 0, 1));
+	return trans;
+}
+
 #pragma endregion

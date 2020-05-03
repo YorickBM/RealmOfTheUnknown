@@ -62,6 +62,9 @@ public:
                             else if (splited2.at(splited2.size() - 1) == "SolidCollision") {
                                 modelData->colType = CollisionType::SolidCollision;
                             }
+                            else if (splited2.at(splited2.size() - 1) == "WorldCollision") {
+                                modelData->colType = CollisionType::WorldCollision;
+                            }
                             else {
                                 modelData->colType = CollisionType::NoCollision;
                             }
@@ -90,5 +93,32 @@ public:
         }
 
         return splited;
+    }
+
+    static std::unordered_map<string,string> loadDataFile(string path) {
+        std::unordered_map<string, string> returnVal;
+        std::ifstream file(path);
+        if (file.is_open()) {
+            std::string line;
+            while (std::getline(file, line)) {
+                if (line.rfind("//", 0) != 0 && line.rfind("#", 0) != 0) {
+                    line = line += "=0";
+                    std::vector<std::string> splited = FileLoader::Split(line, "=");
+
+                    returnVal.insert(make_pair(splited[0], splited[1]));
+                }
+            }
+            file.close();
+        }
+
+        return returnVal;
+    }
+
+    static void SaveFile(string path, std::unordered_map<string, string> data) {
+        ofstream myfile;
+        myfile.open(path);
+        for (auto& it : data)
+            myfile << it.first << "=" << it.second << "\n";
+        myfile.close();
     }
 };

@@ -1,3 +1,4 @@
+#pragma once
 #include "Skeleton.h"
 
 #pragma region Skeleton

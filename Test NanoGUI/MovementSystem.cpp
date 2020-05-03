@@ -1,4 +1,6 @@
+#pragma once
 #include "MovementSystem.h"
+#include "CollisionUtility.h"
 
 void MovementSystem::Init()
 {
@@ -12,9 +14,8 @@ void MovementSystem::Update(float deltatime, Camera& camera)
 		auto& motionC = csm.GetComponent<MotionC>(entity);
 		auto& transformC = csm.GetComponent<TransformC>(entity);
 
-		transformC.position = camera.ProcessKeyboard(motionC.direction, motionC.movementSpeed, deltatime, transformC.position);
-
-		//Update Camera to Position cuz its the only thing we be moving atm (Seperate System Maybe?)
-		///camera.SetPosition(transformC.position);
+		//transformC.position = camera.ProcessKeyboard(motionC.direction, motionC.movementSpeed, deltatime, transformC.position);
+		camera.SetPrevPosition(camera.GetPosition());
+		camera.SetPosition(camera.ProcessKeyboard(motionC.direction, motionC.movementSpeed, deltatime, camera.GetPosition()));
 	}
 }

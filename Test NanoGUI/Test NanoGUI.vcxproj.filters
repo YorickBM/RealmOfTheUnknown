@@ -129,6 +129,18 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ChunkSystem.cpp">
+      <Filter>Source Files\EntityComponentSystem\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemEntitySystem.cpp">
+      <Filter>Source Files\EntityComponentSystem\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Inventory.cpp">
+      <Filter>Source Files\NanoGui Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GLTexture.cpp">
+      <Filter>Source Files\NanoGui Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -257,6 +269,18 @@
     <ClInclude Include="StaticData.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionUtility.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ChunkSystem.h">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemEntitySystem.h">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragmentShader.glsl">
@@ -347,6 +371,12 @@
       <Filter>Resource Files\LIB</Filter>
     </None>
     <None Include="ModelData.data">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Settings.data">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Inventory.data">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

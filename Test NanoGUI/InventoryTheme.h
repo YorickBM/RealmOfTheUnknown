@@ -1,3 +1,4 @@
+#pragma once
 #include <nanogui/theme.h>
 #include <nanogui/entypo.h> // the default icons font
 

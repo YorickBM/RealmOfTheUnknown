@@ -71,7 +71,7 @@ public:
 		NanoUtility::button(_selectionMenu, "Quit Game", {}, [this, window]() { glfwSetWindowShouldClose(window, GL_TRUE); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 
 		_selectionMenu->center();
-		applyCustomTheme(_selectionMenu);
+		NanoUtility::applyCustomTheme(_selectionMenu);
 		menuSizeWidget = _selectionMenu->size();
 
 		_screen->setVisible(true);
@@ -117,6 +117,7 @@ public:
 	*/
 	void ShowContent(bool show = true) {
 		_selectionMenu->setVisible(show);
+		_backgroundImage->setVisible(show);
 	}
 
 	Screen* getScreen() { return this->_screen; }
@@ -189,7 +190,7 @@ public:
 
 		_selectionMenu->setPosition({ 240, height - 40 });
 
-		applyCustomTheme(_selectionMenu);
+		NanoUtility::applyCustomTheme(_selectionMenu);
 
 		_screen->setVisible(true);
 		_screen->performLayout();
@@ -292,11 +293,13 @@ public:
 		_backButton->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Minimum, 0, -1));
 
 		Vector2i btnSize = Vector2i(90, 40);
-		NanoUtility::button(_backButton, "Back", {}, [this]() { this->ShowContent(false); this->_startScreen->ShowContent(true); }, "comic-sans", 32, Color(255, 255, 255, 255))->setFixedSize(btnSize);
-		NanoUtility::button(_backButton, "Quit", {}, [this, window]() {  glfwSetWindowShouldClose(window, GL_TRUE); }, "comic-sans", 32, Color(255, 255, 255, 255))->setFixedSize(btnSize);
+		Button* back = NanoUtility::button(_backButton, "Back", {}, [this]() { this->ShowContent(false); this->_startScreen->ShowContent(true); }, "comic-sans", 32, Color(255, 255, 255, 255));
+		Button* quit = NanoUtility::button(_backButton, "Quit", {}, [this, window]() {  glfwSetWindowShouldClose(window, GL_TRUE); }, "comic-sans", 32, Color(255, 255, 255, 255));
+		back->setFixedSize(btnSize);
+		quit->setFixedSize(btnSize);
 
-		_backButton->setPosition({ 1, height - 42 });
-		applyCustomTheme(_backButton);
+		_backButton->setPosition({ 0, height - 42 });
+		NanoUtility::applyCustomTheme(_backButton);
 
 		_selectionMenu = new Window(_screenExtra, "");
 		_selectionMenu->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Minimum, 0, -1));
@@ -319,7 +322,7 @@ public:
 		
 		_windowContext = new Window(_screenImage, "");
 		_windowContext->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum, 0, -1));
-		applyCustomTheme(_windowContext);
+		NanoUtility::applyCustomTheme(_windowContext);
 
 		GLCanvas* topCanvas = new GLCanvas(_windowContext);
 		topCanvas->setBackgroundColor({ 40, 40, 43, 255 });
@@ -358,8 +361,8 @@ public:
 	}
 
 	/*
-	 Realign the inventory too the center of the window.
-	 */
+	Realign the inventory too the center of the window.
+	*/
 	void realignWindows(int width, int height) {
 		Vector2i imgSizeWidget = _backgroundImage->size();
 		_backgroundImage->setPosition({ width / 2 - imgSizeWidget.x() / 2, height / 2 - imgSizeWidget.y() / 2 });
@@ -370,7 +373,7 @@ public:
 		_windowContext->setSize({ width, height });
 		_windowContext->setPosition({ width / 2 - menuSizeWidget.x() / 2, height / 2 - menuSizeWidget.y() / 2 });
 		
-		_backButton->setPosition({2, height - 40});
+		_backButton->setPosition({0, height - 40});
 	}
 
 	/*
@@ -408,28 +411,6 @@ private:
 	BaseScreen* _startScreen;
 	vector<Button*> _buttons;
 
-	void applyCustomTheme(Window* window) {
-		//*
-		window->theme()->mTransparent = Color(29, 0);
-		window->theme()->mWindowFillUnfocused = Color(255, 0);
-		window->theme()->mWindowFillFocused = Color(255, 0);
-		window->theme()->mBorderMedium = Color(255, 0);
-		window->theme()->mBorderDark = Color(255, 0);
-		window->theme()->mBorderLight = Color(255, 0);
-		window->theme()->mDropShadow = Color(255, 0);
-
-		window->theme()->mButtonCornerRadius = 5;
-
-		window->theme()->mButtonGradientTopUnfocused = Color(99, 54, 11, 225);
-		window->theme()->mButtonGradientBotUnfocused = Color(99, 54, 11, 225);
-
-		window->theme()->mButtonGradientTopFocused = Color(82, 74, 102, 255);
-		window->theme()->mButtonGradientBotFocused = Color(82, 74, 102, 255);
-
-		window->theme()->mButtonGradientTopPushed = Color(255, 255, 255, 255);
-		window->theme()->mButtonGradientBotPushed = Color(255, 255, 255, 255);
-		//*/
-	}
 	void applyCustomTheme2(Window* window) {
 		//*
 		window->theme()->mTransparent = Color(29, 0);

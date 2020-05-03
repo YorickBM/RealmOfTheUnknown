@@ -1,13 +1,13 @@
 #pragma once
-#pragma once
 #include "AnimModel.h"
 #include "Camera.h"
 #include "CollisionExtra.h"
+#include "Item.h"
 
 //Data
 enum AiType { Passive, Hostile };
 enum InputType { Keyboard };
-enum CollisionType { SolidCollision = 0, RayCastingCollision = 1, NoCollision = 2 };
+enum CollisionType { SolidCollision = 0, RayCastingCollision = 1, NoCollision = 2, WorldCollision = 3 };
 
 
 //Components
@@ -23,7 +23,6 @@ struct MotionC {
 
 struct ModelMeshC {
 	AnimModel model;
-	AnimModel BoundingBox;
 };
 
 struct RenderModeC {
@@ -46,6 +45,14 @@ struct InputC {
 
 struct CollisionC {
 	CollisionType type;
-	bool staticCollision;
 	BoundingBox boundingBox;
+};
+
+struct ChunkC {
+	std::map<pair<float, float>, float> worldMapData;
+	std::vector<vec2> positions;
+};
+
+struct EntityC {
+	Item item;
 };

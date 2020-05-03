@@ -9,5 +9,5 @@ class InputSystem : public System
 {
 public:
 	void Init();
-	void Update(bool keys[1024]);
+	void Update(bool keys[1024], std::unordered_map<string, string> settings);
 };

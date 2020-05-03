@@ -67,9 +67,10 @@ public:
 	void SetPosition(glm::vec3 pos) {
 		this->position = pos;
 	}
-	void printPosition() {
-		///std::cout << this->position.x << ";" << this->position.y << ";" << this->position.z << std::endl;
+	void SetPrevPosition(glm::vec3 pos) {
+		this->_prevPosition = pos;
 	}
+	glm::vec3 GetPrevPosition() { return this->_prevPosition; }
 
 	// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
 	vec3 ProcessKeyboard(Camera_Movement direction, GLfloat movementSpeed, GLfloat deltaTime, vec3 position)
@@ -182,7 +183,7 @@ public:
 
 private:
 	// Camera Attributes
-	glm::vec3 position;
+	glm::vec3 position, _prevPosition;
 	glm::vec3 front;
 	glm::vec3 up;
 	glm::vec3 right;

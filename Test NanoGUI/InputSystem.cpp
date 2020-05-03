@@ -1,3 +1,4 @@
+#pragma once
 #include "InputSystem.h"
 
 void InputSystem::Init()
@@ -5,18 +6,18 @@ void InputSystem::Init()
 }
 
 extern ComponentSystemManager csm;
-void InputSystem::Update(bool keys[1024])
+void InputSystem::Update(bool keys[1024], std::unordered_map<string, string> settings)
 {
 	for (auto const& entity : mEntities)
 	{
 		auto& motionC = csm.GetComponent<MotionC>(entity);
 
-		if (keys[GLFW_KEY_W]) motionC.direction = BACKWARD;
-		if (keys[GLFW_KEY_S]) motionC.direction = FORWARD;
-		if (keys[GLFW_KEY_A]) motionC.direction = RIGHT;
-		if (keys[GLFW_KEY_D]) motionC.direction = LEFT;
+		if (keys[std::stoi(settings.at("Forward"))]) motionC.direction = FORWARD;
+		if (keys[std::stoi(settings.at("Backwards"))]) motionC.direction = BACKWARD;
+		if (keys[std::stoi(settings.at("Left"))]) motionC.direction = LEFT;
+		if (keys[std::stoi(settings.at("Right"))]) motionC.direction = RIGHT;
 		
 		//Set Direction to NONE of no keys are pressed
-		if(!keys[GLFW_KEY_W] && !keys[GLFW_KEY_S] && !keys[GLFW_KEY_A] && !keys[GLFW_KEY_D]) motionC.direction = NONE;
+		if(!keys[std::stoi(settings.at("Forward"))] && !keys[std::stoi(settings.at("Left"))] && !keys[std::stoi(settings.at("Right"))] && !keys[std::stoi(settings.at("Backwards"))]) motionC.direction = NONE;
 	}
 }

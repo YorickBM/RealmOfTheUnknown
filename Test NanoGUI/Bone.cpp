@@ -1,3 +1,4 @@
+#pragma once
 #include "Bone.h"
 
 #pragma region Bone

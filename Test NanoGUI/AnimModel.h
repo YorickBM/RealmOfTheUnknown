@@ -58,9 +58,10 @@ public:
 		this->_path = path;
 		this->_origin = position;
 	}
-	AnimModel(Mesh* mesh, glm::vec3 position, float scale) {
+	AnimModel(Mesh* mesh, glm::vec3 position, float scale, vec3 rotation) {
 		SetPosition(position);
 		SetScale(scale);
+		SetRotation(rotation);
 
 		this->meshes.push_back(mesh);
 
@@ -74,16 +75,21 @@ public:
 	vec3 GetRotation() { return vec3(this->rotX, this->rotY, this->rotZ); }
 	string GetPath() { return this->_path; }
 	vector<Mesh*> GetMeshes() { return this->meshes; }
-	vec3 GetMinAndMaxVertice(bool minValue) { 
-		vec3 min, max = vec3(0);
-		GenerateMinAndMaxVerticesTranslated(min, max, this->_position);
-
-		if (minValue) return min;
-		else return max;
+	void GetMinAndMaxVertice(vec3& min, vec3& max) {
+		GenerateMinAndMaxVerticesTranslated(min, max, this->_position, vec3(this->rotX, this->rotY, this->rotZ), this->_scale);
 	}
 	
 	AnimModel GetBoundingBoxModel() { 
-		return AnimModel(CreateBoundingBoxMesh(), this->GetPosition(), this->GetScale()); //Upload mesh vector in here
+		return AnimModel(CreateBoundingBoxMesh(), this->GetPosition(), this->GetScale(), this->GetRotation()); //Upload mesh vector in here
+	}
+	void MinAndMaxVertices(vec3& min, vec3& max, vector<float> X, vector<float> Y, vector<float> Z) {
+		min.x = *std::min_element(X.begin(), X.end());
+		min.y = *std::min_element(Y.begin(), Y.end());
+		min.z = *std::min_element(Z.begin(), Z.end());
+
+		max.x = *std::max_element(X.begin(), X.end());
+		max.y = *std::max_element(Y.begin(), Y.end());
+		max.z = *std::max_element(Z.begin(), Z.end());
 	}
 	void GenerateMinAndMaxVertices() {
 		std::vector<float> X, Y, Z;
@@ -93,31 +99,18 @@ public:
 			Z.push_back(i.z);
 		}
 
-		this->_MinVertice.x = *std::min_element(X.begin(), X.end());
-		this->_MinVertice.y = *std::min_element(Y.begin(), Y.end());
-		this->_MinVertice.z = *std::min_element(Z.begin(), Z.end());
-
-		this->_MaxVertice.x = *std::max_element(X.begin(), X.end());
-		this->_MaxVertice.y = *std::max_element(Y.begin(), Y.end());
-		this->_MaxVertice.z = *std::max_element(Z.begin(), Z.end());
+		MinAndMaxVertices(this->_MinVertice, this->_MaxVertice, X, Y, Z);
 	}
-	void GenerateMinAndMaxVerticesTranslated(vec3& min, vec3& max, vec3 position) {
+	void GenerateMinAndMaxVerticesTranslated(vec3& min, vec3& max, vec3 position, vec3 rotation, float scale = 1) {
 		std::vector<float> Xt, Yt, Zt;
-		std::vector<vec3> verticest = this->meshes.at(meshes.size() - 1)->translateVertices(this->_scale, position);
-		///std::cout << position.x << ";" << position.y << ";" << position.z << std::endl;
+		std::vector<vec3> verticest = this->meshes.at(meshes.size() - 1)->translateVertices(scale, position, rotation);
 		for (glm::vec3 i : verticest) {
 			Xt.push_back(i.x);
 			Yt.push_back(i.y);
 			Zt.push_back(i.z);
 		}
 		
-		min.x = *std::min_element(Xt.begin(), Xt.end());
-		min.y = *std::min_element(Yt.begin(), Yt.end());
-		min.z = *std::min_element(Zt.begin(), Zt.end());
-
-		max.x = *std::max_element(Xt.begin(), Xt.end());
-		max.y = *std::max_element(Yt.begin(), Yt.end());
-		max.z = *std::max_element(Zt.begin(), Zt.end());
+		MinAndMaxVertices(min, max, Xt, Yt, Zt);
 	}
 	Mesh* CreateBoundingBoxMesh() {
 		//Data To Fill
