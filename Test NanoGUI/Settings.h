@@ -116,12 +116,27 @@ public:
 		_audioScreen->setPosition(Vector2i(60, 100));
 		
 		#pragma endregion
-		
-		//Labels/Buttons Settings
+		#pragma region Main Screen
+		//Settings main screen
 		new Label(_frontMenuMiddle, "------ Settings ------", "sans-bold", 30);
-
 		new Label(_frontMenu, "Settings", "sans-bold", 20);
 
+		Button* Graphics = NanoUtility::button(_frontMenuSwitchButtons, "Graphics", {}, [this]() { this->_frontMenu->setVisible(false);this->_controlsScreen->setVisible(false); this->_interfaceScreen->setVisible(false); this->_audioScreen->setVisible(false); this->_graphicsScreen->setVisible(true); }, "comic-sans", 15, Color(255, 255, 255, 255));
+		Button* Controls = NanoUtility::button(_frontMenuSwitchButtons, "Controls", {}, [this]() { this->_frontMenu->setVisible(false);this->_controlsScreen->setVisible(true); this->_interfaceScreen->setVisible(false); this->_audioScreen->setVisible(false); this->_graphicsScreen->setVisible(false);}, "comic-sans", 15, Color(255, 255, 255, 255));
+		Button* Interface = NanoUtility::button(_frontMenuSwitchButtons, "Interface", {}, [this]() { this->_frontMenu->setVisible(false);this->_controlsScreen->setVisible(false); this->_interfaceScreen->setVisible(true); this->_audioScreen->setVisible(false); this->_graphicsScreen->setVisible(false);}, "comic-sans", 15, Color(255, 255, 255, 255));
+		Button* Audio = NanoUtility::button(_frontMenuSwitchButtons, "Audio", {}, [this]() { this->_frontMenu->setVisible(false);this->_controlsScreen->setVisible(false); this->_interfaceScreen->setVisible(false); this->_audioScreen->setVisible(true); this->_graphicsScreen->setVisible(false);}, "comic-sans", 15, Color(255, 255, 255, 255));
+
+		Graphics->setFlags(Button::RadioButton);
+		Controls->setFlags(Button::RadioButton);
+		Interface->setFlags(Button::RadioButton);
+		Audio->setFlags(Button::RadioButton);
+
+		Vector2i RadioBttnsize = Vector2i(50, 20);
+		Graphics->setFixedSize(RadioBttnsize);
+		Controls->setFixedSize(RadioBttnsize);
+		Interface->setFixedSize(RadioBttnsize);
+		Audio->setFixedSize(RadioBttnsize);
+		#pragma endregion
 		#pragma region Graphics Screen
 		new Label(_graphicsScreen, "Graphics", "sans-bold", 20);
 		new Label(_graphicsScreen, "Resolution", "sans", 20);
@@ -129,7 +144,7 @@ public:
 
 		ComboBox* CoBo = new ComboBox(_graphicsScreen, { "640x360", "800x600", "1024x768", "1280x720", "1280x800", "1280x1024"});
 		CoBo->setFixedSize(Vector2i(100, 30));
-
+		
 		new Label(_graphicsScreen, "", "sans", 5);
 		new Label(_graphicsScreen, "Render distant", "sans", 20);
 
@@ -158,30 +173,199 @@ public:
 		#pragma endregion
 		#pragma region Controls Screen
 		new Label(_controlsScreen, "Controls", "sans-bold", 20);
+		new Label(_controlsScreen, "", "sans", 5);
+		new Label(_controlsScreen, "Movement: ", "sans", 20);
+		new Label(_controlsScreen, "Forward:", "sans", 20);
+		new Label(_controlsScreen, "Backward:", "sans", 20);
+		new Label(_controlsScreen, "Left:", "sans", 20);
+		new Label(_controlsScreen, "Right:", "sans", 20);
+		
+		/*
+		Widget* FwdKey = new Widget(_controlsScreen);
+		FwdKey->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 20));
+		TextBox* textBox = new TextBox(FwdKey);
+		textBox->setFixedSize(Vector2i(60, 25));
+		textBox->setValue("Hier moet de key komen");
+		glfwSetCharCallback->setCallback([textBox](float value) { // iets zoals dit?
+			textBox->setValue(std::to_string((int)(value * 10)));
+			});
+
+		textBox->setFixedSize(Vector2i(30, 25));
+		textBox->setFontSize(15);
+		textBox->setAlignment(TextBox::Alignment::Left);
+		dit hierboven moet ook voor de andere, maar eerst laten werken*/
+		
+
 		#pragma endregion
 		#pragma region Interface Screen
 		new Label(_interfaceScreen, "Interface", "sans-bold", 20);
+		new Label(_interfaceScreen, "", "sans-bold", 5);
+		new Label(_interfaceScreen, "HUD scale", "sans-bold", 20);
+		#pragma region HUD
+		Widget* HudPanel = new Widget(_interfaceScreen);
+		HudPanel->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 20));
+		Slider* HudScaleSlider = new Slider(HudPanel);
+		HudScaleSlider->setValue(0.5f);
+		HudScaleSlider->setFixedWidth(100);
+
+		TextBox* textBoxHUD = new TextBox(HudPanel);
+		textBoxHUD->setFixedSize(Vector2i(30, 25));
+		textBoxHUD->setValue("5");
+		HudScaleSlider->setCallback([textBoxHUD](float value) {
+			textBoxHUD->setValue(std::to_string((int)(value * 10)));
+			});
+
+		HudScaleSlider->setFinalCallback([&](float value) {
+			cout << "HUD Scale: " << (int)(value * 10) << endl;
+			});
+
+		textBoxHUD->setFixedSize(Vector2i(65, 25));
+		textBoxHUD->setFontSize(15);
+		textBoxHUD->setAlignment(TextBox::Alignment::Left);
+#pragma endregion
+		new Label(_interfaceScreen, "Combat scale", "sans-bold", 20);
+		#pragma region Combat
+		Widget* CombatPanel = new Widget(_interfaceScreen);
+		CombatPanel->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 20));
+		Slider* CombatScaleSlider = new Slider(CombatPanel);
+		CombatScaleSlider->setValue(0.5f);
+		CombatScaleSlider->setFixedWidth(100);
+
+		TextBox* textBoxCombat = new TextBox(CombatPanel);
+		textBoxCombat->setFixedSize(Vector2i(30, 25));
+		textBoxCombat->setValue("5");
+		CombatScaleSlider->setCallback([textBoxCombat](float value) {
+			textBoxCombat->setValue(std::to_string((int)(value * 10)));
+			});
+
+		CombatScaleSlider->setFinalCallback([&](float value) {
+			cout << "Combat things Scale: " << (int)(value * 10) << endl;
+			});
+
+		textBoxCombat->setFixedSize(Vector2i(65, 25));
+		textBoxCombat->setFontSize(15);
+		textBoxCombat->setAlignment(TextBox::Alignment::Left);
+		#pragma endregion
 		#pragma endregion
 		#pragma region Audio Screen
 		new Label(_audioScreen, "Audio", "sans-bold", 20);
+		new Label(_audioScreen, "", "sans", 5);
+		new Label(_audioScreen, "Master Volume", "sans", 20);
+		#pragma region Master Vol
+		Widget* MasterVolPanel = new Widget(_audioScreen);
+		MasterVolPanel->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 20));
+		Slider* MasterVolSlider = new Slider(MasterVolPanel);
+		MasterVolSlider->setValue(0.5f);
+		MasterVolSlider->setFixedWidth(100);
+
+		TextBox* testBoxMasterVol = new TextBox(MasterVolPanel);
+		testBoxMasterVol->setFixedSize(Vector2i(40, 25));
+		testBoxMasterVol->setValue("50");
+		MasterVolSlider->setCallback([testBoxMasterVol](float value) {
+			testBoxMasterVol->setValue(std::to_string((int)(value * 100)));
+			});
+
+		MasterVolSlider->setFinalCallback([&](float value) {
+			cout << "Master Vol: " << (int)(value * 100) << endl;
+			});
+
+		testBoxMasterVol->setFixedSize(Vector2i(65, 25));
+		testBoxMasterVol->setFontSize(15);
+		testBoxMasterVol->setAlignment(TextBox::Alignment::Left);
 		#pragma endregion
+		new Label(_audioScreen, "Music Volume", "sans", 20);
+		#pragma region Music Vol
+		Widget* MusicVolPanel = new Widget(_audioScreen);
+		MusicVolPanel->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 20));
+		Slider* MusicVolSlider = new Slider(MusicVolPanel);
+		MusicVolSlider->setValue(0.5f);
+		MusicVolSlider->setFixedWidth(100);
 
-		Button* Graphics = NanoUtility::button(_frontMenuSwitchButtons, "Graphics", {}, [this]() { this->_frontMenu->setVisible(false);this->_controlsScreen->setVisible(false); this->_interfaceScreen->setVisible(false); this->_audioScreen->setVisible(false); this->_graphicsScreen->setVisible(true); }, "comic-sans", 15, Color(255, 255, 255, 255));
-		Button* Controls = NanoUtility::button(_frontMenuSwitchButtons, "Controls", {}, [this]() { this->_frontMenu->setVisible(false);this->_controlsScreen->setVisible(true); this->_interfaceScreen->setVisible(false); this->_audioScreen->setVisible(false); this->_graphicsScreen->setVisible(false);}, "comic-sans", 15, Color(255, 255, 255, 255));
-		Button* Interface = NanoUtility::button(_frontMenuSwitchButtons, "Interface", {}, [this]() { this->_frontMenu->setVisible(false);this->_controlsScreen->setVisible(false); this->_interfaceScreen->setVisible(true); this->_audioScreen->setVisible(false); this->_graphicsScreen->setVisible(false);}, "comic-sans", 15, Color(255, 255, 255, 255));
-		Button* Audio = NanoUtility::button(_frontMenuSwitchButtons, "Audio", {}, [this]() { this->_frontMenu->setVisible(false);this->_controlsScreen->setVisible(false); this->_interfaceScreen->setVisible(false); this->_audioScreen->setVisible(true); this->_graphicsScreen->setVisible(false);}, "comic-sans", 15, Color(255, 255, 255, 255));
-		
-		Graphics->setFlags(Button::RadioButton);
-		Controls->setFlags(Button::RadioButton);
-		Interface->setFlags(Button::RadioButton);
-		Audio->setFlags(Button::RadioButton);
+		TextBox* testBoxMusicVol = new TextBox(MusicVolPanel);
+		testBoxMusicVol->setFixedSize(Vector2i(40, 25));
+		testBoxMusicVol->setValue("50");
+		MusicVolSlider->setCallback([testBoxMusicVol](float value) {
+			testBoxMusicVol->setValue(std::to_string((int)(value * 100)));
+			});
 
-		Vector2i RadioBttnsize = Vector2i(50, 20);
-		Graphics->setFixedSize(RadioBttnsize);
-		Controls->setFixedSize(RadioBttnsize);
-		Interface->setFixedSize(RadioBttnsize);
-		Audio->setFixedSize(RadioBttnsize);
+		MusicVolSlider->setFinalCallback([&](float value) {
+			cout << "Music Vol: " << (int)(value * 100) << endl;
+			});
 
+		testBoxMusicVol->setFixedSize(Vector2i(65, 25));
+		testBoxMusicVol->setFontSize(15);
+		testBoxMusicVol->setAlignment(TextBox::Alignment::Left);
+		#pragma endregion
+		new Label(_audioScreen, "Friendly Creature Volume", "sans", 20);
+		#pragma region Friendly creatues Vol
+		Widget* FriendlyVolPanel = new Widget(_audioScreen);
+		FriendlyVolPanel->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 20));
+		Slider* FriendlyVolSlider = new Slider(FriendlyVolPanel);
+		FriendlyVolSlider->setValue(0.5f);
+		FriendlyVolSlider->setFixedWidth(100);
+
+		TextBox* testBoxFriendlyVol = new TextBox(FriendlyVolPanel);
+		testBoxFriendlyVol->setFixedSize(Vector2i(40, 25));
+		testBoxFriendlyVol->setValue("50");
+		FriendlyVolSlider->setCallback([testBoxFriendlyVol](float value) {
+			testBoxFriendlyVol->setValue(std::to_string((int)(value * 100)));
+			});
+
+		FriendlyVolSlider->setFinalCallback([&](float value) {
+			cout << "Friendly CreaturesVol: " << (int)(value * 100) << endl;
+			});
+
+		testBoxFriendlyVol->setFixedSize(Vector2i(65, 25));
+		testBoxFriendlyVol->setFontSize(15);
+		testBoxFriendlyVol->setAlignment(TextBox::Alignment::Left);
+		#pragma endregion
+		new Label(_audioScreen, "Hostile Creature Volume", "sans", 20);
+		#pragma region Hostile creatues Vol
+		Widget* HostileVolPanel = new Widget(_audioScreen);
+		HostileVolPanel->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 20));
+		Slider* HostileVolSlider = new Slider(HostileVolPanel);
+		HostileVolSlider->setValue(0.5f);
+		HostileVolSlider->setFixedWidth(100);
+
+		TextBox* testBoxHostileVol = new TextBox(HostileVolPanel);
+		testBoxHostileVol->setFixedSize(Vector2i(40, 25));
+		testBoxHostileVol->setValue("50");
+		HostileVolSlider->setCallback([testBoxHostileVol](float value) {
+			testBoxHostileVol->setValue(std::to_string((int)(value * 100)));
+			});
+
+		HostileVolSlider->setFinalCallback([&](float value) {
+			cout << "Hostile Creature Vol: " << (int)(value * 100) << endl;
+			});
+
+		testBoxHostileVol->setFixedSize(Vector2i(65, 25));
+		testBoxHostileVol->setFontSize(15);
+		testBoxHostileVol->setAlignment(TextBox::Alignment::Left);
+		#pragma endregion
+		new Label(_audioScreen, "Combat Volume", "sans", 20);
+		#pragma region Combat Vol
+		Widget* CombatVolPanel = new Widget(_audioScreen);
+		CombatVolPanel->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 20));
+		Slider* CombatVolSlider = new Slider(CombatVolPanel);
+		CombatVolSlider->setValue(0.5f);
+		CombatVolSlider->setFixedWidth(100);
+
+		TextBox* testBoxCombatVol = new TextBox(CombatVolPanel);
+		testBoxCombatVol->setFixedSize(Vector2i(40, 25));
+		testBoxCombatVol->setValue("50");
+		CombatVolSlider->setCallback([testBoxCombatVol](float value) {
+			testBoxCombatVol->setValue(std::to_string((int)(value * 100)));
+			});
+
+		CombatVolSlider->setFinalCallback([&](float value) {
+			cout << "Combat Vol: " << (int)(value * 100) << endl;
+			});
+
+		testBoxCombatVol->setFixedSize(Vector2i(65, 25));
+		testBoxCombatVol->setFontSize(15);
+		testBoxCombatVol->setAlignment(TextBox::Alignment::Left);
+		#pragma endregion
+		#pragma endregion
 
 		_backButton = new Window(_screen, "");
 		_backButton->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Minimum, 0, -1));

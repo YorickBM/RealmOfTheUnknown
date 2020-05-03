@@ -128,7 +128,7 @@ SettingsScreen* settingsScreen;
 #pragma endregion
 
 int main(int /* argc */, char** /* argv */) {
-    #pragma region Resolutions
+#pragma region Resolutions
     std::vector<std::string> resolutions;
     resolutions.push_back("640x360");
     resolutions.push_back("800x600");
@@ -149,13 +149,13 @@ int main(int /* argc */, char** /* argv */) {
     resolutions.push_back("2560x1440");
     resolutions.push_back("3440x1440");
     resolutions.push_back("3840x2160");
-    #pragma endregion
+#pragma endregion
 
-    #pragma region Initialize glfw
+#pragma region Initialize glfw
     glfwInit();
     glfwSetTime(0);
-    #pragma endregion
-    #pragma region GlfwWindow Properties
+#pragma endregion
+#pragma region GlfwWindow Properties
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -169,8 +169,8 @@ int main(int /* argc */, char** /* argv */) {
     glfwWindowHint(GLFW_STENCIL_BITS, 8);
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-    #pragma endregion
-    #pragma region GlfwWindow Creation
+#pragma endregion
+#pragma region GlfwWindow Creation
     // Create a GLFWwindow object
     GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, nullptr, nullptr);
     if (window == nullptr) {
@@ -179,15 +179,15 @@ int main(int /* argc */, char** /* argv */) {
         return -1;
     }
     glfwMakeContextCurrent(window);
-    #pragma endregion
-    #pragma region NanoGui Glad
-    #if defined(NANOGUI_GLAD)
+#pragma endregion
+#pragma region NanoGui Glad
+#if defined(NANOGUI_GLAD)
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         throw std::runtime_error("Could not initialize GLAD!");
     glGetError(); // pull and ignore unhandled errors like GL_INVALID_ENUM
-    #endif
-    #pragma endregion
-    #pragma region OpenGl Stuff & NanoGUi Init Stuff
+#endif
+#pragma endregion
+#pragma region OpenGl Stuff & NanoGUi Init Stuff
     glClearColor(0.2f, 0.25f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -214,8 +214,8 @@ int main(int /* argc */, char** /* argv */) {
     glViewport(0, 0, width, height);
     glfwSwapInterval(0);
     glfwSwapBuffers(window);
-    #pragma endregion  
-    #pragma region GLEW
+#pragma endregion  
+#pragma region GLEW
     // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
     glewExperimental = GL_TRUE;
     // Initialize GLEW to setup the OpenGL Function pointers
@@ -224,18 +224,18 @@ int main(int /* argc */, char** /* argv */) {
         std::cout << "Failed to initialize GLEW" << std::endl;
         return -1;
     }
-    #pragma endregion
-    #pragma region FrameBuffer
+#pragma endregion
+#pragma region FrameBuffer
     glfwGetFramebufferSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
     ///glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    #pragma endregion
-    #pragma region OpenGL Options
-    // Define the viewport dimensions
+#pragma endregion
+#pragma region OpenGL Options
+// Define the viewport dimensions
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     // OpenGL options
     glEnable(GL_DEPTH_TEST);
-    #pragma endregion
-    #pragma region NanoGui GUI
+#pragma endregion
+#pragma region NanoGui GUI
     //Create Inventory
     inv = new Inventory(screen, SCREEN_WIDTH, SCREEN_HEIGHT);
     inv->ShowInfo();
@@ -249,8 +249,8 @@ int main(int /* argc */, char** /* argv */) {
     startScreen->UpdateParentClasses(classSelector, settingsScreen);
     settingsScreen->UpdateParentClasses(startScreen);
 
-    #pragma endregion
-    #pragma region glfw Callbacks to NanoGUI & ECS
+#pragma endregion
+#pragma region glfw Callbacks to NanoGUI & ECS
     glfwSetCursorPosCallback(window,
         [](GLFWwindow*, double x, double y) {
             inv->getScreen()->cursorPosCallbackEvent(x, y);
@@ -288,27 +288,27 @@ int main(int /* argc */, char** /* argv */) {
         }
     );
 
-    glfwSetKeyCallback(window,[](GLFWwindow* window, int key, int scancode, int action, int mods) {
-            screen->keyCallbackEvent(key, scancode, action, mods);
-            inv->keyCallbackEvent(key, scancode, action, mods);
-            startScreen->getScreen()->keyCallbackEvent(key, scancode, action, mods);
-            classSelector->getScreen()->keyCallbackEvent(key, scancode, action, mods);
-            classSelector->getScreenOtherTheme()->keyCallbackEvent(key, scancode, action, mods);
-            settingsScreen->getScreen()->keyCallbackEvent(key, scancode, action, mods);
+    glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+        screen->keyCallbackEvent(key, scancode, action, mods);
+        inv->keyCallbackEvent(key, scancode, action, mods);
+        startScreen->getScreen()->keyCallbackEvent(key, scancode, action, mods);
+        classSelector->getScreen()->keyCallbackEvent(key, scancode, action, mods);
+        classSelector->getScreenOtherTheme()->keyCallbackEvent(key, scancode, action, mods);
+        settingsScreen->getScreen()->keyCallbackEvent(key, scancode, action, mods);
 
-            ///if(key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, GL_TRUE);
+        ///if(key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, GL_TRUE);
 
-            if (key >= 0 && key < 1024)
+        if (key >= 0 && key < 1024)
+        {
+            if (action == GLFW_PRESS)
             {
-                if (action == GLFW_PRESS)
-                {
-                    keys[key] = true;
-                }
-                else if (action == GLFW_RELEASE)
-                {
-                    keys[key] = false;
-                }
+                keys[key] = true;
             }
+            else if (action == GLFW_RELEASE)
+            {
+                keys[key] = false;
+            }
+        }
         }
     );
 
@@ -321,7 +321,7 @@ int main(int /* argc */, char** /* argv */) {
 
     glfwSetDropCallback(window,
         [](GLFWwindow*, int count, const char** filenames) {
-           screen->dropCallbackEvent(count, filenames);
+            screen->dropCallbackEvent(count, filenames);
         }
     );
 
@@ -333,19 +333,19 @@ int main(int /* argc */, char** /* argv */) {
 
     glfwSetFramebufferSizeCallback(window,
         [](GLFWwindow*, int width, int height) {
-           screen->resizeCallbackEvent(width, height);
-           inv->realignWindows(width, height);
-           startScreen->realignWindows(width, height);
-           classSelector->realignWindows(width, height);
+            screen->resizeCallbackEvent(width, height);
+            inv->realignWindows(width, height);
+            startScreen->realignWindows(width, height);
+            classSelector->realignWindows(width, height);
 
-           loadingScreen->realignWindows(width, height);
-           loadingScreen->render();
+            loadingScreen->realignWindows(width, height);
+            loadingScreen->render();
         }
     );
-    #pragma endregion
+#pragma endregion
 
     while (startScreen->IsActive() && !glfwWindowShouldClose(window)) {
-        #pragma region Frame & Poll Events & Clear Buffers/Color
+#pragma region Frame & Poll Events & Clear Buffers/Color
         // Set frame time
         GLfloat currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -357,7 +357,7 @@ int main(int /* argc */, char** /* argv */) {
         //Clear Buffers & Color
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        #pragma endregion
+#pragma endregion
 
         startScreen->render();
         classSelector->render();
@@ -369,7 +369,7 @@ int main(int /* argc */, char** /* argv */) {
 
     if (!glfwWindowShouldClose(window)) {
 
-        #pragma region ComponentSystem
+#pragma region ComponentSystem
         csm.Init();
 
         /* Register The Components & Systems*/
@@ -418,16 +418,16 @@ int main(int /* argc */, char** /* argv */) {
         }
         collisionSystem->Init();
 
-        #pragma endregion
-        
-        #pragma region Shaders
+#pragma endregion
+
+#pragma region Shaders
         loadingScreen->specialRender(window, "Loading Shaders", width, height);
         // Setup and compile our shaders
         ShaderLoader* shaderLoader = new ShaderLoader();
         shaderLoader->loadShaders("vertexShader.glsl", "fragmentShader.glsl");
-        #pragma endregion
+#pragma endregion
 
-        #pragma region Entity Creation & Chunk Loading
+#pragma region Entity Creation & Chunk Loading
         loadingScreen->specialRender(window, "Initializing Chunks/Loading Chunks", width, height);
         cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
         ///csm.InitEntities("res/System/Entities.txt");
@@ -464,27 +464,27 @@ int main(int /* argc */, char** /* argv */) {
             csm.AddComponent(Entity, MotionC{});
             csm.AddComponent(Entity, InputC{ Keyboard });
         }
-        #pragma endregion
-        
+#pragma endregion
+
         //model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
 
-        #pragma region Inventory
-        //Add temp items
+#pragma region Inventory
+//Add temp items
         inv->SetItem(0, Item{ "Item in Inv", "desc", "test2" });
         inv->SetItem(50, Item{ "Item in Toolbar", "desc", "test2" });
-        #pragma endregion
+#pragma endregion
 
-        #pragma region Pre Game Loop
+#pragma region Pre Game Loop
         loadingScreen->specialRender(window, "Loading complete", width, height);
         glm::mat4 projection = glm::perspective(camera.GetZoom(), static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT), 0.1f, 100.0f); //Render Distance
         collisionSystem->Update();
         inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT);
         inv->Hide();
-        #pragma endregion
+#pragma endregion
 
         // Game loop
         while (!glfwWindowShouldClose(window)) {
-            #pragma region Frame & Poll Events & Clear Buffers/Color
+#pragma region Frame & Poll Events & Clear Buffers/Color
             // Set frame time
             GLfloat currentFrame = glfwGetTime();
             deltaTime = currentFrame - lastFrame;
@@ -498,14 +498,14 @@ int main(int /* argc */, char** /* argv */) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 #           pragma endregion
 
-            #pragma region Game Objects
+#pragma region Game Objects
             //Game Objects
             inputSystem->Update(keys);
             movementSystem->Update(deltaTime, camera);
             collisionSystem->CollisionCheck();
 
-            #pragma endregion
-            #pragma region Draw Models
+#pragma endregion
+#pragma region Draw Models
             //Z-Buffer
             glEnable(GL_DEPTH_TEST);
             glDepthFunc(GL_LESS);
@@ -519,7 +519,7 @@ int main(int /* argc */, char** /* argv */) {
             glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "projection"), 1, GL_FALSE, value_ptr(projection)); //send the projection matrix to the shader
 
             //Lighting
-            glUniform3f(glGetUniformLocation(shaderLoader->ID, "lightColor"), 1.f, 1.f, 1.f); 
+            glUniform3f(glGetUniformLocation(shaderLoader->ID, "lightColor"), 1.f, 1.f, 1.f);
             glUniform3f(glGetUniformLocation(shaderLoader->ID, "lightPos"), -20.f, 70.f, 100.f);
             glUniform3f(glGetUniformLocation(shaderLoader->ID, "viewPos"), camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
             glUniform1f(glGetUniformLocation(shaderLoader->ID, "ambientStrength"), 0.2f);
@@ -537,7 +537,7 @@ int main(int /* argc */, char** /* argv */) {
             }
 
             shaderLoader->unuse();
-            #pragma endregion
+#pragma endregion
 
             inv->render();
 

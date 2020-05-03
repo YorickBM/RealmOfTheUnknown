@@ -1347,7 +1347,7 @@ _Boost_NAMESPACE_LAST:INTERNAL=boost
 //Last used Boost_USE_MULTITHREADED value.
 _Boost_USE_MULTITHREADED_LAST:INTERNAL=TRUE
 //Result of TRY_COMPILE
-_CompileResult:INTERNAL=FALSE
+_CompileResult:INTERNAL=TRUE
 //CMAKE_INSTALL_PREFIX during last run
 _GNUInstallDirs_LAST_CMAKE_INSTALL_PREFIX:INTERNAL=C:/Users/12107/Source/Repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/install/x64-Debug
 //Result of TRY_RUN

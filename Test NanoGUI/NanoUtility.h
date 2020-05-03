@@ -91,7 +91,7 @@ public:
 		titleLabel->setColor(color);
 		return titleLabel;
 	}
-	static Button* button(Window* window, string title, Vector2i btnSize, const std::function<void()> &callback, string font = "sans-bold", int size = 16, Color color = Color(92, 92, 92, 255)) {
+	static Button* button(Window* window, string title, Vector2i btnSize, const std::function<void()>& callback, string font = "sans-bold", int size = 16, Color color = Color(92, 92, 92, 255)) {
 		Button* button = new Button(window);
 		button->setTextColor(color);
 		button->setSize(btnSize);
