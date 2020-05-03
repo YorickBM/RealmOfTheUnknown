@@ -161,9 +161,6 @@ int main(int /* argc */, char** /* argv */) {
     audioMaster = new AudioMaster();
     #pragma endregion
 
-    audioMaster->genMainEngine();
-    audioMaster->PlaySound(audioMaster->GetMainSoundEngine(), "resources/Sounds/MainMenu.mp3", true);
-
     #pragma region Loading Settings
     //Thread Loading Settings
     auto f = []() {
@@ -240,6 +237,10 @@ int main(int /* argc */, char** /* argv */) {
     collisionSystem->Init();
 
 #pragma endregion
+
+    audioMaster->genMainEngine();
+    audioMaster->SetEngineVolume(audioMaster->GetMainSoundEngine(), std::stoi(settings.at("MusicVol")));
+    audioMaster->PlaySound(audioMaster->GetMainSoundEngine(), "resources/Sounds/MainMenu.mp3", true);
 
     #pragma region Initialize glfw
     glfwInit();

@@ -1,11 +1,11 @@
 Inventory=GLFW_KEY_I
 Forward=87
-Backwards=83
 Right=68
+Backwards=83
 Left=65
 AudioVol=0
-DisplaySize=1703x930
 MasterVol=50
+DisplaySize=1703x930
 FriendlyCreaturesVol=50
 HostileCreaturesVol=50
 MusicVol=50
