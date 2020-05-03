@@ -15,6 +15,8 @@
 #endif
 #endif
 #pragma endregion
+#include <string>
+#include <unordered_map>
 #include <nanogui/nanogui.h>
 #include <nanogui/screen.h>
 #include <nanogui/window.h>
@@ -25,6 +27,7 @@
 #include <nanogui/theme.h>
 #include <nanogui/formhelper.h>
 #include <nanogui/slider.h>
+
 
 #include <nanogui/opengl.h>
 #include <nanogui/checkbox.h>
@@ -50,6 +53,7 @@
 
 using namespace nanogui;
 using imagesDataType = vector<pair<GLTexture, GLTexture::handleType>>;
+extern std::unordered_map<std::string, std::string> settings;
 
 class SettingsScreen : public BaseScreen {
 public:
@@ -96,7 +100,7 @@ public:
 		//Settings different screens
 		_graphicsScreen = new Window(_screen, "");
 		_graphicsScreen->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Fill));
-		_graphicsScreen->setFixedSize(Vector2i(300, height));
+		_graphicsScreen->setFixedSize(Vector2i(200, height));
 		_graphicsScreen->setPosition(Vector2i(60, 100));
 
 		_controlsScreen = new Window(_screen, "");
@@ -257,15 +261,17 @@ public:
 		MasterVolSlider->setValue(0.5f);
 		MasterVolSlider->setFixedWidth(100);
 
+		int MasterVol;
+		MasterVol = std::stoi(settings.at("MasterVol"));
 		TextBox* testBoxMasterVol = new TextBox(MasterVolPanel);
 		testBoxMasterVol->setFixedSize(Vector2i(40, 25));
-		testBoxMasterVol->setValue("50");
+		testBoxMasterVol->setValue(std::to_string(MasterVol));
 		MasterVolSlider->setCallback([testBoxMasterVol](float value) {
 			testBoxMasterVol->setValue(std::to_string((int)(value * 100)));
 			});
 
 		MasterVolSlider->setFinalCallback([&](float value) {
-			cout << "Master Vol: " << (int)(value * 100) << endl;
+			settings.at("MasterVol") = (int)(value * 100);
 			});
 
 		testBoxMasterVol->setFixedSize(Vector2i(65, 25));

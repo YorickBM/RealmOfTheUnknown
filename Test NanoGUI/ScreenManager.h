@@ -61,12 +61,12 @@ public:
 		_selectionMenu = new Window(_screen, "");
 		_selectionMenu->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum, 0, -1));
 
-		Vector2i btnSize = Vector2i( 320, 60 );
+		Vector2i btnSize = Vector2i(320, 60);
 		NanoUtility::button(_selectionMenu, "Start Game", {}, [this]() { this->closeStartScreen(); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 		NanoUtility::title(_selectionMenu, " ", "sans-bold", 5);
 		NanoUtility::button(_selectionMenu, "Select Class", {}, [this]() { this->ShowContent(false); this->_classSelector->ShowContent(true); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 		NanoUtility::title(_selectionMenu, " ", "sans-bold", 5);
-		NanoUtility::button(_selectionMenu, "Settings Menu", {}, [this]() { }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
+		NanoUtility::button(_selectionMenu, "Settings Menu", {}, [this]() { this->ShowContent(false); this->_settingsScreen->ShowContent(true); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 		NanoUtility::title(_selectionMenu, " ", "sans-bold", 5);
 		NanoUtility::button(_selectionMenu, "Quit Game", {}, [this, window]() { glfwSetWindowShouldClose(window, GL_TRUE); }, "comic-sans", 42, Color(255, 255, 255, 255))->setFixedSize(btnSize);
 
@@ -95,8 +95,9 @@ public:
 	/*
 	Update Parent Classes
 	*/
-	void UpdateParentClasses(BaseScreen* classSelector) {
+	void UpdateParentClasses(BaseScreen* classSelector, BaseScreen* settingsScreen) {
 		_classSelector = classSelector;
+		_settingsScreen = settingsScreen;
 	}
 
 	/*
@@ -108,8 +109,10 @@ public:
 
 		_selectionMenu->setSize({ width, height });
 		_selectionMenu->setPosition({ width / 2 - menuSizeWidget.x() / 2, height / 2 - menuSizeWidget.y() / 2 });
+
+
 	}
-	
+
 	/*
 	*/
 	void ShowContent(bool show = true) {
@@ -132,6 +135,30 @@ private:
 	Vector2i menuSizeWidget;
 
 	BaseScreen* _classSelector = nullptr;
+	BaseScreen* _settingsScreen = nullptr;
+
+	void applyCustomTheme(Window* window) {
+		//*
+		window->theme()->mTransparent = Color(29, 0);
+		window->theme()->mWindowFillUnfocused = Color(255, 0);
+		window->theme()->mWindowFillFocused = Color(255, 0);
+		window->theme()->mBorderMedium = Color(255, 0);
+		window->theme()->mBorderDark = Color(255, 0);
+		window->theme()->mBorderLight = Color(255, 0);
+		window->theme()->mDropShadow = Color(255, 0);
+
+		window->theme()->mButtonCornerRadius = 5;
+
+		window->theme()->mButtonGradientTopUnfocused = Color(99, 54, 11, 225);
+		window->theme()->mButtonGradientBotUnfocused = Color(99, 54, 11, 225);
+
+		window->theme()->mButtonGradientTopFocused = Color(82, 74, 102, 255);
+		window->theme()->mButtonGradientBotFocused = Color(82, 74, 102, 255);
+
+		window->theme()->mButtonGradientTopPushed = Color(255, 255, 255, 255);
+		window->theme()->mButtonGradientBotPushed = Color(255, 255, 255, 255);
+		//*/
+	}
 };
 
 class LoadingScreen {

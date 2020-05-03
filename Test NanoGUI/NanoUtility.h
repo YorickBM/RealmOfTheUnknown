@@ -239,4 +239,30 @@ public:
 		Label* line1 = new Label(window, length, font, size);
 		return line1;
 	}
+
+	static void applyCustomTheme1(Window* window1) {
+		//*
+		window1->theme()->mTransparent = Color(29, 0);
+		window1->theme()->mWindowFillUnfocused = Color(255, 0);
+		window1->theme()->mWindowFillFocused = Color(255, 0);
+		window1->theme()->mBorderMedium = Color(255, 0);
+		window1->theme()->mBorderDark = Color(255, 0);
+		window1->theme()->mBorderLight = Color(255, 0);
+		window1->theme()->mDropShadow = Color(255, 0);
+
+		window1->theme()->mButtonCornerRadius = 0;				//Corner Radiusd
+		window1->theme()->mButtonFontSize = 15;					//Font button
+		window1->theme()->mTabButtonHorizontalPadding = 100;		//horizontal padding
+		window1->theme()->mTabButtonVerticalPadding = 2;			//Vertical padding
+
+		window1->theme()->mButtonGradientTopUnfocused = Color(46, 48, 52, 255);
+		window1->theme()->mButtonGradientBotUnfocused = Color(46, 48, 52, 255);
+
+		window1->theme()->mButtonGradientTopFocused = Color(82, 74, 102, 255);
+		window1->theme()->mButtonGradientBotFocused = Color(82, 74, 102, 255);
+
+		window1->theme()->mButtonGradientTopPushed = Color(82, 74, 102, 255);
+		window1->theme()->mButtonGradientBotPushed = Color(82, 74, 102, 255);
+		//*/
+	}
 };

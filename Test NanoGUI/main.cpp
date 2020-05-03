@@ -58,6 +58,7 @@
 #include "ScreenManager.h"
 #include "CollisionUtility.h"
 #include "AudioMaster.h"
+#include "Settings.h"
 #pragma endregion
 using namespace nanogui;
 #pragma region Vars
@@ -116,6 +117,8 @@ Inventory* inv;
 StartScreen* startScreen;
 LoadingScreen* loadingScreen;
 ClassSelector* classSelector;
+SettingsScreen* settingsScreen;
+
 
 std::unordered_map<string, string> settings;
 std::unordered_map<string, string> inventory;
@@ -295,6 +298,11 @@ int main(int /* argc */, char** /* argv */) {
     classSelectorNonInteractiveScreen = new Screen();
     classSelectorNonInteractiveScreen->initialize(window, false);
 
+    settingsScreenScreen = new Screen();
+    settingsScreenScreen->initialize(window, false);
+    settingsScreenImgScreen = new Screen();
+    settingsScreenImgScreen->initialize(window, false);
+
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
@@ -329,9 +337,11 @@ int main(int /* argc */, char** /* argv */) {
     classSelector = new ClassSelector(classSelectorInteractiveScreen, SCREEN_WIDTH, SCREEN_HEIGHT, window, classSelectorNonInteractiveScreen);
     startScreen = new StartScreen(startScreenScreen, SCREEN_WIDTH, SCREEN_HEIGHT, window, startScreenImgScreen);
     loadingScreen = new LoadingScreen(loadingScreenScreen, SCREEN_WIDTH, SCREEN_HEIGHT);
+    settingsScreen = new SettingsScreen(settingsScreenScreen, SCREEN_WIDTH, SCREEN_HEIGHT, window, settingsScreenImgScreen);
 
     classSelector->UpdateParentClasses(startScreen);
-    startScreen->UpdateParentClasses(classSelector);
+    startScreen->UpdateParentClasses(classSelector, settingsScreen);
+    settingsScreen->UpdateParentClasses(startScreen);
     #pragma endregion
     #pragma region glfw Callbacks to NanoGUI & ECS
     glfwSetCursorPosCallback(window,
@@ -342,6 +352,7 @@ int main(int /* argc */, char** /* argv */) {
             startScreen->getScreen()->cursorPosCallbackEvent(x, y);
             classSelector->getScreen()->cursorPosCallbackEvent(x, y);
             classSelector->getScreenOtherTheme()->cursorPosCallbackEvent(x, y);
+            settingsScreen->getScreen()->cursorPosCallbackEvent(x, y);
 
             if (firstMouse)
             {
@@ -368,6 +379,7 @@ int main(int /* argc */, char** /* argv */) {
             startScreen->getScreen()->mouseButtonCallbackEvent(button, action, modifiers);
             classSelector->getScreen()->mouseButtonCallbackEvent(button, action, modifiers);
             classSelector->getScreenOtherTheme()->mouseButtonCallbackEvent(button, action, modifiers);
+            settingsScreen->getScreen()->mouseButtonCallbackEvent(button, action, modifiers);
         }
     );
 
@@ -377,6 +389,7 @@ int main(int /* argc */, char** /* argv */) {
             startScreen->getScreen()->keyCallbackEvent(key, scancode, action, mods);
             classSelector->getScreen()->keyCallbackEvent(key, scancode, action, mods);
             classSelector->getScreenOtherTheme()->keyCallbackEvent(key, scancode, action, mods);
+            settingsScreen->getScreen()->keyCallbackEvent(key, scancode, action, mods);
 
             entitySystem->Update(camera, inv, key, scancode, action, mods);
 
@@ -399,6 +412,7 @@ int main(int /* argc */, char** /* argv */) {
     glfwSetCharCallback(window,
         [](GLFWwindow*, unsigned int codepoint) {
             screen->charCallbackEvent(codepoint);
+            settingsScreen->getScreen()->charCallbackEvent(codepoint);
         }
     );
 
@@ -450,6 +464,7 @@ int main(int /* argc */, char** /* argv */) {
 
         startScreen->render();
         classSelector->render();
+        settingsScreen->render();
 
         // Swap the buffers
         glfwSwapBuffers(window);
