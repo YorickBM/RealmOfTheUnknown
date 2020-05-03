@@ -17,7 +17,7 @@ struct TransformC {
 };
 
 struct MotionC {
-	float movementSpeed = 1.0f;
+	float movementSpeed = 1.4f;
 	Camera_Movement direction;
 };
 
