@@ -1,8 +1,8 @@
-# Install script for directory: D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen/demos
+# Install script for directory: C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/demos
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen/out/install/x64-Debug")
+  set(CMAKE_INSTALL_PREFIX "C:/Users/12107/Source/Repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/install/x64-Debug")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

@@ -1,8 +1,8 @@
-# Install script for directory: D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen/blas
+# Install script for directory: C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/blas
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen/out/install/x64-Debug")
+  set(CMAKE_INSTALL_PREFIX "C:/Users/12107/Source/Repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/install/x64-Debug")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,14 +33,14 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY OPTIONAL FILES "D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen/out/build/x64-Debug/blas/eigen_blas.lib")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY OPTIONAL FILES "C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/blas/eigen_blas.lib")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE SHARED_LIBRARY FILES "D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen/out/build/x64-Debug/blas/eigen_blas.dll")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE SHARED_LIBRARY FILES "C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/blas/eigen_blas.dll")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "D:/Yorick/source/repos/Test NanoGUI/include/ext/eigen/out/build/x64-Debug/blas/eigen_blas_static.lib")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/12107/source/repos/YorickBM/RealmOfTheUnknown/include/ext/eigen/out/build/x64-Debug/blas/eigen_blas_static.lib")
 endif()
 

@@ -171,9 +171,9 @@ targets_to_make=`echo "$TESTSLIST" | egrep "$1" | xargs echo`
 
 if [ -n "${EIGEN_MAKE_ARGS:+x}" ]
 then
-  D:/Yorick/Programs (86x)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe $targets_to_make ${EIGEN_MAKE_ARGS}
+  C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe $targets_to_make ${EIGEN_MAKE_ARGS}
 else
-  D:/Yorick/Programs (86x)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe $targets_to_make 
+  C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe $targets_to_make 
 fi
 exit $?
 
