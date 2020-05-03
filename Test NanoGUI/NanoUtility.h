@@ -30,6 +30,9 @@
 #include <map>
 #include <iostream>
 #include <cstdint>
+#include <stdlib.h>
+#include <time.h>
+#include <stdio.h>
 
 using imagesDataType = vector<pair<GLTexture, GLTexture::handleType>>;
 
@@ -215,5 +218,11 @@ public:
 		canvas->setFixedSize(size);
 
 		return canvas;
+	}
+
+	static int randomInt() {
+		srand((unsigned)time(NULL));
+		printf("%d,\t%d\n", rand(), rand() % 6 + 1);
+		return rand() % 6 + 1;
 	}
 };

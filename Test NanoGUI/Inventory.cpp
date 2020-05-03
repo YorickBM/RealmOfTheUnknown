@@ -306,14 +306,22 @@ void Inventory::RemoveItem(int slot) {
 	refreshItem(slot);
 }
 void Inventory::AddItem(Item item, int count) {
+	int items = 0;
 	for (auto pair : allUserItems) {
+		items++;
 		if (pair.id == item.id) {
 			pair.amount += 1;
 		}
 		else {
 			std::cout << "New Item" << std::endl;
+			item.id = NanoUtility::randomInt();
 			allUserItems.push_back(item);
 		}
+	}
+	if (items == 0) {
+		std::cout << "New Item" << std::endl;
+		item.id = NanoUtility::randomInt();
+		allUserItems.push_back(item);
 	}
 
 	SortInventory(_activeType);
