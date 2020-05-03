@@ -111,7 +111,7 @@ Inventory::Inventory(GLFWwindow* window, int width, int height, Camera& camera, 
 		cout << "Show All" << endl;
 		for (Button* btn : _filterButtons) btn->setTextColor({ 89, 91, 91, 255 });
 		_filterButtons.at(0)->setTextColor({ 214, 171, 63, 255 });
-		SortInventory(InventoryCataType::AllItems);
+		SortInventory(InventoryCataType::AllItems, _items, _slotImages, _slotCounters);
 		});
 	_filterButtons.push_back(b);
 	b = new Button(tools, "Tools");
@@ -119,7 +119,7 @@ Inventory::Inventory(GLFWwindow* window, int width, int height, Camera& camera, 
 		cout << "Show Tools" << endl;
 		for (Button* btn : _filterButtons) btn->setTextColor({ 89, 91, 91, 255 });
 		_filterButtons.at(1)->setTextColor({ 214, 171, 63, 255 });
-		SortInventory(InventoryCataType::Tools);
+		SortInventory(InventoryCataType::Tools, _items, _slotImages, _slotCounters);
 		});
 	_filterButtons.push_back(b);
 	b = new Button(tools, "Armor");
@@ -127,7 +127,7 @@ Inventory::Inventory(GLFWwindow* window, int width, int height, Camera& camera, 
 		cout << "Show Armor" << endl;
 		for (Button* btn : _filterButtons) btn->setTextColor({ 89, 91, 91, 255 });
 		_filterButtons.at(2)->setTextColor({ 214, 171, 63, 255 });
-		SortInventory(InventoryCataType::Armor);
+		SortInventory(InventoryCataType::Armor, _items, _slotImages, _slotCounters);
 		});
 	_filterButtons.push_back(b);
 	b = new Button(tools, "Miscellaneous");
@@ -135,7 +135,7 @@ Inventory::Inventory(GLFWwindow* window, int width, int height, Camera& camera, 
 		cout << "Show Miscellaneous" << endl;
 		for (Button* btn : _filterButtons) btn->setTextColor({ 89, 91, 91, 255 });
 		_filterButtons.at(3)->setTextColor({ 214, 171, 63, 255 });
-		SortInventory(InventoryCataType::Miscellaneous);
+		SortInventory(InventoryCataType::Miscellaneous, _items, _slotImages, _slotCounters);
 		});
 	_filterButtons.push_back(b);
 
@@ -144,6 +144,7 @@ Inventory::Inventory(GLFWwindow* window, int width, int height, Camera& camera, 
 	_filterButtons.at(0)->setTextColor({ 214, 171, 63, 255 });
 #pragma endregion
 	#pragma region Backpack Bottom Content
+	rowsVar = 0;
 	createSlotRow(new Window(frontScreen, ""), _invRows);
 	createSlotRow(new Window(frontScreen, ""), _invRows);
 	createSlotRow(new Window(frontScreen, ""), _invRows);
@@ -271,14 +272,14 @@ Inventory::Inventory(GLFWwindow* window, int width, int height, Camera& camera, 
 	NanoUtility::title(_questInfoContextBottomWindow, "DESCRIPTION");
 	NanoUtility::line(_questInfoContextBottomWindow);
 
-	_desc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
-	_desc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
-	_desc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
-	_desc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
-	_desc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
-	_desc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
-	_desc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
-	_desc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
+	_questDesc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
+	_questDesc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
+	_questDesc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
+	_questDesc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
+	_questDesc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
+	_questDesc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
+	_questDesc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
+	_questDesc.push_back(NanoUtility::createTextLine(_questInfoContextBottomWindow, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
 	#pragma endregion
 
 	#pragma region Quest Background
@@ -301,27 +302,27 @@ Inventory::Inventory(GLFWwindow* window, int width, int height, Camera& camera, 
 	_filterQuestButtons.push_back(NanoUtility::button(questSort, "To do", {}, [&] {
 		for (Button* btn : _filterQuestButtons) btn->setTextColor({ 89, 91, 91, 255 });
 		_filterQuestButtons.at(0)->setTextColor({ 214, 171, 63, 255 });
-		SortQuests(QuestCataType::Open);
+		SortQuests(QuestCataType::Open, _quests, _questImages, _questCounters);
 		}));
 	_filterQuestButtons.push_back(NanoUtility::button(questSort, "Active", {}, [&] {
 		for (Button* btn : _filterQuestButtons) btn->setTextColor({ 89, 91, 91, 255 });
 		_filterQuestButtons.at(1)->setTextColor({ 214, 171, 63, 255 });
-		SortQuests(QuestCataType::Active);
+		SortQuests(QuestCataType::Active, _quests, _questImages, _questCounters);
 		}));
 	_filterQuestButtons.push_back(NanoUtility::button(questSort, "Completed", {}, [&] {
 		for (Button* btn : _filterQuestButtons) btn->setTextColor({ 89, 91, 91, 255 });
 		_filterQuestButtons.at(2)->setTextColor({ 214, 171, 63, 255 });
-		SortQuests(QuestCataType::Completed);
+		SortQuests(QuestCataType::Completed, _quests, _questImages, _questCounters);
 		}));
 	_filterQuestButtons.push_back(NanoUtility::button(questSort, "Locked", {}, [&] {
 		for (Button* btn : _filterQuestButtons) btn->setTextColor({ 89, 91, 91, 255 });
 		_filterQuestButtons.at(3)->setTextColor({ 214, 171, 63, 255 });
-		SortQuests(QuestCataType::Closed);
+		SortQuests(QuestCataType::Closed, _quests, _questImages, _questCounters);
 		}));
 	_filterQuestButtons.push_back(NanoUtility::button(questSort, "All", {}, [&] {
 		for (Button* btn : _filterQuestButtons) btn->setTextColor({ 89, 91, 91, 255 });
 		_filterQuestButtons.at(4)->setTextColor({ 214, 171, 63, 255 });
-		SortQuests(QuestCataType::AllQuests);
+		SortQuests(QuestCataType::AllQuests, _quests, _questImages, _questCounters);
 		}));
 
 	//Bootup first selection
@@ -330,6 +331,11 @@ Inventory::Inventory(GLFWwindow* window, int width, int height, Camera& camera, 
 
 	#pragma endregion
 	#pragma region Quest Bottom Context
+	createSlotRow(new Window(frontScreen, ""), _questRows, true);
+	createSlotRow(new Window(frontScreen, ""), _questRows, true);
+	createSlotRow(new Window(frontScreen, ""), _questRows, true);
+	createSlotRow(new Window(frontScreen, ""), _questRows, true);
+	createSlotRow(new Window(frontScreen, ""), _questRows, true);
 	#pragma endregion
 	#pragma endregion
 
@@ -472,18 +478,32 @@ void Inventory::keyCallbackEvent(int key, int scancode, int action, int mods) {
 	}
 }
 
-void Inventory::SetItem(int slot, Item item) {
+void Inventory::SetItem(int slot, Item item, std::map<int, Item> &list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3) {
 	item.imgLocation = NanoUtility::LoadImage(item.image, mImagesData);
-	_items[slot] = item;
+	list[slot] = item;
 
-	refreshItem(slot);
+	refreshItem(slot, list, list2, list3);
 }
-void Inventory::RemoveItem(int slot) {
+void Inventory::SetQuest(int slot, Quest item, std::map<int, Quest>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3) {
+	item.imgLocation = NanoUtility::LoadImage(item.image, mImagesData);
+	list[slot] = item;
+
+	refreshQuest(slot, list, list2, list3);
+}
+
+void Inventory::RemoveItem(int slot, std::map<int, Item>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3) {
 	_items[slot].imgLocation = 1; //Set to image empty
 	_items[slot].name = "none"; //Reset name so we now its an empty slot
 
-	refreshItem(slot);
+	refreshItem(slot, list, list2, list3);
 }
+void Inventory::RemoveQuest(int slot, std::map<int, Quest>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3) {
+	list[slot].imgLocation = 1; //Set to image empty
+	list[slot].name = "none"; //Reset name so we now its an empty slot
+
+	refreshQuest(slot, list, list2, list3);
+}
+
 void Inventory::AddItem(Item item, int count) {
 	bool newItem = true;
 	for (auto& pair : allUserItems) {
@@ -502,7 +522,11 @@ void Inventory::AddItem(Item item, int count) {
 		allUserItems.push_back(item);
 	}
 
-	SortInventory(_activeType);
+	SortInventory(_activeType, _items, _slotImages, _slotCounters);
+}
+void Inventory::AddQuest(Quest item) {
+	allUserQuests.push_back(item);
+	SortQuests(_activeTypeQuests, _quests, _questImages, _questCounters);
 }
 void Inventory::DropItem(Item item, vec3 position) {
 	for (int i = 0; i < allUserItems.size(); i++) {
@@ -525,17 +549,17 @@ void Inventory::DropItem(Item item, vec3 position) {
 	csm.AddComponent(Entity, TransformC{ position, 0.3f });
 	csm.AddComponent(Entity, EntityC{ item });
 
-	SortInventory(_activeType);
+	SortInventory(_activeType, _items, _slotImages, _slotCounters);
 }
-void Inventory::SwitchItems(int slot1, int slot2) {
-	Item itm1 = _items[slot1];
-	Item itm2 = _items[slot2];
+void Inventory::SwitchItems(int slot1, int slot2, std::map<int, Item>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3) {
+	Item itm1 = list[slot1];
+	Item itm2 = list[slot2];
 
-	_items[slot1] = itm2;
-	_items[slot2] = itm1;
+	list[slot1] = itm2;
+	list[slot2] = itm1;
 
-	refreshItem(slot1);
-	refreshItem(slot2);
+	refreshItem(slot1, list, list2, list3);
+	refreshItem(slot2, list, list2, list3);
 }
 
 void Inventory::Hide() {
@@ -581,6 +605,9 @@ void Inventory::ShowQuest(bool show) {
 	_naviButton->setVisible(show);
 	for (Button* btn : _naviButtons) btn->setTextColor({ 255, 255, 255, 255 });
 	_naviButtons.at(0)->setTextColor({ 214, 171, 63, 255 });
+
+	for (pair<int, Window*> pair : _questRows)
+		pair.second->setVisible(show);
 }
 void Inventory::ShowInventory(bool show) {
 	_backpackBackgroundWindow->setVisible(show);
@@ -602,73 +629,118 @@ void Inventory::SetActiveSlot(int slot) {
 		//Make specificslot active
 	}
 }
-void Inventory::createSlotRow(Window* row, vector<pair<int, Window*>>& list, int rows, vector<string> items) {
+void Inventory::createSlotRow(Window* row, vector<pair<int, Window*>>& list, bool quests, int rows, vector<string> items) {
 	row->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 20, 8));
 	row->setFixedSize({ 812 , 96 });
 	rowsVar += 1;
 
 	for (int i = 0; i < rows; i++) {
 		int pos = NanoUtility::LoadImage(items[i], mImagesData);
-		_items[uniqueSlotId] = Item({ "none", {}, items[i], InventoryCataType::Miscellaneous, pos });
-		createSlot(row, 70, 70, uniqueSlotId++);
+		if (quests) _quests[uniqueSlotId] = Quest();
+		else _items[uniqueSlotId] = Item({ "none", {}, items[i], InventoryCataType::Miscellaneous, pos });
+		createSlot(row, 70, 70, uniqueSlotId++, quests);
 	}
 
-	int rowNum = _invRows.size();
+	int rowNum = list.size();
 	if (rowNum < 0) rowNum = 0;
 
 	list.push_back(make_pair(rowNum, row));
 }
-Widget* Inventory::createSlot(Widget* window, int x, int y, int slotNum) {
-	Widget* slot = new Widget(window);
-	slot->setFixedSize({ x, y });
-	slot->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Minimum, 0, -x));
+Widget* Inventory::createSlot(Widget* window, int x, int y, int slotNum, bool quests) {
+	if(quests) { //Quests
+		std::cout << "Quest Slot creating" << std::endl;
+		Widget* slot = new Widget(window);
+		slot->setFixedSize({ x, y });
+		slot->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Minimum, 0, -x));
 
-	ImageView* backgroundImage = new ImageView(slot, mImagesData[0].first.texture());
-	backgroundImage->setFixedSize({ x, y });
+		ImageView* backgroundImage = new ImageView(slot, mImagesData[0].first.texture());
+		backgroundImage->setFixedSize({ x, y });
 
-	int num = _items.size() - 1;
-	ImageView* frontImage = new ImageView(slot, mImagesData[_items[slotNum].imgLocation].first.texture());
-	frontImage->setFixedSize({ x, y });
-	_slotImages[slotNum] = frontImage;
+		int num = _items.size() - 1;
+		ImageView* frontImage = new ImageView(slot, mImagesData[_quests[slotNum].imgLocation].first.texture());
+		frontImage->setFixedSize({ x, y });
+		_questImages[slotNum] = frontImage;
 
-	ImageView* selectedImage = new ImageView(slot, mImagesData[0].first.texture());
-	selectedImage->setFixedSize({ x, y });
-	_selectedItems.push_back(make_pair(slotNum, selectedImage));
+		Button* selectItem = new Button(slot, " ");
+		selectItem->setFixedSize({ x, y });
+		selectItem->setCallback([slotNum, this, frontImage]() {
+			Quest itm = _quests[slotNum];
+			frontImage->bindImage(mImagesData[itm.imgLocation].first.texture());
 
-	Button* selectItem = new Button(slot, " ");
-	selectItem->setFixedSize({ x, y });
-	selectItem->setCallback([slotNum, this, frontImage, selectedImage]() {
-		Item itm = _items[slotNum];
-		frontImage->bindImage(mImagesData[itm.imgLocation].first.texture());
+			if (itm.name != "none" && _backpackBackgroundWindow->visible()) {
+				//Update Info widget with correct info
+				UpdateQuestsInfo(itm.name, itm.imgLocation, itm.stat1, itm.icon1, itm.stat2, itm.icon2, itm.desc);
 
-		if (itm.name != "none" && _backpackBackgroundWindow->visible()) {
-			//Update Info widget with correct info
-			UpdateInfo(itm.name, itm.imgLocation, itm.stat1, itm.icon1, itm.stat2, itm.icon2, itm.stat3, itm.icon3, itm.desc);
+				//Show Info Menu
+				ShowQuestInfo(true);
 
-			//Select Thingy
-			_selectedItems.clear();
-			_selectedItems.push_back(make_pair(slotNum, selectedImage));
+				//Realign Windows
+				realignWindows(tempWidth, tempHeight);
+			}
+			else {
+				ShowQuestInfo(true);
+				UpdateQuestsInfo("Select a Quest", 0, "", 0, "", 0, {"Please select a quest..."});
+				realignWindows(tempWidth, tempHeight);
+			}
+			});
 
-			//Show Info Menu
-			ShowArmor(false);
-			ShowInfo(true);
+		Label* lbl = new Label(slot, "00", "sans", 16);
+		_questCounters.insert(std::make_pair(slotNum, lbl));
+		std::cout << "-> " << _questCounters.size() << std::endl;
+		return slot;
+	}
+	else { //Inventory
+		Widget* slot = new Widget(window);
+		slot->setFixedSize({ x, y });
+		slot->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Minimum, 0, -x));
 
-			//Realign Windows
-			realignWindows(tempWidth, tempHeight);
+		ImageView* backgroundImage = new ImageView(slot, mImagesData[0].first.texture());
+		backgroundImage->setFixedSize({ x, y });
 
-			//Set selected Slot int to slotNum
-			SelectedSlot = slotNum;
-		}
-		else {
-			ShowInfo(false);
-			ShowArmor(true);
-			realignWindows(tempWidth, tempHeight);
-		}
-	});
+		int num = _items.size() - 1;
+		ImageView* frontImage = new ImageView(slot, mImagesData[_items[slotNum].imgLocation].first.texture());
+		frontImage->setFixedSize({ x, y });
+		_slotImages[slotNum] = frontImage;
 
-	Label* lbl = new Label(slot, "00", "sans", 16);
-	_slotCounters.insert(std::make_pair(slotNum, lbl));
-	return slot;
+		ImageView* selectedImage = new ImageView(slot, mImagesData[0].first.texture());
+		selectedImage->setFixedSize({ x, y });
+		_selectedItems.push_back(make_pair(slotNum, selectedImage));
+
+		Button* selectItem = new Button(slot, " ");
+		selectItem->setFixedSize({ x, y });
+		selectItem->setCallback([slotNum, this, frontImage, selectedImage]() {
+			Item itm = _items[slotNum];
+			frontImage->bindImage(mImagesData[itm.imgLocation].first.texture());
+
+			if (itm.name != "none" && _backpackBackgroundWindow->visible()) {
+				//Update Info widget with correct info
+				UpdateInfo(itm.name, itm.imgLocation, itm.stat1, itm.icon1, itm.stat2, itm.icon2, itm.stat3, itm.icon3, itm.desc);
+
+				//Select Thingy
+				_selectedItems.clear();
+				_selectedItems.push_back(make_pair(slotNum, selectedImage));
+
+				//Show Info Menu
+				ShowArmor(false);
+				ShowInfo(true);
+
+				//Realign Windows
+				realignWindows(tempWidth, tempHeight);
+
+				//Set selected Slot int to slotNum
+				SelectedSlot = slotNum;
+			}
+			else {
+				ShowInfo(false);
+				ShowArmor(true);
+				realignWindows(tempWidth, tempHeight);
+			}
+			});
+
+		Label* lbl = new Label(slot, "00", "sans", 16);
+		_slotCounters.insert(std::make_pair(slotNum, lbl));
+		return slot;
+	}
 }
 
 void Inventory::UpdateInfo(string title, int image, string Stats1, int stats1Icon, string Stats2, int stats2Icon, string Stats3, int stats3Icon, std::vector<std::string> desc) {
@@ -698,18 +770,18 @@ void Inventory::UpdateInfo(string title, int image, string Stats1, int stats1Ico
 		_desc.at(i)->setCaption("");
 	}
 }
-void Inventory::refreshItem(int slotNum) {
-	Item itm = _items[slotNum];
-	_slotImages[slotNum]->bindImage(mImagesData[itm.imgLocation].first.texture());
+void Inventory::refreshItem(int slotNum, std::map<int, Item>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3) {
+	Item itm = list[slotNum];
+	list2[slotNum]->bindImage(mImagesData[itm.imgLocation].first.texture());
 
 	std::stringstream ss;
 	ss << std::setw(2) << std::setfill('0') << itm.amount;
 
 	if(itm.amount > 0 && itm.isStackable)
-		_slotCounters[slotNum]->setCaption(ss.str());
-	else _slotCounters[slotNum]->setCaption("");
+		list3[slotNum]->setCaption(ss.str());
+	else list3[slotNum]->setCaption("");
 		
-	_slotCounters[slotNum]->setPosition(_slotImages[slotNum]->position() + Vector2i(50, 50));
+	list3[slotNum]->setPosition(list2[slotNum]->position() + Vector2i(50, 50));
 
 	if (itm.type == InventoryCataType::Armor) {
 		if (itm.ArmorType == ArmorType::Head) {
@@ -719,40 +791,98 @@ void Inventory::refreshItem(int slotNum) {
 		}
 	}
 }
-void Inventory::SortInventory(InventoryCataType sortType) {
+void Inventory::SortInventory(InventoryCataType sortType, std::map<int, Item>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3) {
 	int slot = 0;
 	_activeType = sortType;
 
 	switch (sortType) {
 	case InventoryCataType::AllItems:
 		for (auto item : allUserItems)
-			SetItem(slot++, item);
+			SetItem(slot++, item, list, list2, _slotCounters);
 		break;
 	case InventoryCataType::Armor:
 		for (auto item : allUserItems)
-			if (item.type == InventoryCataType::Armor)SetItem(slot++, item);
+			if (item.type == InventoryCataType::Armor)SetItem(slot++, item, list, list2, list3);
 		break;
 	case InventoryCataType::Miscellaneous:
 		for (auto item : allUserItems)
-			if (item.type == InventoryCataType::Miscellaneous)SetItem(slot++, item);
+			if (item.type == InventoryCataType::Miscellaneous)SetItem(slot++, item, list, list2, list3);
 		break;
 	case InventoryCataType::Tools:
 		for (auto item : allUserItems)
-			if (item.type == InventoryCataType::Tools)SetItem(slot++, item);
+			if (item.type == InventoryCataType::Tools)SetItem(slot++, item, list, list2, list3);
 		break;
 	}
 
 	for (int i = slot; slot < 50; slot++) {
-		RemoveItem(slot);
+		RemoveItem(slot, _items, _slotImages, _slotCounters);
 	}
 
 	for (int i = 50; i < 60; i++) {
-		refreshItem(i);
+		refreshItem(i, _items, _slotImages, _slotCounters);
 	}
 }
 void Inventory::UpdateArmorInfo(string itemName) {
 
 }
-void Inventory::SortQuests(QuestCataType sortType) {
+void Inventory::SortQuests(QuestCataType sortType, std::map<int, Quest>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3) {
+	int slot = 70;
+	_activeTypeQuests = sortType;
 
+	switch (sortType) {
+	case QuestCataType::AllQuests:
+		for (auto item : allUserQuests)
+			SetQuest(slot++, item, list, list2, list3);
+		break;
+	case QuestCataType::Completed:
+		for (auto item : allUserQuests)
+			if (item.type == InventoryCataType::Armor)SetQuest(slot++, item, list, list2, list3);
+		break;
+	case QuestCataType::Active:
+		for (auto item : allUserQuests)
+			if (item.type == InventoryCataType::Miscellaneous)SetQuest(slot++, item, list, list2, list3);
+		break;
+	case QuestCataType::Open:
+		for (auto item : allUserQuests)
+			if (item.type == InventoryCataType::Tools)SetQuest(slot++, item, list, list2, list3);
+		break;
+	case QuestCataType::Closed:
+		for (auto item : allUserQuests)
+			if (item.type == InventoryCataType::Tools)SetQuest(slot++, item, list, list2, list3);
+		break;
+	}
+
+	for (int i = slot; slot < 110; slot++) {
+		RemoveQuest(slot, list, list2, list3);
+	}
+
+	for (int i = 70; i < 110; i++) {
+		refreshQuest(i, list, list2, list3);
+	}
+}
+void Inventory::refreshQuest(int slotNum, std::map<int, Quest>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3) {
+	Quest itm = list[slotNum];
+	list2[slotNum]->bindImage(mImagesData[itm.imgLocation].first.texture());
+
+	list3[slotNum]->setCaption(std::to_string(itm.reqLevel));
+
+	list3[slotNum]->setPosition(list2[slotNum]->position() + Vector2i(50, 50));
+}
+void Inventory::UpdateQuestsInfo(string title, int image, string Stats1, int stats1Icon, string Stats2, int stats2Icon, std::vector<std::string> desc) {
+	if (Stats1 == "") _infoButtons["1"]->setVisible(false);
+	_infoQuestButtons["1"]->setCaption(Stats1);
+	_infoQuestButtons["1"]->setIcon(stats1Icon);
+
+	_infoQuestButtons["2"]->setCaption(Stats2);
+	_infoQuestButtons["2"]->setIcon(stats2Icon);
+
+	_infoQuestLabels["TITLE"]->setCaption(title);
+	_infoQuestImages["PREVIEW"]->bindImage(mImagesData[image].first.texture());
+
+	for (int i = 0; i < desc.size(); i++) {
+		_questDesc.at(i)->setCaption(desc.at(i));
+	}
+	for (int i = desc.size(); i < _desc.size(); i++) {
+		_questDesc.at(i)->setCaption("");
+	}
 }
