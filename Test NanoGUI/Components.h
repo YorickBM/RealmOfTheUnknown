@@ -55,4 +55,10 @@ struct ChunkC {
 
 struct EntityC {
 	Item item;
+
+	bool isNpc = false;
+};
+
+struct NPCC {
+	Quest questItem;
 };
