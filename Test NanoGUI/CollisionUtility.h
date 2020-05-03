@@ -12,7 +12,7 @@ public:
 	static std::vector<glm::vec2> getClosesPointsInRange(int amountOfPoints, std::vector<glm::vec2> positions, glm::vec2 origin, float range) {
 		std::map<float, glm::vec2> inRange = getRangePositions(positions, origin, range);
 		std::vector<glm::vec2> closestPoints;
-		if (inRange.size() > 3) {
+		if (inRange.size() > (amountOfPoints - 1)) {
 			for (int i = 0; i < amountOfPoints; i++) {
 			
 				float index = findClosestKey(inRange, 0.f);
@@ -20,10 +20,6 @@ public:
 				inRange.erase(index);
 			}
 		}
-		else {
-			std::cout << "Empty Map Recieved" << std::endl;
-		}
-
 		return closestPoints;
 	}
 

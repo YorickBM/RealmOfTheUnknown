@@ -135,6 +135,12 @@
     <ClCompile Include="ItemEntitySystem.cpp">
       <Filter>Source Files\EntityComponentSystem\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="Inventory.cpp">
+      <Filter>Source Files\NanoGui Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GLTexture.cpp">
+      <Filter>Source Files\NanoGui Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">

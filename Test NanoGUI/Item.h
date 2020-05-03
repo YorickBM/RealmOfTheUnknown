@@ -20,6 +20,8 @@ struct Item {
 	std::string stat3 = "Req. Quest: ---";
 	int icon3 = ENTYPO_ICON_CLIPBOARD;
 
+	int id = -1;
+	int amount = 1;
 	bool isStackable = true;
 	int catagorie = -1;
 

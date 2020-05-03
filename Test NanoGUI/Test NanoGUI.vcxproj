@@ -162,7 +162,9 @@
     <ClCompile Include="ChunkSystem.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
+    <ClCompile Include="GLTexture.cpp" />
     <ClCompile Include="InputSystem.cpp" />
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="ItemEntitySystem.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ModelLoader.cpp" />

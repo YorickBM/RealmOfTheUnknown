@@ -7,22 +7,24 @@ void ItemEntitySystem::Init()
 }
 
 extern ComponentSystemManager csm;
-void ItemEntitySystem::Update(Camera& camera, Inventory* inv)
+void ItemEntitySystem::Update(Camera& camera, Inventory* inv, int key, int scancode, int action, int mods)
 {
+	pickedUpEntities.clear();
 	for (auto const& entity : mEntities)
 	{
+		if (frames < 2) frames = 10;
 		auto& transformC = csm.GetComponent<TransformC>(entity);
 		auto& entityC = csm.GetComponent<EntityC>(entity);
 
-		if (std::find(_positions.begin(), _positions.end(), vec2(transformC.position.x, transformC.position.z)) == _positions.end()) {
-			_positions.push_back(vec2(transformC.position.x, transformC.position.z));
-			_itemByPos.insert(make_pair(make_pair(transformC.position.x, transformC.position.z), entityC.item));
+		float distance = CollisionUtility::distanceBetweenTwoPoints(transformC.position.x, transformC.position.z, camera.GetPosition().x, camera.GetPosition().z);
+		if(distance <= 1.f && action == GLFW_PRESS && key == GLFW_KEY_E) {
+			inv->AddItem(entityC.item);
+			pickedUpEntities.push_back(entity);
+			
 		}
 	}
 
-	std::vector<glm::vec2> inRangeItems = CollisionUtility::getClosesPointsInRange(4, _positions, camera.GetPosition(), 0.4f);
-	for (glm::vec2 pos : inRangeItems) {
-		Item itm = _itemByPos.at(make_pair(pos.x, pos.y));
-		inv->AddItem(itm);
+	for (int i = 0; i < pickedUpEntities.size(); i++) {
+		csm.DestroyEntity(pickedUpEntities.at(i));
 	}
 }

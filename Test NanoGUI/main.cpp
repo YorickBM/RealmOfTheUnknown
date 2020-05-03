@@ -45,6 +45,7 @@
 #include <nanogui/nanogui.h>
 
 //Personal Includes
+#include "Inventory.h"
 #include "Components.h"
 #include "Systems.h"
 #include "Camera.h"
@@ -54,17 +55,13 @@
 #include "ComponentSystemManager.h"
 #include "ChunkManager.h"
 #include "ModelLoader.h";
-
-#include "InventoryTheme.h"
-#include "Inventory.h"
 #include "ScreenManager.h"
-
 #include "CollisionUtility.h"
 #pragma endregion
 using namespace nanogui;
 #pragma region Vars
 // Properties
-const GLuint WIDTH = 800, HEIGHT = 800; //1280x1024 <- lower then this = customScale
+const GLuint WIDTH = 800, HEIGHT = 800;
 const char* TITLE = "Fighting Against The Coruption - (0.0.1)";
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
@@ -123,6 +120,8 @@ std::unordered_map<string, string> settings;
 std::unordered_map<string, string> inventory;
 std::unordered_map<string, Item> invItems;
 
+std::shared_ptr< ItemEntitySystem> entitySystem;
+
 #pragma endregion
 
 int main(int /* argc */, char** /* argv */) {
@@ -152,9 +151,7 @@ int main(int /* argc */, char** /* argv */) {
     //Item{ "", "", "", InventoryCataType::Tools, 1, "",ENTYPO_ICON_LAB_FLASK, "", ENTYPO_ICON_NEWSLETTER, "", ENTYPO_ICON_CLIPBOARD }
     invItems.insert(make_pair("Dummy Hammer", Item{ "Dummy Hammer", "----", "Inventory/DummyHammer", InventoryCataType::Tools, 1, "Min. Level --1",ENTYPO_ICON_LAB_FLASK, "Class: --Hunter", ENTYPO_ICON_NEWSLETTER, "Att. Spd: Slow", ENTYPO_ICON_FLASH }));
     invItems.insert(make_pair("Bone", Item{ "Bone", "----", "Inventory/Bone", InventoryCataType::Miscellaneous, 1, "Misc Item",ENTYPO_ICON_LAB_FLASK, "", ENTYPO_ICON_NEWSLETTER, "", ENTYPO_ICON_FLASH }));
-    invItems.insert(make_pair("Bone", Item{ "Bone", "----", "Inventory/Bone", InventoryCataType::Miscellaneous, 1, "Misc Item",ENTYPO_ICON_LAB_FLASK, "", ENTYPO_ICON_NEWSLETTER, "", ENTYPO_ICON_FLASH }));
-
-#pragma endregion
+    #pragma endregion
 
 
     #pragma region Loading Settings
@@ -164,6 +161,75 @@ int main(int /* argc */, char** /* argv */) {
     };
     std::thread thread_object(f);
     #pragma endregion
+    #pragma region ComponentSystem
+    csm.Init();
+
+    /* Register The Components & Systems*/
+    csm.RegisterComponent<TransformC>();
+    csm.RegisterComponent<MotionC>();
+    csm.RegisterComponent<ModelMeshC>();
+    csm.RegisterComponent<CollisionC>();
+    csm.RegisterComponent<HealthC>();
+    csm.RegisterComponent<AiC>();
+    csm.RegisterComponent<InputC>();
+    csm.RegisterComponent<ChunkC>();
+    csm.RegisterComponent<EntityC>();
+
+    auto inputSystem = csm.RegisterSystem<InputSystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<MotionC>());
+        signature.set(csm.GetComponentType<InputC>());
+        csm.SetSystemSignature<InputSystem>(signature);
+    }
+    inputSystem->Init();
+
+    entitySystem = csm.RegisterSystem<ItemEntitySystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<EntityC>());
+        signature.set(csm.GetComponentType<TransformC>());
+        csm.SetSystemSignature<ItemEntitySystem>(signature);
+    }
+    entitySystem->Init();
+
+    auto movementSystem = csm.RegisterSystem<MovementSystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<MotionC>());
+        signature.set(csm.GetComponentType<TransformC>());
+        csm.SetSystemSignature<MovementSystem>(signature);
+    }
+    movementSystem->Init();
+
+    auto chunkSystem = csm.RegisterSystem<ChunkSystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<ChunkC>());
+        csm.SetSystemSignature<ChunkSystem>(signature);
+    }
+    chunkSystem->Init();
+
+    auto modelSystem = csm.RegisterSystem<ModelMeshSystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<ModelMeshC>());
+        signature.set(csm.GetComponentType<TransformC>());
+        csm.SetSystemSignature<ModelMeshSystem>(signature);
+    }
+    modelSystem->Init();
+
+    auto collisionSystem = csm.RegisterSystem<CollisionSystem>(); //Model Postion Transformation in here ???
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<CollisionC>());
+        signature.set(csm.GetComponentType<ModelMeshC>());
+        signature.set(csm.GetComponentType<TransformC>());
+        csm.SetSystemSignature<CollisionSystem>(signature);
+    }
+    collisionSystem->Init();
+
+#pragma endregion
 
     #pragma region Initialize glfw
     glfwInit();
@@ -305,6 +371,8 @@ int main(int /* argc */, char** /* argv */) {
             classSelector->getScreen()->keyCallbackEvent(key, scancode, action, mods);
             classSelector->getScreenOtherTheme()->keyCallbackEvent(key, scancode, action, mods);
 
+            entitySystem->Update(camera, inv, key, scancode, action, mods);
+
             ///if(key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, GL_TRUE);
 
             if (key >= 0 && key < 1024)
@@ -382,67 +450,6 @@ int main(int /* argc */, char** /* argv */) {
 
     if (!glfwWindowShouldClose(window)) {
 
-        #pragma region ComponentSystem
-        csm.Init();
-
-        /* Register The Components & Systems*/
-        csm.RegisterComponent<TransformC>();
-        csm.RegisterComponent<MotionC>();
-        csm.RegisterComponent<ModelMeshC>();
-        csm.RegisterComponent<CollisionC>();
-        csm.RegisterComponent<HealthC>();
-        csm.RegisterComponent<AiC>();
-        csm.RegisterComponent<InputC>();
-        csm.RegisterComponent<ChunkC>();
-        csm.RegisterComponent<EntityC>();
-
-        auto inputSystem = csm.RegisterSystem<InputSystem>();
-        {
-            Signature signature;
-            signature.set(csm.GetComponentType<MotionC>());
-            signature.set(csm.GetComponentType<InputC>());
-            csm.SetSystemSignature<InputSystem>(signature);
-        }
-        inputSystem->Init();
-
-        auto movementSystem = csm.RegisterSystem<MovementSystem>();
-        {
-            Signature signature;
-            signature.set(csm.GetComponentType<MotionC>());
-            signature.set(csm.GetComponentType<TransformC>());
-            csm.SetSystemSignature<MovementSystem>(signature);
-        }
-        movementSystem->Init();
-
-        auto chunkSystem = csm.RegisterSystem<ChunkSystem>();
-        {
-            Signature signature;
-            signature.set(csm.GetComponentType<ChunkC>());
-            csm.SetSystemSignature<ChunkSystem>(signature);
-        }
-        movementSystem->Init();
-
-        auto modelSystem = csm.RegisterSystem<ModelMeshSystem>();
-        {
-            Signature signature;
-            signature.set(csm.GetComponentType<ModelMeshC>());
-            signature.set(csm.GetComponentType<TransformC>());
-            csm.SetSystemSignature<ModelMeshSystem>(signature);
-        }
-        modelSystem->Init();
-
-        auto collisionSystem = csm.RegisterSystem<CollisionSystem>(); //Model Postion Transformation in here ???
-        {
-            Signature signature;
-            signature.set(csm.GetComponentType<CollisionC>());
-            signature.set(csm.GetComponentType<ModelMeshC>());
-            signature.set(csm.GetComponentType<TransformC>());
-            csm.SetSystemSignature<CollisionSystem>(signature);
-        }
-        collisionSystem->Init();
-
-        #pragma endregion
-        
         #pragma region Shaders
         loadingScreen->specialRender(window, "Loading Shaders", width, height);
         // Setup and compile our shaders
@@ -500,8 +507,7 @@ int main(int /* argc */, char** /* argv */) {
             }
 
             if (data->colType != 2) { model.GetMinAndMaxVertice(min, max); }
-            if (data->colType != 2 && data->colType != 3)
-                csm.AddComponent(Entity, CollisionC{ data->colType, BoundingBox{min, max} });
+            if (data->colType != 2) csm.AddComponent(Entity, CollisionC{ data->colType, BoundingBox{min, max} });
             csm.AddComponent(Entity, TransformC{ vec3(data->x, data->y, data->z), data->scale });
             csm.AddComponent(Entity, ModelMeshC{ model });
         }
@@ -517,6 +523,8 @@ int main(int /* argc */, char** /* argv */) {
         loadingScreen->specialRender(window, "Adding items to player inventory", width, height);
         //Add temp items
         inv->AddItem(invItems.at("Dummy Hammer"));
+        inv->AddItem(invItems.at("Bone"));
+        inv->AddItem(invItems.at("Bone"));
         inv->AddItem(invItems.at("Bone"));
         #pragma endregion
 

@@ -14,8 +14,9 @@ void CollisionSystem::Update(Camera &camera)
 		auto& transformC = csm.GetComponent<TransformC>(entity);
 		auto& collisionC = csm.GetComponent<CollisionC>(entity);
 
-		if (col.detectCollision(collisionC.boundingBox, camera.GetPosition())) {
-			camera.SetPosition(camera.GetPrevPosition());
-		}
+		if(collisionC.type != CollisionType::WorldCollision)
+			if (col.detectCollision(collisionC.boundingBox, camera.GetPosition())) {
+				camera.SetPosition(camera.GetPrevPosition());
+			}
 	}
 }

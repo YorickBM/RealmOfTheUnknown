@@ -74,4 +74,9 @@ namespace que {
 			(point.y >= box.min.y && point.y <= box.max.y) &&
 			(point.z >= box.min.z && point.z <= box.max.z);
 	}
+	bool Collision::detectCollision(BoundingBox box, vec2 point)
+	{
+		return (point.x >= box.min.x && point.x <= box.max.x) &&
+			(point.y >= box.min.z && point.y <= box.max.z);
+	}
 }

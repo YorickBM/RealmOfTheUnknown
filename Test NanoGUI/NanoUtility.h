@@ -1,5 +1,4 @@
 #pragma once
-#include "SOIL2/SOIL2.h"
 #pragma region NanoGUI Settings (GLAD & Appel & Prototypes)
 #if defined(NANOGUI_GLAD)
 #if defined(NANOGUI_SHARED) && !defined(GLAD_GLAPI_EXPORT)
@@ -104,7 +103,7 @@ public:
 		lineCanvas->setFixedSize({ 1, height });
 		return lineCanvas;
 	}
-	static Label* textAtPos(Window* window, string title, Vector2i pos, string font = "sans-bold", int size = 16, Color color = Color(255, 255, 255, 255)) {
+	static Label* textAtPos(Widget* window, string title, Vector2i pos, string font = "sans-bold", int size = 16, Color color = Color(255, 255, 255, 255)) {
 		Label* titleLabel = new Label(window, title, font, size);
 		titleLabel->setColor(color);
 		return titleLabel;
@@ -117,6 +116,39 @@ public:
 		button->setFontSize(size);
 		button->setCallback(callback);
 		return button;
+	}
+	static Button* ToggleButton(Window* window, string title, Vector2i btnSize, const std::function<void(bool)>& callback, string font = "sans-bold", int size = 16, Color color = Color(92, 92, 92, 255)) {
+		Button* button = new Button(window);
+		button->setTextColor(color);
+		button->setSize(btnSize);
+		button->setCaption(title);
+		button->setFontSize(size);
+		button->setChangeCallback(callback);
+		button->setFlags(Button::ToggleButton);
+		return button;
+	}
+	static Button* IconButton(Window* window, string title, int ICON, const std::function<void()>& callback, string font = "sans-bold", int size = 16, Color color = Color(92, 92, 92, 255), Vector2i btnSize = { 20, 10 }) {
+		Button* iconText = new Button(window);
+		iconText->setIcon(ICON);
+		iconText->setTextColor(color);
+		iconText->setCaption(title);
+		iconText->setBackgroundColor(Color(0, 0, 0, 0));
+		iconText->setFontSize(size);
+		iconText->setCallback(callback);
+
+		return iconText;
+	}
+	static Button* ToggleiconText(Window* window, string title, int ICON, const std::function<void(bool)>& callback, string font = "sans-bold", int size = 16, Color color = Color(92, 92, 92, 255), Vector2i btnSize = { 20, 10 }) {
+		Button* iconText = new Button(window);
+		iconText->setIcon(ICON);
+		iconText->setTextColor(color);
+		iconText->setCaption(title);
+		iconText->setBackgroundColor(Color(0, 0, 0, 0));
+		iconText->setFontSize(size);
+		iconText->setChangeCallback(callback);
+		iconText->setFlags(Button::ToggleButton);
+
+		return iconText;
 	}
 
 	static int LoadImage(string texturePath, imagesDataType& mImagesData) {
@@ -175,5 +207,13 @@ public:
 			return false;
 		str.replace(start_pos, from.length(), to);
 		return true;
+	}
+
+	static GLCanvas* canvas(Window* window, Color color, Vector2i size) {
+		GLCanvas* canvas = new GLCanvas(window);
+		canvas->setBackgroundColor(color);
+		canvas->setFixedSize(size);
+
+		return canvas;
 	}
 };
