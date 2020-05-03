@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
+#include <random>
 
 using imagesDataType = vector<pair<GLTexture, GLTexture::handleType>>;
 
@@ -111,7 +112,7 @@ public:
 		titleLabel->setColor(color);
 		return titleLabel;
 	}
-	static Button* button(Window* window, string title, Vector2i btnSize, const std::function<void()> &callback, string font = "sans-bold", int size = 16, Color color = Color(92, 92, 92, 255)) {
+	static Button* button(Widget* window, string title, Vector2i btnSize, const std::function<void()> &callback, string font = "sans-bold", int size = 16, Color color = Color(92, 92, 92, 255)) {
 		Button* button = new Button(window);
 		button->setTextColor(color);
 		button->setSize(btnSize);
@@ -221,8 +222,22 @@ public:
 	}
 
 	static int randomInt() {
-		srand((unsigned)time(NULL));
-		printf("%d,\t%d\n", rand(), rand() % 6 + 1);
-		return rand() % 6 + 1;
+		std::random_device dev;
+		std::mt19937 rng(dev());
+		std::uniform_int_distribution<std::mt19937::result_type> dist6(1, 99999); // distribution in range [1, 6]
+
+		int rnd = dist6(rng);
+		std::cout << to_string(rnd) << std::endl;
+		return rnd;
+	}
+
+	static ComboBox* comboBox(Widget* window, const std::vector<string> items) {
+		ComboBox* box = new ComboBox(window, items);
+		return box;
+	}
+
+	static Label* createTextLine(Window* window, string length, string font = "sans", int size = 16) {
+		Label* line1 = new Label(window, length, font, size);
+		return line1;
 	}
 };

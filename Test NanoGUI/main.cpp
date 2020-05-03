@@ -149,10 +149,10 @@ int main(int /* argc */, char** /* argv */) {
     #pragma endregion
     #pragma region Items
     //Item{ "", "", "", InventoryCataType::Tools, 1, "",ENTYPO_ICON_LAB_FLASK, "", ENTYPO_ICON_NEWSLETTER, "", ENTYPO_ICON_CLIPBOARD }
-    invItems.insert(make_pair("Dummy Hammer", Item{ "Dummy Hammer", "----", "Inventory/DummyHammer", InventoryCataType::Tools, 1, "Min. Level --1",ENTYPO_ICON_LAB_FLASK, "Class: --Hunter", ENTYPO_ICON_NEWSLETTER, "Att. Spd: Slow", ENTYPO_ICON_FLASH }));
-    invItems.insert(make_pair("Bone", Item{ "Bone", "----", "Inventory/Bone", InventoryCataType::Miscellaneous, 1, "Misc Item",ENTYPO_ICON_LAB_FLASK, "", ENTYPO_ICON_NEWSLETTER, "", ENTYPO_ICON_FLASH }));
+    invItems.insert(make_pair("Dummy Hammer", Item{ "Dummy Hammer", {"A hammer for all the hunter dummy's." ,"Deals: 3-5 damage per hit."}, "Inventory/DummyHammer", InventoryCataType::Tools, 1, "Min. Level --1",ENTYPO_ICON_LAB_FLASK, "Class: --Hunter", ENTYPO_ICON_NEWSLETTER, "Att. Spd: Slow", ENTYPO_ICON_FLASH, ItemType::game_dummy_hammer, -1, true }));
+    invItems.insert(make_pair("Bone", Item{ "Bone", {"Look for a wandering trader,","they might be intressted in this miscellaneous item."}, "Inventory/Bone", InventoryCataType::Miscellaneous, 1, "Misc Item",ENTYPO_ICON_LAB_FLASK, "", 0, "", 0, ItemType::game_bone, -1, true}));
+    invItems.insert(make_pair("Worn Boots", Item{ "Worn Boots", {"Some old boots found in the pond nearby", "Just sturdy enough for some basic protection."}, "Inventory/Worn Boots", InventoryCataType::Armor, 1, "Min. Level --3",ENTYPO_ICON_LAB_FLASK, "Health Boost: +6", ENTYPO_ICON_CIRCLE_WITH_PLUS, "", 0, ItemType::game_worn_boots, 1, false, ArmorType::Boots }));
     #pragma endregion
-
 
     #pragma region Loading Settings
     //Thread Loading Settings
@@ -526,6 +526,7 @@ int main(int /* argc */, char** /* argv */) {
         inv->AddItem(invItems.at("Bone"));
         inv->AddItem(invItems.at("Bone"));
         inv->AddItem(invItems.at("Bone"));
+        inv->AddItem(invItems.at("Worn Boots"));
         #pragma endregion
 
         #pragma region Pre Game Loop

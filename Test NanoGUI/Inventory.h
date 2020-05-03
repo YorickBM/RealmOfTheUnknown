@@ -112,6 +112,10 @@ public:
 
 	/*
 	*/
+	void SortQuests(QuestCataType sortType);
+
+	/*
+	*/
 	void SetActiveSlot(int slot = -1);
 
 private:
@@ -125,6 +129,7 @@ private:
 	Window* _infoArmorBackgroundWindow;
 	Window* _infoArmorContextTopWindow;
 	Window* _infoArmorContextBottomWindow;
+	Window* _infoArmorConfirmWindow;
 
 	Window* _backpackBackgroundWindow;
 	Window* _backpacContextTopWindow;
@@ -135,24 +140,35 @@ private:
 	Window* _toolBarBackgroundWindow;
 	Window* _toolBarContextWindow;
 
+	Window* _questBackgroundWindow;
+	Window* _questContextTopWindow;
+	Window* _questContextBottomWindow;
+
+	Window* _questInfoBackgroundWindow;
+	Window* _questInfoContextTopWindow;
+	Window* _questInfoContextBottomWindow;
+
 	Vector2i _position;
-	std::vector<Label*> desc;
+	std::vector<Label*> _desc;
 	std::vector<Button*> _filterButtons;
+	std::vector<Button*> _filterQuestButtons;
 
 	std::vector<Item> allUserItems;
 
 	imagesDataType mImagesData;
-	InventoryCataType _activeType = InventoryCataType::All;
+	InventoryCataType _activeType = InventoryCataType::AllItems;
 	Camera& _camera;
 
 	void createSlotRow(Window* row, vector<pair<int, Window*>>& list, int rows = 10, vector<string> items = { "empty" , "empty" , "empty" , "empty" , "empty" , "empty" , "empty" ,"empty" ,"empty" ,"empty" });
 	Widget* createSlot(Widget* window, int x, int y, int slotNum);
 
-	void UpdateInfo(string title, int image, string Stats1, int stats1Icon, string Stats2, int stats2Icon, string Stats3, int stats3Icon);
+	void UpdateInfo(string title, int image, string Stats1, int stats1Icon, string Stats2, int stats2Icon, string Stats3, int stats3Icon, std::vector<std::string> desc = {""});
 	void refreshItem(int slotNum);
+	void UpdateArmorInfo(string itemName);
 
 	std::map<int, Item> _items;
 	std::vector<pair<int, Window*>> _invRows;
+	std::vector<pair<int, Window*>> _questRows;
 	std::vector<pair<int, Window*>> _tbRows;
 
 	int uniqueSlotId = 0;
@@ -169,6 +185,11 @@ private:
 	std::map<int, Label*> _slotCounters;
 	std::vector<Button*> _naviButtons;
 
+	std::map<std::string, Button*> _infoQuestButtons;
+	std::map<std::string, GLCanvas*> _infoQuestLines;
+	std::map<std::string, Label*> _infoQuestLabels;
+	std::map<std::string, ImageView*> _infoQuestImages;
+
 	int frame = 0;
 
 	int tempWidth = 0;
@@ -176,4 +197,14 @@ private:
 	int SelectedImageIndex = 0;
 	int EmptyImageIndex = 0;
 	int SelectedSlot = -1;
+
+	ComboBox* _head;
+	ComboBox* _shirts;
+	ComboBox* _trousers;
+	ComboBox* _boots;
+
+	std::vector<std::string> itemsHead = {"No Helmet"};
+	std::vector<std::string> itemsChest = { "No Chestplate" };
+	std::vector<std::string> itemsLegs = { "No Leggings" };
+	std::vector<std::string> itemsBoots = { "No Boots" };
 };
