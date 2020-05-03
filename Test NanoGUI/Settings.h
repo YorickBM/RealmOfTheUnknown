@@ -225,7 +225,7 @@ public:
 		textBoxHUD->setFixedSize(Vector2i(65, 25));
 		textBoxHUD->setFontSize(15);
 		textBoxHUD->setAlignment(TextBox::Alignment::Left);
-#pragma endregion
+		#pragma endregion
 		new Label(_interfaceScreen, "Combat scale", "sans-bold", 20);
 		#pragma region Combat
 		Widget* CombatPanel = new Widget(_interfaceScreen);
