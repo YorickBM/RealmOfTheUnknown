@@ -60,5 +60,5 @@ struct EntityC {
 };
 
 struct NPCC {
-	Quest questItem;
+	Quest quest;
 };

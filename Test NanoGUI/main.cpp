@@ -123,6 +123,7 @@ SettingsScreen* settingsScreen;
 std::unordered_map<string, string> settings;
 std::unordered_map<string, string> inventory;
 std::unordered_map<string, Item> invItems;
+std::vector<std::string> resolutions;
 
 std::shared_ptr< ItemEntitySystem> entitySystem;
 
@@ -132,7 +133,6 @@ AudioMaster* audioMaster;
 
 int main(int /* argc */, char** /* argv */) {
     #pragma region Resolutions
-    std::vector<std::string> resolutions;
     resolutions.push_back("640x360");
     resolutions.push_back("800x600");
     resolutions.push_back("1024x768");
@@ -153,11 +153,8 @@ int main(int /* argc */, char** /* argv */) {
     resolutions.push_back("3440x1440");
     resolutions.push_back("3840x2160");
     #pragma endregion
-    #pragma region Items
+    #pragma region Audio
     //Item{ "", "", "", InventoryCataType::Tools, 1, "",ENTYPO_ICON_LAB_FLASK, "", ENTYPO_ICON_NEWSLETTER, "", ENTYPO_ICON_CLIPBOARD }
-    invItems.insert(make_pair("Dummy Hammer", Item{ "Dummy Hammer", {"A hammer for all the hunter dummy's." ,"Deals: 3-5 damage per hit."}, "Inventory/DummyHammer", InventoryCataType::Tools, 1, "Min. Level --1",ENTYPO_ICON_LAB_FLASK, "Class: --Hunter", ENTYPO_ICON_NEWSLETTER, "Att. Spd: Slow", ENTYPO_ICON_FLASH, ItemType::game_dummy_hammer, -1, true }));
-    invItems.insert(make_pair("Bone", Item{ "Bone", {"Look for a wandering trader, they ","might be intressted in this", " miscellaneous item."}, "Inventory/Bone", InventoryCataType::Miscellaneous, 1, "Misc Item",ENTYPO_ICON_LAB_FLASK, "", 0, "", 0, ItemType::game_bone, -1, true}));
-    invItems.insert(make_pair("Worn Boots", Item{ "Worn Boots", {"Some old boots found in the pond", " nearby. Just sturdy enough for ", "some basic protection."}, "Inventory/Worn Boots", InventoryCataType::Armor, 1, "Min. Level --3",ENTYPO_ICON_LAB_FLASK, "Health Boost: +6", ENTYPO_ICON_CIRCLE_WITH_PLUS, "", 0, ItemType::game_worn_boots, 1, false, ArmorType::Boots }));
     audioMaster = new AudioMaster();
     #pragma endregion
 
@@ -181,6 +178,7 @@ int main(int /* argc */, char** /* argv */) {
     csm.RegisterComponent<InputC>();
     csm.RegisterComponent<ChunkC>();
     csm.RegisterComponent<EntityC>();
+    csm.RegisterComponent<NPCC>();
 
     auto inputSystem = csm.RegisterSystem<InputSystem>();
     {
@@ -480,6 +478,33 @@ int main(int /* argc */, char** /* argv */) {
         shaderLoader->loadShaders("vertexShader.glsl", "fragmentShader.glsl");
         #pragma endregion
 
+        #pragma region Inventory
+        loadingScreen->specialRender(window, "Loading Items", width, height);
+        std::unordered_map<string, string> invItemsFile = FileLoader::loadDataFile("Inventory.data");
+        invItems.insert(make_pair("Dummy Hammer", Item{ "Dummy Hammer", {"A hammer for all the hunter dummy's." ,"Deals: 3-5 damage per hit."}, "Inventory/DummyHammer", InventoryCataType::Tools, 1, "Min. Level --1",ENTYPO_ICON_LAB_FLASK, "Class: --Hunter", ENTYPO_ICON_NEWSLETTER, "Att. Spd: Slow", ENTYPO_ICON_FLASH, ItemType::game_dummy_hammer, -1, true }));
+        invItems.insert(make_pair("Bone", Item{ "Bone", {"Look for a wandering trader, they ","might be intressted in this", " miscellaneous item."}, "Inventory/Bone", InventoryCataType::Miscellaneous, 1, "Misc Item",ENTYPO_ICON_LAB_FLASK, "", 0, "", 0, ItemType::game_bone, -1, true }));
+        invItems.insert(make_pair("Worn Boots", Item{ "Worn Boots", {"Some old boots found in the pond", " nearby. Just sturdy enough for ", "some basic protection."}, "Inventory/Worn Boots", InventoryCataType::Armor, 1, "Min. Level --3",ENTYPO_ICON_LAB_FLASK, "Health Boost: +6", ENTYPO_ICON_CIRCLE_WITH_PLUS, "", 0, ItemType::game_worn_boots, 1, false, ArmorType::Boots }));
+
+        loadingScreen->specialRender(window, "Adding items to player inventory", width, height);
+        for (auto pair : invItemsFile) {
+            for (int i = 0; i < std::stoi(pair.second); i++)
+                inv->AddItem(invItems.at(pair.first));
+        }
+
+        loadingScreen->specialRender(window, "Initializing Quests", width, height);
+        Quest quest1 = Quest("Protect your camp", { "Collect 15 bones", "", "Reward: 6 Currencry" }, QuestCataType::Open, QuestType::quest_protect_camp, 1, { "S 1" }, { "W 1" }, { "C 1" });
+        Quest quest2 = Quest("Spider Forest", { "Collect 6 Mushrooms", "", "Reward: 8 Currencry" }, QuestCataType::Open, QuestType::quest_forest, 1, { "S 2" }, { "W 2" }, { "C 2" });
+        Quest quest3 = Quest("Boat Repair", { "Repair your boat by the Miner", "Costst: 20 currency", "", "Reward: 24 Currencry & Acces to ???" }, QuestCataType::Open, QuestType::quest_repair_boat, 3, { "S 3" }, { "W 3" }, { "C 3" });
+        std::map<QuestType, Quest> map;
+        map.insert(make_pair(quest1.type, quest1));
+        map.insert(make_pair(quest2.type, quest2));
+        map.insert(make_pair(quest3.type, quest3));
+
+        inv->AddQuest(quest1);
+        inv->AddQuest(quest2);
+        inv->AddQuest(quest3);
+        #pragma endregion
+
         #pragma region Entity Creation & Chunk Loading
         loadingScreen->specialRender(window, "Initializing Chunks/Loading Chunks", width, height);
         cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
@@ -509,7 +534,8 @@ int main(int /* argc */, char** /* argv */) {
                 if (data->detail == "low") allowRender = true;
                 else if (data->detail == "medium") allowRender = true;
                 else if (data->detail == "high") allowRender = true;
-            } else if (settings.at("GraphicsDetail") == "medium") {
+            } 
+            else if (settings.at("GraphicsDetail") == "medium") {
                 if (data->detail == "low") allowRender = true;
                 else if (data->detail == "medium") allowRender = true;
                 else if (data->detail == "high") allowRender = false;
@@ -547,31 +573,17 @@ int main(int /* argc */, char** /* argv */) {
 
                 if (data->colType != 2) { model.GetMinAndMaxVertice(min, max); }
                 if (data->colType != 2) csm.AddComponent(Entity, CollisionC{ data->colType, BoundingBox{min, max} });
+                if (data->questType != "N/A") { csm.AddComponent(Entity, EntityC{ Item{}, true }); csm.AddComponent(Entity, NPCC{ map.at(EnumUtility::StringToQuestType(data->questType)) });
+            }
                 csm.AddComponent(Entity, TransformC{ vec3(data->x, data->y, data->z), data->scale });
                 csm.AddComponent(Entity, ModelMeshC{ model });
             }
         }
         #pragma endregion
+        map.clear(); //Remove Temp Stored Quests
 
         ///ANIMATION
         ///model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
-
-        #pragma region Inventory
-        loadingScreen->specialRender(window, "Loading Items", width, height);
-        FileLoader::loadDataFile("Inventory.data");
-
-        loadingScreen->specialRender(window, "Adding items to player inventory", width, height);
-        //Add temp items
-        inv->AddItem(invItems.at("Dummy Hammer"));
-        inv->AddItem(invItems.at("Bone"));
-        inv->AddItem(invItems.at("Bone"));
-        inv->AddItem(invItems.at("Bone"));
-        inv->AddItem(invItems.at("Worn Boots"));
-
-        inv->AddQuest(Quest("Protect your camp", {"Collect 15 bones", "", "Reward: 6 Currencry"}, QuestCataType::Open, QuestType::quest_protect_camp, 1));
-        inv->AddQuest(Quest("Spider Forest", { "Collect 6 Mushrooms", "", "Reward: 8 Currencry" }, QuestCataType::Open, QuestType::quest_forest, 1));
-        inv->AddQuest(Quest("Boat Repair", { "Repair your boat by the Miner", "Costst: 20 currency", "", "Reward: 24 Currencry & Acces to ???" }, QuestCataType::Open, QuestType::quest_repair_boat, 3));
-        #pragma endregion
 
         #pragma region Pre Game Loop
         loadingScreen->specialRender(window, "Loading complete", width, height);
@@ -597,7 +609,7 @@ int main(int /* argc */, char** /* argv */) {
             //Clear Buffers & Color
             glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-#           pragma endregion
+            #pragma endregion
 
             #pragma region Game Objects
             //Game Objects
@@ -605,6 +617,7 @@ int main(int /* argc */, char** /* argv */) {
             movementSystem->Update(deltaTime, camera);
             chunkSystem->Update(camera);
             collisionSystem->Update(camera);
+            entitySystem->loopUpdate(camera);
 
             #pragma endregion
             #pragma region Draw Models

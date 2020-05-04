@@ -9,11 +9,15 @@ enum ItemType { game_unknown, game_worn_boots, game_dummy_hammer, game_bone };
 
 enum QuestCataType { AllQuests = 0, Completed, Active, Open, Closed };
 enum QuestType { quest_unknown = 0, quest_forest, quest_repair_boat, quest_protect_camp };
+enum QuestTaskType { ItemTask, KillTask };
 
 class Quest {
 public:
 	Quest() {}
-	Quest(std::string name, std::vector<std::string> desc, QuestCataType sortType, QuestType type, int reqLvl) : name(name), desc(desc), sortType(sortType), type(type), reqLevel(reqLvl) {}
+	Quest(std::string name, std::vector<std::string> desc, QuestCataType sortType, QuestType type, int reqLvl,
+		std::vector<std::string> start, std::vector<std::string> working, std::vector<std::string> completed) : 
+		name(name), desc(desc), sortType(sortType), type(type), reqLevel(reqLvl), 
+		start(start), working(working), completed(completed) {}
 	~Quest() {}
 
 	std::string name = "Unknown Quest";
@@ -24,6 +28,10 @@ public:
 
 	QuestCataType sortType = QuestCataType::Closed;
 	QuestType type = QuestType::quest_unknown;
+	QuestTaskType taskType = QuestTaskType::ItemTask;
+	string taskReq = "1xgame_bone";
+	int amountReq = 1;
+	bool takeOnComplete = true;
 
 	std::string stat1 = "Min. Level: --1";
 	int icon1 = ENTYPO_ICON_LAB_FLASK;
@@ -31,6 +39,10 @@ public:
 	int icon2 = ENTYPO_ICON_NEWSLETTER;
 
 	int imgLocation = 1;
+
+	std::vector<std::string> start;
+	std::vector<std::string> working;
+	std::vector<std::string> completed;
 };
 
 struct Item {
@@ -54,4 +66,20 @@ struct Item {
 	//Armor Extra / Tools Extra
 	bool isStackable = false; //Tools/Armor = false
 	ArmorType ArmorType = ArmorType::NoArmor;
+};
+
+class EnumUtility {
+public:
+	static QuestType StringToQuestType(string type) {
+		if (type == "quest_forest" || type == "quest-forest") return QuestType::quest_forest;
+		if (type == "quest_protect_camp" || type == "quest-protect-camp") return QuestType::quest_protect_camp;
+		if (type == "quest_repair_boat" || type == "quest-repair-boat") return QuestType::quest_repair_boat;
+		if (type == "quest_unknown" || type == "quest-unknown") return QuestType::quest_unknown;
+	}
+	static ItemType StringToItemType(string type) {
+		if (type == "game_bone") return ItemType::game_bone;
+		if (type == "game_dummy_hammer") return ItemType::game_dummy_hammer;
+		if (type == "game_unknown") return ItemType::game_unknown;
+		if (type == "game_worn_boots") return ItemType::game_worn_boots;
+	}
 };

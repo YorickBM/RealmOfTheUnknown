@@ -502,6 +502,20 @@ void Inventory::RemoveQuest(int slot, std::map<int, Quest>& list, std::map<int, 
 
 	refreshQuest(slot, list, list2, list3);
 }
+void Inventory::RemoveItem(Item item) {
+	for (int i = 0; i < allUserItems.size(); i++) {
+		if (allUserItems[i].id == item.id && allUserItems[i].amount > 1) {
+			allUserItems[i].amount -= 1;
+			break;
+		}
+		else if (allUserItems[i].id == item.id) {
+			allUserItems.erase(allUserItems.begin() + i);
+			break;
+		}
+	}
+
+	SortInventory(_activeType, _items, _slotImages, _slotCounters);
+}
 
 void Inventory::AddItem(Item item, int count) {
 	bool newItem = true;
@@ -528,16 +542,7 @@ void Inventory::AddQuest(Quest item) {
 	SortQuests(_activeTypeQuests, _quests, _questImages, _questCounters);
 }
 void Inventory::DropItem(Item item, vec3 position) {
-	for (int i = 0; i < allUserItems.size(); i++) {
-		if (allUserItems[i].id == item.id && allUserItems[i].amount > 1) {
-			allUserItems[i].amount -= 1;
-			break;
-		}
-		else if(allUserItems[i].id == item.id) {
-			allUserItems.erase(allUserItems.begin() + i);
-			break;
-		}
-	}
+	RemoveItem(item);
 
 	///Create CSM entity
 	auto Entity = csm.CreateEntity();
@@ -547,8 +552,6 @@ void Inventory::DropItem(Item item, vec3 position) {
 	csm.AddComponent(Entity, ModelMeshC{ AnimModel(modelPath, position, 0.3f) });
 	csm.AddComponent(Entity, TransformC{ position, 0.3f });
 	csm.AddComponent(Entity, EntityC{ item });
-
-	SortInventory(_activeType, _items, _slotImages, _slotCounters);
 }
 void Inventory::SwitchItems(int slot1, int slot2, std::map<int, Item>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3) {
 	Item itm1 = list[slot1];

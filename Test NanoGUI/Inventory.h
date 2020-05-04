@@ -68,6 +68,7 @@ public:
 	*/
 	void RemoveItem(int slot, std::map<int, Item>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3);
 	void RemoveQuest(int slot, std::map<int, Quest>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3);
+	void RemoveItem(Item item);
 
 	/*
 	*/
@@ -120,6 +121,10 @@ public:
 	/*
 	*/
 	void SetActiveSlot(int slot = -1);
+
+	/*
+	*/
+	std::vector<Item> GetInvItems() { return this->allUserItems; }
 
 private:
 	//Private Func
