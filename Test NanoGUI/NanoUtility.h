@@ -221,10 +221,10 @@ public:
 		return canvas;
 	}
 
-	static int randomInt() {
+	static int randomInt(int min = 1, int max = 10) {
 		std::random_device dev;
 		std::mt19937 rng(dev());
-		std::uniform_int_distribution<std::mt19937::result_type> dist6(1, 99999); // distribution in range [1, 6]
+		std::uniform_int_distribution<std::mt19937::result_type> dist6(min, max); // distribution in range [1, 6]
 
 		int rnd = dist6(rng);
 		return rnd;

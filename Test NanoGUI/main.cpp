@@ -59,6 +59,7 @@
 #include "CollisionUtility.h"
 #include "AudioMaster.h"
 #include "Settings.h"
+#include "MobManager.h"
 #pragma endregion
 using namespace nanogui;
 #pragma region Vars
@@ -178,7 +179,17 @@ int main(int /* argc */, char** /* argv */) {
     csm.RegisterComponent<InputC>();
     csm.RegisterComponent<ChunkC>();
     csm.RegisterComponent<EntityC>();
-    csm.RegisterComponent<NPCC>();
+    csm.RegisterComponent<NPCC>(); 
+    csm.RegisterComponent<DataC>();
+    csm.RegisterComponent<PathfindingC>();
+
+    auto dataSystem = csm.RegisterSystem<DataSystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<DataC>());
+        csm.SetSystemSignature<DataSystem>(signature);
+    }
+    dataSystem->Init();
 
     auto inputSystem = csm.RegisterSystem<InputSystem>();
     {
@@ -206,6 +217,16 @@ int main(int /* argc */, char** /* argv */) {
         csm.SetSystemSignature<MovementSystem>(signature);
     }
     movementSystem->Init();
+
+    auto pathfindingSystem = csm.RegisterSystem<PathfindingSystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<TransformC>());
+        signature.set(csm.GetComponentType<PathfindingC>());
+        signature.set(csm.GetComponentType<EntityC>());
+        csm.SetSystemSignature<PathfindingSystem>(signature);
+    }
+    pathfindingSystem->Init();
 
     auto chunkSystem = csm.RegisterSystem<ChunkSystem>();
     {
@@ -505,6 +526,14 @@ int main(int /* argc */, char** /* argv */) {
         inv->AddQuest(quest3);
         #pragma endregion
 
+        #pragma region Mobs
+        MobManager mobManager = MobManager();
+
+        AnimModel spiderModel("resources/Mobs/SpiderMeshOnly.fbx");
+        mobManager.CreateMob(Mob(spiderModel, MobType::mob_spider, .07f, 10), MobType::mob_spider);
+        mobManager.SpawnMob(MobType::mob_spider, camera.GetPosition());
+        #pragma endregion
+
         #pragma region Entity Creation & Chunk Loading
         loadingScreen->specialRender(window, "Initializing Chunks/Loading Chunks", width, height);
         cm.InitChunks("res/Chunks/ChunkData.txt", "", 0.2f);
@@ -518,9 +547,10 @@ int main(int /* argc */, char** /* argv */) {
 
         #pragma region Maksure MovementSystem Update runs
         auto Te = csm.CreateEntity();
-        csm.AddComponent(Te, MotionC{});
+        csm.AddComponent(Te, MotionC{2.f, Camera_Movement::NONE, true});
         csm.AddComponent(Te, InputC{ Keyboard });
         csm.AddComponent(Te, TransformC{ vec3(0), 1.f });
+        csm.AddComponent(Te, DataC{});
         #pragma endregion
 
         for (ModelDataClass* data : modelData) {
@@ -562,8 +592,6 @@ int main(int /* argc */, char** /* argv */) {
                             if (worldMapDataMap.count(make_pair(vertice.x, vertice.z)) == 0) {
                                 worldMapDataMap.insert(make_pair(make_pair(vertice.x, vertice.z), vertice.y));
                                 positionsMap.push_back(vec2(vertice.x, vertice.z));
-                                ///DEBUG
-                                ///std::cout << vertice.x << ";" << vertice.z << " - " << vertice.y << std::endl;
                             }
                         }
                     }
@@ -613,11 +641,12 @@ int main(int /* argc */, char** /* argv */) {
 
             #pragma region Game Objects
             //Game Objects
+            pathfindingSystem->Update(camera);
+            pathfindingSystem->MoveToGoal(deltaTime);
             inputSystem->Update(keys, settings);
             movementSystem->Update(deltaTime, camera);
-            chunkSystem->Update(camera);
+            chunkSystem->Update(camera, dataSystem->GetEntities());
             collisionSystem->Update(camera);
-            entitySystem->loopUpdate(camera);
 
             #pragma endregion
             #pragma region Draw Models

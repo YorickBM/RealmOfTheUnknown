@@ -83,16 +83,7 @@ void ItemEntitySystem::Update(Camera& camera, Inventory* inv, int key, int scanc
 	}
 
 	for (int i = 0; i < pickedUpEntities.size(); i++) {
+		std::cout << "Destorying an entity" << std::endl;
 		csm.DestroyEntity(pickedUpEntities.at(i));
-	}
-}
-
-void ItemEntitySystem::loopUpdate(Camera& camera) {
-	for (auto const& entity : mEntities)
-	{
-		auto& transformC = csm.GetComponent<TransformC>(entity);
-		auto& entityC = csm.GetComponent<EntityC>(entity);
-
-		
 	}
 }

@@ -7,7 +7,7 @@ class ChunkSystem : public System
 {
 public:
 	void Init();
-	void Update(Camera& camera);
+	void Update(Camera& camera, std::set<Entity> collidingEntities);
 
 private:
 	que::Collision col;

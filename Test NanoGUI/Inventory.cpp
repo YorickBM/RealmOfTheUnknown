@@ -552,6 +552,7 @@ void Inventory::DropItem(Item item, vec3 position) {
 	csm.AddComponent(Entity, ModelMeshC{ AnimModel(modelPath, position, 0.3f) });
 	csm.AddComponent(Entity, TransformC{ position, 0.3f });
 	csm.AddComponent(Entity, EntityC{ item });
+	csm.AddComponent(Entity, DataC{ false,  TransformC{ position, 0.3f } });
 }
 void Inventory::SwitchItems(int slot1, int slot2, std::map<int, Item>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3) {
 	Item itm1 = list[slot1];
