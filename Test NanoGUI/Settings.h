@@ -70,7 +70,7 @@ public:
 		ImageView* backgroundImg = new ImageView(_backgroundImage, mImagesDataSettingsScreen[NanoUtility::LoadImage("MineRender5", mImagesDataSettingsScreen)].first.texture());
 		_backgroundImage->center();
 
-#pragma region Making Windows
+	#pragma region Making Windows
 		//Setting Background Screen
 		_backMenu = new Window(_screenImage, "");
 
@@ -118,8 +118,8 @@ public:
 		_audioScreen->setFixedSize(Vector2i(width, height));
 		_audioScreen->setPosition(Vector2i(60, 100));
 
-#pragma endregion
-#pragma region Main Screen
+	#pragma endregion
+	#pragma region Main Screen
 		//Settings main screen
 		///new Label(_frontMenuMiddle, "------ Settings ------", "sans-bold", 30);
 		new Label(_frontMenuMiddle, "------ Settings ------", "sans-bold", 30);
@@ -141,7 +141,10 @@ public:
 		Interface->setFixedSize(RadioBttnsize);
 		Audio->setFixedSize(RadioBttnsize);
 #pragma endregion
-#pragma region Graphics Screen
+	#pragma region Graphics Screen
+		int RenderDistant;
+		RenderDistant = std::stoi(settings.at("RenderDistant"));
+
 		new Label(_graphicsScreen, "Graphics", "sans-bold", 20);
 		new Label(_graphicsScreen, "Resolution", "sans", 20);
 		new Label(_graphicsScreen, "", "sans", 5);
@@ -156,19 +159,14 @@ public:
 		Widget* panel = new Widget(_graphicsScreen);
 		panel->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 20));
 		Slider* RenderSlider = new Slider(panel);
-		RenderSlider->setValue(0.5f);
+		RenderSlider->setValue(0.1f * RenderDistant);
 		RenderSlider->setFixedWidth(100);
 
 		TextBox* textBox = new TextBox(panel);
 		textBox->setFixedSize(Vector2i(30, 25));
-		textBox->setValue("5");
-		RenderSlider->setCallback([textBox](float value) {
-			textBox->setValue(std::to_string((int)(value * 10)));
-			});
-
-		RenderSlider->setFinalCallback([&](float value) {
-			settings.at("RenderDistant") = (int)(value * 10);
-			});
+		textBox->setValue(std::to_string(RenderDistant));
+		RenderSlider->setCallback([textBox](float value) { textBox->setValue(std::to_string((int)(value * 10))); });
+		RenderSlider->setFinalCallback([&](float value) { settings.at("RenderDistant") = std::to_string((int)(value * 10));});
 
 		textBox->setFixedSize(Vector2i(65, 25));
 		textBox->setFontSize(15);
@@ -296,7 +294,6 @@ public:
 		testBoxMasterVol->setFixedSize(Vector2i(40, 25));
 		testBoxMasterVol->setValue(std::to_string(MasterVol));
 		MasterVolSlider->setCallback([testBoxMasterVol](float value) { testBoxMasterVol->setValue(std::to_string((int)(value * 100))); });
-
 		MasterVolSlider->setFinalCallback([&](float value) { settings.at("MasterVol") = std::to_string((int)(value * 100));} );
 
 		testBoxMasterVol->setFixedSize(Vector2i(65, 25));
@@ -378,14 +375,14 @@ public:
 		#pragma endregion
 
 		_backButton = new Window(_screen, "");
-		_backButton->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Fill));
-		_backButton->setPosition(Vector2i(1200, 100));
+		_backButton->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Fill));
+		_backButton->setFixedSize(Vector2i(50, 50));
+		_backButton->setPosition(Vector2i(width - 100, 50));
 
-		Vector2i btnSize = Vector2i(90, 40);
+		Vector2i btnSize = Vector2i(50, 50);
 		Button* back = NanoUtility::button(_backButton, "X", {}, [this]() { this->ShowContent(false); this->_startScreen->ShowContent(true); }, "comic-sans", 32, Color(Grey));
-		Button* quit = NanoUtility::button(_backButton, "Quit", {}, [this, window]() {  glfwSetWindowShouldClose(window, GL_TRUE); }, "comic-sans", 32, Color(Grey));
+		///Button* quit = NanoUtility::button(_backButton, "Quit", {}, [this, window]() {  glfwSetWindowShouldClose(window, GL_TRUE); }, "comic-sans", 32, Color(Grey));
 		back->setFixedSize(btnSize);
-		quit->setFixedSize(btnSize);
 
 		ShowContent(false);
 		realignWindows(width, height);
@@ -393,9 +390,7 @@ public:
 		_screen->performLayout();
 		_screenImage->setVisible(true);
 		_screenImage->performLayout();
-		_backButton->setPosition({ 10, height - 40 });
 
-		NanoUtility::applyCustomTheme(_backButton);
 		NanoUtility::applyCustomTheme1(_frontMenuSwitchButtons);
 	}
 	/*
@@ -436,10 +431,7 @@ public:
 		_backgroundImage->setPosition({ width / 2 - imgSizeWidget.x() / 2, height / 2 - imgSizeWidget.y() / 2 });
 
 		Vector2i menuSizeWidget = Vector2i(_frontMenu->size().x() + 10, _backMenu->size().y() + 25);
-		///_frontMenu->center();
-		///_frontMenu->setSize({ width, height });
-		///_backMenu->center();
-		_backButton->setPosition({ 10, height - 40 });
+		///_backButton->setPosition({ 10, height - 40 });
 
 	}
 

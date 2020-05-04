@@ -10,5 +10,5 @@ FriendlyCreaturesVol=50
 HostileCreaturesVol=50
 MusicVol=50
 CombatVol=50
-GraphicsDetail=low
+GraphicsDetail=medium
 RenderDistant=5
