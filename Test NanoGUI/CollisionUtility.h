@@ -25,7 +25,7 @@ public:
 
 	static float getNewHeight(std::map<pair<float, float>, float>mapData, glm::vec2 origin, std::vector<glm::vec2> positions) {
 		if (positions.size() != 0) {
-			std::vector<glm::vec2> closePoints = CollisionUtility::getClosesPointsInRange(4, positions, origin, 10);
+			std::vector<glm::vec2> closePoints = CollisionUtility::getClosesPointsInRange(4, positions, origin, 20);
 
 			//Point Calculations
 			float y = mapData.at(make_pair(closePoints.at(0).x, closePoints.at(0).y));

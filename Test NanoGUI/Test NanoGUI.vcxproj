@@ -162,6 +162,7 @@
     <ClCompile Include="ChunkSystem.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
+    <ClCompile Include="DataSystem.cpp" />
     <ClCompile Include="GLTexture.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="Inventory.cpp" />
@@ -170,6 +171,7 @@
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="ModelMeshSystem.cpp" />
     <ClCompile Include="MovementSystem.cpp" />
+    <ClCompile Include="PathfindingSystem.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="main.cpp" />
@@ -195,6 +197,7 @@
     <ClInclude Include="ComponentSystemManager.h" />
     <ClInclude Include="Converter.h" />
     <ClInclude Include="CustomGrid.h" />
+    <ClInclude Include="DataSystem.h" />
     <ClInclude Include="ECS.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
@@ -205,11 +208,13 @@
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemEntitySystem.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MobManager.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="ModelMeshSystem.h" />
     <ClInclude Include="MovementSystem.h" />
     <ClInclude Include="MyGLCanvas.h" />
     <ClInclude Include="NanoUtility.h" />
+    <ClInclude Include="PathfindingSystem.h" />
     <ClInclude Include="RayIntersect.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="ShaderLoader.h" />

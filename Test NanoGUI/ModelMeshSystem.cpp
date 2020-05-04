@@ -14,6 +14,7 @@ void ModelMeshSystem::Update(ShaderLoader* shaderLoader)
 		auto& transformC = csm.GetComponent<TransformC>(entity);
 
 		modelMeshC.model.SetPosition(transformC.position);
+		modelMeshC.model.SetScale(transformC.scale);
 
 		mat4 objectModel; //model matrix
 		objectModel = mat4(1.0);
@@ -24,8 +25,5 @@ void ModelMeshSystem::Update(ShaderLoader* shaderLoader)
 		objectModel = glm::rotate(objectModel, glm::radians(modelMeshC.model.GetRotation().z), glm::vec3(0.f, 0.f, 1.f));
 		glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the model matrix to the shader
 		modelMeshC.model.Draw(shaderLoader);
-
-		//glUniformMatrix4fv(glGetUniformLocation(shaderLoader->ID, "model"), 1, GL_FALSE, value_ptr(objectModel)); //send the model matrix to the shader
-		//modelMeshC.BoundingBox.Draw(shaderLoader, false);
 	}
 }

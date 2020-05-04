@@ -17,8 +17,9 @@ struct TransformC {
 };
 
 struct MotionC {
-	float movementSpeed = 1.4f;
+	float movementSpeed = 2.0f;
 	Camera_Movement direction;
+	bool isCamera = false;
 };
 
 struct ModelMeshC {
@@ -28,11 +29,6 @@ struct ModelMeshC {
 struct RenderModeC {
 	bool MeshMode = false;
 	bool Boundingboxes = false;
-};
-
-struct HealthC {
-	int hp = 0;
-	int maxHp = 100;
 };
 
 struct AiC {
@@ -55,10 +51,27 @@ struct ChunkC {
 
 struct EntityC {
 	Item item;
-
 	bool isNpc = false;
+	vec2 goal = vec2(0);
+	bool isHostile = false;
+	float movementSpeed = 1.8f;
+	bool firstTime = true;
 };
 
 struct NPCC {
-	Quest questItem;
+	Quest quest;
+};
+
+struct HealthC {
+	int health = 10;
+	int maxHealth = 10;
+};
+
+struct DataC {
+	bool isCamera;
+	TransformC tranformC;
+};
+
+struct PathfindingC {
+
 };

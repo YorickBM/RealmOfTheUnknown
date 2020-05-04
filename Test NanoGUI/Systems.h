@@ -5,6 +5,8 @@
 #include "CollisionSystem.h"
 #include "ChunkSystem.h"
 #include "ItemEntitySystem.h"
+#include "PathfindingSystem.h"
+#include "DataSystem.h"
 
 /*
 >>> XSystem.h <<<

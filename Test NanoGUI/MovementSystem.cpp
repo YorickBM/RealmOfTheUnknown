@@ -14,8 +14,11 @@ void MovementSystem::Update(float deltatime, Camera& camera)
 		auto& motionC = csm.GetComponent<MotionC>(entity);
 		auto& transformC = csm.GetComponent<TransformC>(entity);
 
-		//transformC.position = camera.ProcessKeyboard(motionC.direction, motionC.movementSpeed, deltatime, transformC.position);
-		camera.SetPrevPosition(camera.GetPosition());
-		camera.SetPosition(camera.ProcessKeyboard(motionC.direction, motionC.movementSpeed, deltatime, camera.GetPosition()));
+		transformC.position = camera.ProcessKeyboard(motionC.direction, motionC.movementSpeed, deltatime, transformC.position);
+		
+		if (motionC.isCamera) {
+			camera.SetPrevPosition(camera.GetPosition());
+			camera.SetPosition(camera.ProcessKeyboard(motionC.direction, motionC.movementSpeed, deltatime, camera.GetPosition()));
+		}
 	}
 }

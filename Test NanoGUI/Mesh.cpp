@@ -87,10 +87,10 @@ vector<vec3> Mesh::translateVertices(float scale, vec3 position, vec3 rot) {
 	vector<vec3> returnvalue;
 	for (Vertex vertice : vertices) {
 		vec3 vertexPos(vertice.position);
-		vertexPos *= vec3(scale);
 		glm::vec4 vec4Ofvec3 = glm::vec4(vertexPos.x, vertexPos.y, vertexPos.z, 1);
 		glm::mat4 transformMatrix = createTransform(position, rot, vec3(scale));
 		vertexPos = (vec4Ofvec3 * transformMatrix);
+		vertexPos *= vec3(scale);
 		vertexPos += vec3(position.x, position.y, position.z);
 
 		returnvalue.push_back(vertexPos);

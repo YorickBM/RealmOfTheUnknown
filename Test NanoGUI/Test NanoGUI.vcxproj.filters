@@ -144,6 +144,12 @@
     <ClCompile Include="GLTexture.cpp">
       <Filter>Source Files\NanoGui Engine</Filter>
     </ClCompile>
+    <ClCompile Include="PathfindingSystem.cpp">
+      <Filter>Source Files\EntityComponentSystem\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="DataSystem.cpp">
+      <Filter>Source Files\EntityComponentSystem\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -286,6 +292,15 @@
     </ClInclude>
     <ClInclude Include="AudioMaster.h">
       <Filter>Source Files\Audio Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="PathfindingSystem.h">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="MobManager.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DataSystem.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

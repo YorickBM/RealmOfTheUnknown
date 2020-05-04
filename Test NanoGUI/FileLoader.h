@@ -16,6 +16,7 @@ public:
     CollisionType colType = CollisionType::NoCollision;
 
     string detail = "high";
+    string questType = "N/A";
 };
 
 class FileLoader {
@@ -70,9 +71,11 @@ public:
                             else {
                                 modelData->colType = CollisionType::NoCollision;
                             }
-                        }
-                        else if (func == "detail") {
+                        } else if (func == "detail") {
                             modelData->detail = splited2.at(splited2.size() - 1);
+                        } else if (func == "NPC") {
+                            modelData->questType = splited2.at(splited2.size() - 1);
+                            std::cout << "NPC CREATED" << std::endl;
                         }
                         else {
                             std::cout << func << std::endl;
