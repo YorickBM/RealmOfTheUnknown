@@ -23,12 +23,13 @@ void ChunkSystem::Update(Camera &camera, std::set<Entity> collidingEntities)
 
 		for (auto const& entityCol : collidingEntities) {
 			auto& dataC = csm.GetComponent<DataC>(entityCol);
+			auto& transformC = csm.GetComponent<TransformC>(entityCol);
 
 			if (!dataC.isCamera) {
-				if (col.detectCollision(collisionC.boundingBox, dataC.tranformC.position)) {
+				if (col.detectCollision(collisionC.boundingBox, transformC.position)) {
 					auto& chunkC = csm.GetComponent<ChunkC>(entity);
-					float yC = CollisionUtility::getNewHeight(chunkC.worldMapData, { dataC.tranformC.position.x, dataC.tranformC.position.z }, chunkC.positions);
-					dataC.tranformC.position = vec3({ dataC.tranformC.position.x, (yC + 1.f), dataC.tranformC.position.z });
+					float yC = CollisionUtility::getNewHeight(chunkC.worldMapData, { transformC.position.x,transformC.position.z }, chunkC.positions);
+					transformC.position = vec3({ transformC.position.x, (yC + 1.f), transformC.position.z });
 				}
 			}
 		}

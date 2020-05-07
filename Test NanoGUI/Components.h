@@ -9,7 +9,6 @@ enum AiType { Passive, Hostile };
 enum InputType { Keyboard };
 enum CollisionType { SolidCollision = 0, RayCastingCollision = 1, NoCollision = 2, WorldCollision = 3 };
 
-
 //Components
 struct TransformC {
 	vec3 position;
@@ -53,25 +52,49 @@ struct EntityC {
 	Item item;
 	bool isNpc = false;
 	vec2 goal = vec2(0);
+
 	bool isHostile = false;
 	float movementSpeed = 1.8f;
 	bool firstTime = true;
+	float damagePerHit = 0.5f;
+	float attackSpeekd = 2.3f;
+	float timeSinceLastAttack = 0.f;
 };
 
 struct NPCC {
 	Quest quest;
 };
 
-struct HealthC {
-	int health = 10;
-	int maxHealth = 10;
-};
-
 struct DataC {
 	bool isCamera;
-	TransformC tranformC;
 };
 
 struct PathfindingC {
 
+};
+
+struct XpC {
+	int currentLvl = 0;
+	int currentXp = 0;
+
+	int skillPoints = 0;
+};
+
+struct HealthC {
+	int health = 10;
+	int maxHealth = 10;
+
+	float timeFromLastDamage = 0;
+	float timeBeforeHealing = 150.f;
+};
+
+struct SpellC {
+	SpellType first = SpellType::spell_unknown;
+	SpellType second = SpellType::spell_unknown;
+	SpellType third = SpellType::spell_unknown;
+};
+
+struct ManaC {
+	int mana = 20;
+	int maxMana = 20;
 };

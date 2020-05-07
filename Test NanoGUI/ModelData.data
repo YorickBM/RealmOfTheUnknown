@@ -1073,4 +1073,6 @@ path_resources/World/Pillar.fbx:scale_1.03496f:position_-36.1506f_-82.1635f_4.39
 path_resources/World/Pillar.fbx:scale_1.03496f:position_-35.6104f_-82.6467f_4.39793f:rotation_94.9045f_6.14429f_463.286f:detail_low
 path_resources/World/Pillar.fbx:scale_1.03496f:position_-17.4379f_-33.7327f_4.46629f:rotation_94.9045f_6.14429f_304.177f:detail_low
 #NPCS
-path_resources/World/Sack.fbx:scale_2.03496f:position_0.698971f_-106.674f_4.29277f:rotation_90.f_0f_-180f:detail_low:NPC_quest-forest
+path_resources/Quests/NPC.fbx:scale_0.009496f:position_-23.3531171f_-103.970314f_6.063902f:rotation_180.f_0f_-180f:detail_low:NPC_quest-forest
+path_resources/Quests/NPC.fbx:scale_0.009496f:position_-2.427599f_-83.682343f_5.490777f:rotation_180.f_0f_-180f:detail_low:NPC_quest-protect-camp
+path_resources/Quests/NPC.fbx:scale_0.009496f:position_0.698971f_-106.674f_5.26277f:rotation_180.f_0f_-180f:detail_low:NPC_quest-repair-boat

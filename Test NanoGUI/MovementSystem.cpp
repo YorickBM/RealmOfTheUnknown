@@ -19,6 +19,7 @@ void MovementSystem::Update(float deltatime, Camera& camera)
 		if (motionC.isCamera) {
 			camera.SetPrevPosition(camera.GetPosition());
 			camera.SetPosition(camera.ProcessKeyboard(motionC.direction, motionC.movementSpeed, deltatime, camera.GetPosition()));
+			transformC.position = camera.GetPosition();
 		}
 	}
 }

@@ -162,6 +162,7 @@
     <ClCompile Include="ChunkSystem.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
+    <ClCompile Include="CombatSystems.cpp" />
     <ClCompile Include="DataSystem.cpp" />
     <ClCompile Include="GLTexture.cpp" />
     <ClCompile Include="InputSystem.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="CollisionExtra.h" />
     <ClInclude Include="CollisionSystem.h" />
     <ClInclude Include="CollisionUtility.h" />
+    <ClInclude Include="CombatSystems.h" />
     <ClInclude Include="ComponentArray.h" />
     <ClInclude Include="ComponentManager.h" />
     <ClInclude Include="Components.h" />
@@ -253,6 +255,7 @@
     <None Include="ModelData.data" />
     <None Include="nanogui.dll" />
     <None Include="pcre_d.dll" />
+    <None Include="PlayerData.data" />
     <None Include="Settings.data" />
     <None Include="SILLY_d.dll" />
     <None Include="test.dae" />

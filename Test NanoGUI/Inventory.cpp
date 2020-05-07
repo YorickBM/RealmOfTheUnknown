@@ -161,14 +161,23 @@ Inventory::Inventory(GLFWwindow* window, int width, int height, Camera& camera, 
 	//Create Toolbar
 	_toolBarBackgroundWindow = new Window(backgroundScreen, "");
 	_toolBarContextWindow = new Window(frontScreen, "");
+	_toolBarHudContextWindow = new Window(frontScreen, "");
 
 	#pragma region ToolBar
 	_toolBarBackgroundWindow->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum, 0, -1));
-	_toolBarBackgroundWindow->setFixedSize({ 812, 96 });
+	_toolBarBackgroundWindow->setFixedSize({ 816, 122 });
 
 	GLCanvas* topCanvasTb = new GLCanvas(_toolBarBackgroundWindow);
 	topCanvasTb->setBackgroundColor({ 40, 40, 43, 255 });
-	topCanvasTb->setFixedSize({ 812, 96 });
+	topCanvasTb->setFixedSize({ 812, 112 });
+
+	_toolBarHudContextWindow->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Minimum, 0, -1));
+	_toolBarHudContextWindow->setSize({ 10, 112 });
+
+	health = NanoUtility::iconText(_toolBarHudContextWindow, "1000/1000", ENTYPO_ICON_HEART_OUTLINED, "sans-bold", 16, {141, 2, 31, 255});
+	xp = NanoUtility::iconText(_toolBarHudContextWindow, "999999999", ENTYPO_ICON_LAB_FLASK, "sans-bold", 16, { 51, 165, 50, 255 });
+	mana = NanoUtility::iconText(_toolBarHudContextWindow, "1000/1000", ENTYPO_ICON_LIGHT_DOWN, "sans-bold", 16, { 14, 77, 146, 255 });
+	currency = NanoUtility::iconText(_toolBarHudContextWindow, "999999999", ENTYPO_ICON_TICKET, "sans-bold", 16, { 225, 149, 38, 255 });
 
 	createSlotRow(_toolBarContextWindow, _tbRows);
 #pragma endregion
@@ -364,6 +373,19 @@ Inventory::Inventory(GLFWwindow* window, int width, int height, Camera& camera, 
 	_naviButtons.push_back(Inventory);
 #pragma endregion
 
+	#pragma region Npc & Notification
+	_npcTextBackground = new Window(backgroundScreen, "");
+	_npcText = new Window(frontScreen, "");
+
+	_npcTextBackground->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum, 0, -1));
+	NanoUtility::canvas(_npcTextBackground, { 46, 48, 52, 255 }, { 290, 60 });
+
+	_npcText->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum, 0, -1));
+	_NpcDesc.push_back(NanoUtility::createTextLine(_npcText, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
+	_NpcDesc.push_back(NanoUtility::createTextLine(_npcText, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
+	_NpcDesc.push_back(NanoUtility::createTextLine(_npcText, "ABCDFDREHG3IEKDH44DKEIDJEO$GDKJDH4GD"));
+	#pragma endregion
+
 	#pragma region Themes
 	NanoUtility::InventoryTheme(_infoArmorBackgroundWindow);
 	NanoUtility::InventoryTheme(_infoArmorContextTopWindow);
@@ -372,7 +394,6 @@ Inventory::Inventory(GLFWwindow* window, int width, int height, Camera& camera, 
 	NanoUtility::InventoryTheme(_toolBarBackgroundWindow);
 	NanoUtility::InventoryTheme(_toolBarContextWindow);
 	#pragma endregion
-
 
 	frontScreen->setVisible(true);
 	frontScreen->performLayout();
@@ -399,9 +420,11 @@ void Inventory::realignWindows(int width, int height) {
 	//Toolbar
 	_toolBarBackgroundWindow->center();
 	_toolBarContextWindow->center();
+	_toolBarHudContextWindow->center();
 
-	_toolBarContextWindow->setPosition(Vector2i(_toolBarContextWindow->position().x(), height - _toolBarContextWindow->height() - 20));
-	_toolBarBackgroundWindow->setPosition(Vector2i(_toolBarBackgroundWindow->position().x(), height - _toolBarBackgroundWindow->height() - 20));
+	_toolBarBackgroundWindow->setPosition(Vector2i(_toolBarBackgroundWindow->position().x(), height - _toolBarBackgroundWindow->size().y() - 10));
+	_toolBarContextWindow->setPosition(Vector2i(_toolBarContextWindow->position().x(), height - _toolBarBackgroundWindow->size().y() + 2));
+	_toolBarHudContextWindow->setPosition(Vector2i(_toolBarBackgroundWindow->position().x(), height - _toolBarBackgroundWindow->size().y() - 10));
 
 	//Info
 	_infoBackgroundWindow->center();
@@ -440,6 +463,10 @@ void Inventory::realignWindows(int width, int height) {
 	_questInfoContextBottomWindow->setPosition(_questInfoBackgroundWindow->position() + Vector2i(0, _questInfoContextTopWindow->height()) + Vector2i(_questBackgroundWindow->width() / 2 + 10, 0));
 	_questInfoBackgroundWindow->setPosition(_questInfoBackgroundWindow->position() + Vector2i(0, 0) + Vector2i(_questBackgroundWindow->width() / 2 + 10, 0));
 
+	//Npc & Other
+	_npcText->setPosition(Vector2i(width / 2 - _npcText->size().x() / 2, 4));
+	_npcTextBackground->setPosition(Vector2i(width / 2 - _npcTextBackground->size().x() / 2, 0));
+
 	tempWidth = width;
 	tempHeight = height;
 }
@@ -455,25 +482,47 @@ void Inventory::render() {
 
 	frame--;
 }
-void Inventory::keyCallbackEvent(int key, int scancode, int action, int mods) {
+void Inventory::keyCallbackEvent(int key, int scancode, int action, int mods, GLFWwindow* window) {
+
 	if (GLFW_KEY_I == key && GLFW_PRESS == action)
 	{
 		if (!_backpackBackgroundWindow->visible() && frame <= 0) {
 			ShowInventory(true);
 			ShowArmor(true);
 			realignWindows(tempWidth, tempHeight);
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 			frame = 10;
+			SelectedSlot = 0;
 		}
 		else if (frame <= 0) {
 			Hide();
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 			frame = 10;
+			SelectedSlot = 50;
 		}
 	}
-	else if (GLFW_KEY_Q == key && GLFW_PRESS == action)
-	{
-		DropItem(_items[SelectedSlot], _camera.GetPosition());
+	else if (GLFW_KEY_Q == key && GLFW_PRESS == action) {
+		if(_items[SelectedSlot].name != "N/A")
+			DropItem(_items[SelectedSlot], _camera.GetPosition());
+	}
+	else if (GLFW_KEY_1 == key && GLFW_PRESS == action && _backpackBackgroundWindow->visible() || GLFW_KEY_2 == key && GLFW_PRESS == action && _backpackBackgroundWindow->visible() || GLFW_KEY_3 == key && GLFW_PRESS == action && _backpackBackgroundWindow->visible()
+		|| GLFW_KEY_4 == key && GLFW_PRESS == action && _backpackBackgroundWindow->visible() || GLFW_KEY_5 == key && GLFW_PRESS == action && _backpackBackgroundWindow->visible() || GLFW_KEY_6 == key && GLFW_PRESS == action && _backpackBackgroundWindow->visible()
+		|| GLFW_KEY_7 == key && GLFW_PRESS == action && _backpackBackgroundWindow->visible() || GLFW_KEY_8 == key && GLFW_PRESS == action && _backpackBackgroundWindow->visible() || GLFW_KEY_9 == key && GLFW_PRESS == action && _backpackBackgroundWindow->visible()
+		|| GLFW_KEY_0 == key && GLFW_PRESS == action && _backpackBackgroundWindow->visible()) {
+		int slot = key + 1;
+		if (key == GLFW_KEY_0) slot += 10;
+		SwitchItems(SelectedSlot, slot, _items, _slotImages, _slotCounters);
+	}
+	else if (GLFW_KEY_1 == key && GLFW_PRESS == action && !_backpackBackgroundWindow->visible() || GLFW_KEY_2 == key && GLFW_PRESS == action && !_backpackBackgroundWindow->visible() || GLFW_KEY_3 == key && GLFW_PRESS == action && !_backpackBackgroundWindow->visible()
+		|| GLFW_KEY_4 == key && GLFW_PRESS == action && !_backpackBackgroundWindow->visible() || GLFW_KEY_5 == key && GLFW_PRESS == action && !_backpackBackgroundWindow->visible() || GLFW_KEY_6 == key && GLFW_PRESS == action && !_backpackBackgroundWindow->visible()
+		|| GLFW_KEY_7 == key && GLFW_PRESS == action && !_backpackBackgroundWindow->visible() || GLFW_KEY_8 == key && GLFW_PRESS == action && !_backpackBackgroundWindow->visible() || GLFW_KEY_9 == key && GLFW_PRESS == action && !_backpackBackgroundWindow->visible()
+		|| GLFW_KEY_0 == key && GLFW_PRESS == action && !_backpackBackgroundWindow->visible()) {
+		int slot = key + 1;
+		if (key == GLFW_KEY_0) slot += 10;
+
+		SelectedSlot = slot;
 	}
 }
 
@@ -541,8 +590,8 @@ void Inventory::AddQuest(Quest item) {
 	allUserQuests.push_back(item);
 	SortQuests(_activeTypeQuests, _quests, _questImages, _questCounters);
 }
-void Inventory::DropItem(Item item, vec3 position) {
-	RemoveItem(item);
+void Inventory::DropItem(Item item, vec3 position, bool removeItem) {
+	if(removeItem) RemoveItem(item);
 
 	///Create CSM entity
 	auto Entity = csm.CreateEntity();
@@ -552,7 +601,7 @@ void Inventory::DropItem(Item item, vec3 position) {
 	csm.AddComponent(Entity, ModelMeshC{ AnimModel(modelPath, position, 0.3f) });
 	csm.AddComponent(Entity, TransformC{ position, 0.3f });
 	csm.AddComponent(Entity, EntityC{ item });
-	csm.AddComponent(Entity, DataC{ false,  TransformC{ position, 0.3f } });
+	csm.AddComponent(Entity, DataC{ false });
 }
 void Inventory::SwitchItems(int slot1, int slot2, std::map<int, Item>& list, std::map<int, ImageView*>& list2, std::map<int, Label*>& list3) {
 	Item itm1 = list[slot1];
@@ -884,4 +933,32 @@ void Inventory::UpdateQuestsInfo(string title, int image, string Stats1, int sta
 	for (int i = desc.size(); i < _desc.size(); i++) {
 		_questDesc.at(i)->setCaption("");
 	}
+}
+
+void Inventory::SetHealth(int min, int max) {
+	health->setCaption(std::to_string(min) + "/" + std::to_string(max));
+}
+void Inventory::SetMana(int min, int max) {
+	mana->setCaption(std::to_string(min) + "/" + std::to_string(max));
+}
+void Inventory::SetXp(int xpI) {
+	xp->setCaption(std::to_string(xpI));
+}
+void Inventory::SetCurrencry(int currencyI) {
+	currency->setCaption(std::to_string(currencyI));
+}
+void Inventory::AddCurrency(int amount) {
+	currency->setCaption(std::to_string(std::stoi(currency->caption()) + amount));
+}
+void Inventory::AddXp(int amount) {
+	xp->setCaption(std::to_string(std::stoi(xp->caption()) + amount));
+}
+
+void Inventory::SetNpcText(string line1, string line2, string line3, bool show) {
+	_npcText->setVisible(show);
+	_npcTextBackground->setVisible(show);
+
+	_NpcDesc[0]->setCaption(line1);
+	_NpcDesc[1]->setCaption(line2);
+	_NpcDesc[2]->setCaption(line3);
 }

@@ -7,6 +7,7 @@
 #include "ItemEntitySystem.h"
 #include "PathfindingSystem.h"
 #include "DataSystem.h"
+#include "CombatSystems.h"
 
 /*
 >>> XSystem.h <<<

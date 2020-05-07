@@ -5,7 +5,7 @@
 class AudioMaster {
 private:
 	irrklang::ISoundEngine* SoundEngineMain;
-	irrklang::ISoundEngine* SoundEngineEffects = irrklang::createIrrKlangDevice();
+	irrklang::ISoundEngine* SoundEngineEffects;
 
 public:
 	AudioMaster() {}
@@ -14,6 +14,10 @@ public:
 	void genMainEngine() {
 		SoundEngineMain = irrklang::createIrrKlangDevice();
 		SoundEngineMain->stopAllSounds();
+	}
+	void genEffectsEngine() {
+		SoundEngineEffects = irrklang::createIrrKlangDevice();
+		SoundEngineEffects->stopAllSounds();
 	}
 
 	void PlaySound(irrklang::ISoundEngine* SoundEngine, std::string path, bool loop) {

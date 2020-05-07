@@ -150,6 +150,9 @@
     <ClCompile Include="DataSystem.cpp">
       <Filter>Source Files\EntityComponentSystem\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="CombatSystems.cpp">
+      <Filter>Source Files\EntityComponentSystem\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -302,6 +305,9 @@
     <ClInclude Include="DataSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CombatSystems.h">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragmentShader.glsl">
@@ -398,6 +404,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Inventory.data">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="PlayerData.data">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

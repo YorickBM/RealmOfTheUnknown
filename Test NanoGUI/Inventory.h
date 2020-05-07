@@ -14,7 +14,11 @@
 #include <nanogui/theme.h>
 #include <nanogui/formhelper.h>
 #include <nanogui/slider.h>
+
 #include <map>
+#include <thread>
+#include <chrono>
+#include <sstream>
 
 #include "NanoUtility.h"
 #include "Components.h"
@@ -77,7 +81,7 @@ public:
 
 	/*
 	*/
-	void DropItem(Item item, vec3 position);
+	void DropItem(Item item, vec3 position, bool removeItem = true);
 
 	/*
 	Switch two items from there slot.
@@ -88,7 +92,7 @@ public:
 	/*
 	Keyboard logic for the inventory precoded
 	*/
-	void keyCallbackEvent(int key, int scancode, int action, int mods);
+	void keyCallbackEvent(int key, int scancode, int action, int mods, GLFWwindow* window);
 
 	/*
 	Show or Hide the Inventory
@@ -126,6 +130,22 @@ public:
 	*/
 	std::vector<Item> GetInvItems() { return this->allUserItems; }
 
+	/*
+	*/
+	Item GetActiveItem() { return this->_items[SelectedSlot]; }
+
+	void SetHealth(int min, int max);
+	void SetMana(int min, int max);
+	void SetXp(int xpI);
+	void SetCurrencry(int currencyI);
+	void AddCurrency(int amount);
+	void AddXp(int amount);
+
+	string GetXp() { return xp->caption(); }
+	string GetCurrency() { return currency->caption(); }
+
+	void SetNpcText(string line1, string line2, string line3, bool show = true);
+
 private:
 	//Private Func
 	void createSlotRow(Window* row, vector<pair<int, Window*>>& list, bool quests = false, int rows = 10,  vector<string> items = { "empty" , "empty" , "empty" , "empty" , "empty" , "empty" , "empty" ,"empty" ,"empty" ,"empty" });
@@ -158,8 +178,18 @@ private:
 
 	Window* _naviButton;
 
+	Window* _npcTextBackground;
+	Window* _npcText;
+	Window* _notifications;
+
 	Window* _toolBarBackgroundWindow;
 	Window* _toolBarContextWindow;
+	Window* _toolBarHudContextWindow;
+
+	Button* health;
+	Button* mana;
+	Button* xp;
+	Button* currency;
 
 	//Quest Windows
 	Window* _questBackgroundWindow;
@@ -204,6 +234,9 @@ private:
 	std::vector<pair<int, Window*>> _questRows;
 	std::vector<Label*> _questDesc;
 	std::vector<Quest> allUserQuests;
+
+	//Npc & Other
+	std::vector<Label*> _NpcDesc;
 
 	//Armor Vectors & Maps
 	std::vector<std::string> itemsHead = { "No Helmet" };

@@ -14,6 +14,7 @@ void PathfindingSystem::Update(Camera& camera) {
 
 		auto transformC = csm.GetComponent<TransformC>(entity);
 		auto& entityC = csm.GetComponent<EntityC>(entity);
+		auto& modelMeshC = csm.GetComponent<ModelMeshC>(entity);
 
 		int randomX = NanoUtility::randomInt(1, 8);
 		int randomZ = NanoUtility::randomInt(1, 8);
@@ -22,6 +23,13 @@ void PathfindingSystem::Update(Camera& camera) {
 
 		if (entityC.firstTime) {
 			entityC.goal = vec2(transformC.position.x, transformC.position.z);
+		}
+
+		try {
+			modelMeshC.model.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
+		}
+		catch (exception ex) {
+
 		}
 		
 		if(entityC.isHostile) {

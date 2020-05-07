@@ -125,10 +125,14 @@ std::unordered_map<string, string> settings;
 std::unordered_map<string, string> inventory;
 std::unordered_map<string, Item> invItems;
 std::vector<std::string> resolutions;
+std::unordered_map<string, string> playerData;
 
-std::shared_ptr< ItemEntitySystem> entitySystem;
+std::shared_ptr<ItemEntitySystem> entitySystem;
+std::shared_ptr<AttackSystem> damageSystem;
 
 AudioMaster* audioMaster;
+Entity CameraEntity;
+MobManager mobManager;
 
 #pragma endregion
 
@@ -163,6 +167,7 @@ int main(int /* argc */, char** /* argv */) {
     //Thread Loading Settings
     auto f = []() {
         settings = FileLoader::loadDataFile("Settings.data");
+        playerData = FileLoader::loadDataFile("PlayerData.data");
     };
     std::thread thread_object(f);
     #pragma endregion
@@ -182,6 +187,9 @@ int main(int /* argc */, char** /* argv */) {
     csm.RegisterComponent<NPCC>(); 
     csm.RegisterComponent<DataC>();
     csm.RegisterComponent<PathfindingC>();
+    csm.RegisterComponent<XpC>();
+    csm.RegisterComponent<SpellC>();
+    csm.RegisterComponent<ManaC>();
 
     auto dataSystem = csm.RegisterSystem<DataSystem>();
     {
@@ -222,8 +230,9 @@ int main(int /* argc */, char** /* argv */) {
     {
         Signature signature;
         signature.set(csm.GetComponentType<TransformC>());
-        signature.set(csm.GetComponentType<PathfindingC>());
+        signature.set(csm.GetComponentType<PathfindingC>()); 
         signature.set(csm.GetComponentType<EntityC>());
+        signature.set(csm.GetComponentType<ModelMeshC>());
         csm.SetSystemSignature<PathfindingSystem>(signature);
     }
     pathfindingSystem->Init();
@@ -245,7 +254,7 @@ int main(int /* argc */, char** /* argv */) {
     }
     modelSystem->Init();
 
-    auto collisionSystem = csm.RegisterSystem<CollisionSystem>(); //Model Postion Transformation in here ???
+    auto collisionSystem = csm.RegisterSystem<CollisionSystem>();
     {
         Signature signature;
         signature.set(csm.GetComponentType<CollisionC>());
@@ -255,11 +264,44 @@ int main(int /* argc */, char** /* argv */) {
     }
     collisionSystem->Init();
 
-#pragma endregion
+    auto xpSystem = csm.RegisterSystem<XpSystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<XpC>());
+        signature.set(csm.GetComponentType<HealthC>());
+        signature.set(csm.GetComponentType<SpellC>());
+        csm.SetSystemSignature<XpSystem>(signature);
+    }
+    xpSystem->Init();
 
-    audioMaster->genMainEngine();
-    audioMaster->SetEngineVolume(audioMaster->GetMainSoundEngine(), std::stof(settings.at("MusicVol")));
-    audioMaster->PlaySound(audioMaster->GetMainSoundEngine(), "resources/Sounds/MainMenu.mp3", true);
+    damageSystem = csm.RegisterSystem<AttackSystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<HealthC>());
+        signature.set(csm.GetComponentType<TransformC>());
+        signature.set(csm.GetComponentType<EntityC>());
+        csm.SetSystemSignature<AttackSystem>(signature);
+    }
+    damageSystem->Init();
+
+    auto healthSystem = csm.RegisterSystem<HealthSystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<HealthC>());
+        csm.SetSystemSignature<HealthSystem>(signature);
+    }
+    healthSystem->Init();
+
+    auto spellSystem = csm.RegisterSystem<SpellSystem>();
+    {
+        Signature signature;
+        signature.set(csm.GetComponentType<ManaC>());
+        signature.set(csm.GetComponentType<SpellC>());
+        csm.SetSystemSignature<SpellSystem>(signature);
+    }
+    spellSystem->Init();
+
+#pragma endregion
 
     #pragma region Initialize glfw
     glfwInit();
@@ -400,18 +442,20 @@ int main(int /* argc */, char** /* argv */) {
             classSelector->getScreen()->mouseButtonCallbackEvent(button, action, modifiers);
             classSelector->getScreenOtherTheme()->mouseButtonCallbackEvent(button, action, modifiers);
             settingsScreen->getScreen()->mouseButtonCallbackEvent(button, action, modifiers);
+            damageSystem->ExecuteAttack(camera, inv, button, action);
         }
     );
 
     glfwSetKeyCallback(window,[](GLFWwindow* window, int key, int scancode, int action, int mods) {
             screen->keyCallbackEvent(key, scancode, action, mods);
-            inv->keyCallbackEvent(key, scancode, action, mods);
+            inv->keyCallbackEvent(key, scancode, action, mods, window);
             startScreen->getScreen()->keyCallbackEvent(key, scancode, action, mods);
             classSelector->getScreen()->keyCallbackEvent(key, scancode, action, mods);
             classSelector->getScreenOtherTheme()->keyCallbackEvent(key, scancode, action, mods);
             settingsScreen->getScreen()->keyCallbackEvent(key, scancode, action, mods);
 
             entitySystem->Update(camera, inv, key, scancode, action, mods);
+            damageSystem->ExecuteAttack(camera, inv, key, action);
 
             ///if(key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, GL_TRUE);
 
@@ -466,6 +510,17 @@ int main(int /* argc */, char** /* argv */) {
     );
     #pragma endregion
 
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+    #pragma region Audio
+    audioMaster->genEffectsEngine();
+    audioMaster->genMainEngine();
+
+    audioMaster->SetEngineVolume(audioMaster->GetEffectsSoundEngine(), std::stof(settings.at("CombatVol")));
+    audioMaster->SetEngineVolume(audioMaster->GetMainSoundEngine(), std::stof(settings.at("MusicVol")));
+    audioMaster->PlaySound(audioMaster->GetMainSoundEngine(), "resources/Sounds/MainMenu.mp3", true);
+    #pragma endregion
+
     ///REMOVE !
     while (startScreen->IsActive() && !glfwWindowShouldClose(window)) {
         #pragma region Frame & Poll Events & Clear Buffers/Color
@@ -502,9 +557,10 @@ int main(int /* argc */, char** /* argv */) {
         #pragma region Inventory
         loadingScreen->specialRender(window, "Loading Items", width, height);
         std::unordered_map<string, string> invItemsFile = FileLoader::loadDataFile("Inventory.data");
-        invItems.insert(make_pair("Dummy Hammer", Item{ "Dummy Hammer", {"A hammer for all the hunter dummy's." ,"Deals: 3-5 damage per hit."}, "Inventory/DummyHammer", InventoryCataType::Tools, 1, "Min. Level --1",ENTYPO_ICON_LAB_FLASK, "Class: --Hunter", ENTYPO_ICON_NEWSLETTER, "Att. Spd: Slow", ENTYPO_ICON_FLASH, ItemType::game_dummy_hammer, -1, true }));
+        invItems.insert(make_pair("Dummy Hammer", Item{ "Dummy Hammer", {"A hammer for all the hunter dummy's." ,"Deals: 3-5 damage per hit."}, "Inventory/DummyHammer", InventoryCataType::Tools, 1, "Min. Level --1",ENTYPO_ICON_LAB_FLASK, "Class: --Hunter", ENTYPO_ICON_NEWSLETTER, "Att. Spd: Slow", ENTYPO_ICON_FLASH, ItemType::game_dummy_hammer, -1, true, ArmorType::NoArmor, ItemTypeE::game_weapon }));
         invItems.insert(make_pair("Bone", Item{ "Bone", {"Look for a wandering trader, they ","might be intressted in this", " miscellaneous item."}, "Inventory/Bone", InventoryCataType::Miscellaneous, 1, "Misc Item",ENTYPO_ICON_LAB_FLASK, "", 0, "", 0, ItemType::game_bone, -1, true }));
-        invItems.insert(make_pair("Worn Boots", Item{ "Worn Boots", {"Some old boots found in the pond", " nearby. Just sturdy enough for ", "some basic protection."}, "Inventory/Worn Boots", InventoryCataType::Armor, 1, "Min. Level --3",ENTYPO_ICON_LAB_FLASK, "Health Boost: +6", ENTYPO_ICON_CIRCLE_WITH_PLUS, "", 0, ItemType::game_worn_boots, 1, false, ArmorType::Boots }));
+        invItems.insert(make_pair("Worn Boots", Item{ "Worn Boots", {"Some old boots found in the pond", " nearby. Just sturdy enough for ", "some basic protection."}, "Inventory/Worn Boots", InventoryCataType::Armor, 1, "Min. Level --3",ENTYPO_ICON_LAB_FLASK, "Health Boost: +6", ENTYPO_ICON_CIRCLE_WITH_PLUS, "", 0, ItemType::game_worn_boots, 1, false, ArmorType::Boots, ItemTypeE::game_armor }));
+        invItems.insert(make_pair("Mushroom", Item{ "Mushroom", {"Old fasion mushrooms.","Some people might say they", " are perfect for soup."}, "Inventory/Mushroom", InventoryCataType::Miscellaneous, 1, "Misc Item",ENTYPO_ICON_LAB_FLASK, "", 0, "", 0, ItemType::game_mushroom, -1, true }));
 
         loadingScreen->specialRender(window, "Adding items to player inventory", width, height);
         for (auto pair : invItemsFile) {
@@ -513,9 +569,10 @@ int main(int /* argc */, char** /* argv */) {
         }
 
         loadingScreen->specialRender(window, "Initializing Quests", width, height);
-        Quest quest1 = Quest("Protect your camp", { "Collect 15 bones", "", "Reward: 6 Currencry" }, QuestCataType::Open, QuestType::quest_protect_camp, 1, { "S 1" }, { "W 1" }, { "C 1" });
-        Quest quest2 = Quest("Spider Forest", { "Collect 6 Mushrooms", "", "Reward: 8 Currencry" }, QuestCataType::Open, QuestType::quest_forest, 1, { "S 2" }, { "W 2" }, { "C 2" });
-        Quest quest3 = Quest("Boat Repair", { "Repair your boat by the Miner", "Costst: 20 currency", "", "Reward: 24 Currencry & Acces to ???" }, QuestCataType::Open, QuestType::quest_repair_boat, 3, { "S 3" }, { "W 3" }, { "C 3" });
+        Quest quest1 = Quest("Protect your camp", { "Collect 15 bones", "", "Reward: 6 Currencry" }, QuestCataType::Open, QuestType::quest_protect_camp, 1, { "Hey there, can you collect 15 bones", "for me? If you do i will reward you", "with 6 tickets!" }, { "Keep going! You doing great.", "Small Tip my friend, at night most", "mobs spawn in the forest, or mine." }, { "Geez, thank you! I see great", "strength in you soldier.", "Here is your reward...!" }, { "Currency:6" }, {"15xgame_bone"});
+        Quest quest2 = Quest("Spider Forest", { "Collect 6 Mushrooms", "", "Reward: 14 Currencry" }, QuestCataType::Open, QuestType::quest_forest, 1, { "Hey! Can you collect 6 mushrooms?", "They can be found in the spider", "infested forest behind me." }, { "Just keep going, you are almost", "there. Just a few more so i can", "make my soup again." }, { "Geez, thank you! Now i can finally", "make my famous soup again!", "Here is your reward...!" }, { "Currency:14" }, { "6xgame_mushroom" });
+        Quest quest3 = Quest("Boat Repair", { "Repair your boat by the Miner", "Costst: 20 currency", "", "Reward: 24 Currencry & Acces to Ryton" }, QuestCataType::Open, QuestType::quest_repair_boat, 3, { "Hmm, you say you need a boat fixed?", "I can do that for 20 tickets my", "friend. When you got those find me!" }, { "Already got that money for me?", "If not come back later i don't do", "anything for free here." }, { "Hehehe, i knew you could do it.", "Soo, where is your boat? Ill fix it", "for you so you can be on your way." }, { "Currency:24" }, { "20xcurrency" });
+        quest3.taskType = QuestTaskType::CurrencyTask;
         std::map<QuestType, Quest> map;
         map.insert(make_pair(quest1.type, quest1));
         map.insert(make_pair(quest2.type, quest2));
@@ -524,14 +581,32 @@ int main(int /* argc */, char** /* argv */) {
         inv->AddQuest(quest1);
         inv->AddQuest(quest2);
         inv->AddQuest(quest3);
+
+        inv->DropItem(invItems.at("Mushroom"), camera.GetPosition(), false);
+        inv->DropItem(invItems.at("Mushroom"), camera.GetPosition(), false);
+        inv->DropItem(invItems.at("Mushroom"), camera.GetPosition(), false);
+        inv->DropItem(invItems.at("Mushroom"), camera.GetPosition(), false);
+        inv->DropItem(invItems.at("Mushroom"), camera.GetPosition(), false);
+        inv->DropItem(invItems.at("Mushroom"), camera.GetPosition(), false);
+        inv->DropItem(invItems.at("Mushroom"), camera.GetPosition(), false);
         #pragma endregion
 
         #pragma region Mobs
-        MobManager mobManager = MobManager();
+        loadingScreen->specialRender(window, "Loading Mobs", width, height);
+        mobManager = MobManager();
 
         AnimModel spiderModel("resources/Mobs/SpiderMeshOnly.fbx");
-        mobManager.CreateMob(Mob(spiderModel, MobType::mob_spider, .07f, 10), MobType::mob_spider);
-        mobManager.SpawnMob(MobType::mob_spider, camera.GetPosition());
+        AnimModel skeletonModel ("resources/Mobs/Skeleton.fbx");
+
+        mobManager.CreateMob(Mob(spiderModel, MobType::mob_spider, {"currency:2-9", "xp:10-26"}, .07f, 10), MobType::mob_spider);
+        mobManager.CreateMob(Mob(skeletonModel, MobType::mob_skeleton, { "currency:2-9", "xp:10-26" }, .07f, 10), MobType::mob_skeleton);
+        //mobManager.CreateMob(Mob(cowModel, MobType::mob_cow, { "currency:1-3", "xp:6-20" }, .07f, 10), MobType::mob_cow);
+        //mobManager.CreateMob(Mob(sheepModel, MobType::mob_sheep, { "currency:1-3", "xp:6-20" }, .07f, 10), MobType::mob_sheep);
+
+        mobManager.SpawnMob(MobType::mob_spider, camera.GetPosition(), true, 0.02f); // vec3(-39.212929, 5.305047, -109.676712)
+        mobManager.SpawnMob(MobType::mob_spider, vec3(-40.212929, 5.305047, -106.676712), true, 0.02f);
+        mobManager.SpawnMob(MobType::mob_skeleton, vec3(-42.212929, 5.305047, -108.676712), true, 0.02f);
+        mobManager.SpawnMob(MobType::mob_skeleton, camera.GetPosition(), true, 0.02f);
         #pragma endregion
 
         #pragma region Entity Creation & Chunk Loading
@@ -545,12 +620,16 @@ int main(int /* argc */, char** /* argv */) {
         int modelnum = 0;
         int amountmodels = modelData.size();
 
-        #pragma region Maksure MovementSystem Update runs
-        auto Te = csm.CreateEntity();
-        csm.AddComponent(Te, MotionC{2.f, Camera_Movement::NONE, true});
-        csm.AddComponent(Te, InputC{ Keyboard });
-        csm.AddComponent(Te, TransformC{ vec3(0), 1.f });
-        csm.AddComponent(Te, DataC{});
+        #pragma region Camera/Player Entity
+        CameraEntity = csm.CreateEntity();
+        csm.AddComponent(CameraEntity, MotionC{2.f, Camera_Movement::NONE, true});
+        csm.AddComponent(CameraEntity, InputC{ Keyboard });
+        csm.AddComponent(CameraEntity, TransformC{ camera.GetPosition(), 1.f });
+        csm.AddComponent(CameraEntity, DataC{});
+        csm.AddComponent(CameraEntity, HealthC{});
+        csm.AddComponent(CameraEntity, SpellC{});
+        csm.AddComponent(CameraEntity, XpC{ 1, 0, 0});
+        csm.AddComponent(CameraEntity, ManaC{ 20, 20 });
         #pragma endregion
 
         for (ModelDataClass* data : modelData) {
@@ -610,17 +689,40 @@ int main(int /* argc */, char** /* argv */) {
         #pragma endregion
         map.clear(); //Remove Temp Stored Quests
 
+        #pragma region Levels
+        auto& xpC = csm.GetComponent<XpC>(CameraEntity);
+
+        loadingScreen->specialRender(window, "Loading Levels", width, height);
+        xpSystem->CreateLevel(1, 0, {"Spell:spell_hunter_bash"});
+        xpSystem->CreateLevel(2, 100, { "Health:5", "SkillPoints:2" });
+        xpSystem->CreateLevel(3, 170, { "Health:5", "SkillPoints:2" });
+        xpSystem->CreateLevel(4, 250, { "Health:5", "SkillPoints:2" });
+        xpSystem->CreateLevel(5, 340, { "Health:5", "SkillPoints:2" });
+        xpSystem->CreateLevel(6, 440, { "Health:5", "SkillPoints:2" });
+        xpSystem->CreateLevel(7, 560, { "Health:5", "SkillPoints:2" });
+        xpSystem->CreateLevel(8, 690, { "Health:5", "SkillPoints:2" });
+        xpSystem->CreateLevel(9, 840, { "Health:5", "SkillPoints:2" });
+        xpSystem->CreateLevel(10, 990, { "Health:5", "SkillPoints:2" });
+        xpSystem->CreateLevel(11, 1160, { "Spell:spell_hunter_charge", "Health:5", "SkillPoints:2" });
+        xpC.currentXp = std::stoi(playerData.at("xp"));
+        #pragma endregion
+
         ///ANIMATION
         ///model0.playAnimation(new Animation("Armature", vec2(0, 55), 0.2, 10, true), false); //forcing our model to play the animation (name, frames, speed, priority, loop)
 
         #pragma region Pre Game Loop
         loadingScreen->specialRender(window, "Loading complete", width, height);
-        glm::mat4 projection = glm::perspective(camera.GetZoom(), static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT), 0.1f, 100.0f); //Render Distance
+        glm::mat4 projection = glm::perspective(camera.GetZoom(), static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT), 0.1f, 40.0f); //Render Distance
 
         inv->realignWindows(SCREEN_WIDTH, SCREEN_HEIGHT);
         inv->Hide();
+        inv->SetCurrencry(std::stoi(playerData.at("currency")));
+        inv->SetXp(std::stoi(playerData.at("xp"))); 
+        camera.SetPosition(vec3(std::stof(playerData.at("cameraPosX")), std::stof(playerData.at("cameraPosY")), std::stof(playerData.at("cameraPosZ"))));
 
         audioMaster->PlayNewSound(audioMaster->GetMainSoundEngine(), "resources/Sounds/Game.mp3", true);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
         #pragma endregion
 
         // Game loop
@@ -647,6 +749,10 @@ int main(int /* argc */, char** /* argv */) {
             movementSystem->Update(deltaTime, camera);
             chunkSystem->Update(camera, dataSystem->GetEntities());
             collisionSystem->Update(camera);
+            healthSystem->Update(deltaTime, inv, CameraEntity);
+            xpSystem->Update(inv);
+            damageSystem->Update(camera, inv, CameraEntity, deltaTime);
+            spellSystem->Update(inv);
 
             #pragma endregion
             #pragma region Draw Models
@@ -688,7 +794,15 @@ int main(int /* argc */, char** /* argv */) {
     thread_object.detach();
 
     #pragma region Save Data
+    auto& xpC = csm.GetComponent<XpC>(CameraEntity);
+    playerData.at("currency") = inv->GetCurrency();
+    playerData.at("xp") = std::to_string(xpC.currentXp);
+    playerData.at("cameraPosX") = std::to_string(camera.GetPosition().x);
+    playerData.at("cameraPosY") = std::to_string(camera.GetPosition().y);
+    playerData.at("cameraPosZ") = std::to_string(camera.GetPosition().z);
+
     FileLoader::SaveFile("Settings.data", settings);
+    FileLoader::SaveFile("PlayerData.data", playerData);
     #pragma endregion
 
     return 0;
